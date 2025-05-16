@@ -1,0 +1,40 @@
+.container {
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.layout {
+  display: grid;
+  gap: 24px;
+}
+
+.profileHeader {
+  grid-column: span 12;
+  margin-bottom: 24px;
+}
+
+.sidebar {
+  position: sticky;
+  top: 88px; /* Header高度 + 一些间距 */
+  height: fit-content;
+}
+
+.main {
+  min-height: 70vh;
+}
+
+.mobileMenuButton {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .profileHeader {
+    margin-bottom: 16px;
+  }
+}

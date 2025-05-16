@@ -1,0 +1,47 @@
+.container {
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.layout {
+  display: grid;
+  gap: 24px;
+}
+
+.main {
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  /* 设置为页面2/3处，假设视口高度为100vh，2/3处就是在33.33vh处 */
+  top: calc(max(88px, 33.33vh));
+  height: fit-content;
+  max-width: 320px;
+  width: 100%;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  /* 增加平滑滚动效果 */
+  scroll-behavior: smooth;
+  /* 添加滚动条样式 */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+}
+
+.mobileSidebar {
+  margin-top: 24px;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    padding: 16px;
+  }
+}

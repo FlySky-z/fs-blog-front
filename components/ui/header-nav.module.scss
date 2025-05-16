@@ -1,0 +1,236 @@
+// header-nav.module.scss
+.headerContainer {
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px !important;
+  background-color: var(--ant-component-background) !important;
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--ant-border-color-split);
+  box-shadow: 0 1px 3px var(--ant-shadow-color);
+  transition: all 0.3s;
+  height: 64px;
+  line-height: 64px;
+
+  &.scrolled {
+    box-shadow: 0 2px 8px var(--ant-shadow-color);
+  }
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 64px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  margin-right: 48px;
+}
+
+.logo {
+  height: 32px;
+  width: auto;
+  cursor: pointer;
+  margin-right: 12px;
+}
+
+.siteSwitcher {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  
+  .arrowIcon {
+    margin-left: 4px;
+    transition: transform 0.2s;
+    
+    &.open {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.headerCenter {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  
+  .navLinks {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    
+    li {
+      margin: 0 8px;
+      
+      a {
+        display: block;
+        padding: 0 12px;
+        line-height: 64px;
+        color: var(--ant-text-color);
+        font-weight: 500;
+        transition: color 0.3s;
+        position: relative;
+        text-decoration: none;
+        
+        &:hover, &.active {
+          color: var(--ant-color-primary);
+        }
+        
+        &.active::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 12px;
+          right: 12px;
+          height: 2px;
+          background-color: var(--ant-color-primary);
+        }
+      }
+    }
+  }
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.searchContainer {
+  position: relative;
+  margin-right: 24px;
+  
+  input {
+    padding: 8px 16px;
+    padding-left: 40px;
+    border-radius: 16px;
+    border: 1px solid var(--ant-border-color-base);
+    background: var(--ant-background-color-light);
+    transition: all 0.3s;
+    width: 200px;
+    
+    &:focus {
+      width: 280px;
+      box-shadow: 0 0 0 2px var(--ant-primary-color-outline);
+    }
+  }
+  
+  .searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ant-text-color-secondary);
+  }
+  
+  .searchHint {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 2px 6px;
+    background-color: var(--ant-background-color-base);
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--ant-text-color-secondary);
+  }
+}
+
+.iconButtons {
+  display: flex;
+  margin-right: 16px;
+  
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    transition: background 0.3s;
+    position: relative;
+    
+    &:hover {
+      background-color: var(--ant-background-color-base);
+    }
+    
+    .badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      min-width: 8px;
+      height: 8px;
+      border-radius: 4px;
+      background-color: var(--ant-color-error);
+    }
+  }
+}
+
+.avatarDropdown {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #1890ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+  }
+}
+
+// 响应式设计
+@media (max-width: 1024px) {
+  .searchContainer {
+    input {
+      width: 150px;
+      
+      &:focus {
+        width: 200px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .headerCenter {
+    .navLinks {
+      display: none;
+    }
+  }
+  
+  .headerContainer {
+    padding: 0 16px;
+  }
+  
+  .siteSwitcher {
+    display: none;
+  }
+  
+  .searchContainer {
+    margin-left: auto;
+  }
+  
+  .mobileMenuButton {
+    display: block;
+  }
+}

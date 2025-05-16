@@ -1,0 +1,33 @@
+.userItem {
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.userItem:last-child {
+  border-bottom: none !important;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 70%;
+}
+
+.userBio {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.followButton {
+  min-width: 64px;
+}

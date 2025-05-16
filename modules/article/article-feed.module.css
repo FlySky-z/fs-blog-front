@@ -1,0 +1,40 @@
+.homeFeed {
+  display: flex;
+  flex-direction: column;
+}
+
+.feedTitle {
+  margin-bottom: 16px !important;
+  padding-left: 8px;
+  border-left: 4px solid #1677ff;
+}
+
+.posts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empty {
+  margin: 48px 0;
+}
+
+.loadingTrigger {
+  margin: 24px 0;
+  text-align: center;
+  padding: 12px;
+}
+
+.loadingSpinner {
+  margin: 0 auto;
+}
+
+.noMore {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+.error {
+  color: #ff4d4f;
+  font-size: 14px;
+}

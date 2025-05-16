@@ -1,0 +1,61 @@
+.quickEntryCard {
+  overflow: hidden; /* 确保tab内容不溢出 */
+}
+
+.tabs {
+  margin-top: -16px; /* 减少上方空间 */
+}
+
+.tabLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tabIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabContent {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.entryItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  color: rgba(0, 0, 0, 0.85);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.entryItem:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: #1677ff;
+}
+
+.itemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.singleEntry {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.65);
+  padding: 8px;
+}
+
+@media (max-width: 768px) {
+  .tabContent {
+    grid-template-columns: 1fr;
+  }
+}

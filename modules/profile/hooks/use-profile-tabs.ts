@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { TabDataType } from '@/components/profile/profile-tab-panel';
-import { PostItemData } from '@/components/profile/article-item';
+import { ArticleItemData } from '@/components/profile/article-item';
 import { CommentItemData } from '@/components/profile/comment-item';
 import { CollectionItemData } from '@/components/profile/collection-item';
 import { UserCardData } from '@/components/profile/user-card';
@@ -210,7 +210,7 @@ export const useProfileTabs = (tab: string, userId: string) => {
 };
 
 // 生成模拟文章数据
-function generateMockPosts(count: number): PostItemData[] {
+function generateMockPosts(count: number): ArticleItemData[] {
   return Array.from({ length: count }, (_, i) => ({
     id: `post-${Date.now()}-${i}`,
     title: `这是一篇关于${['React', 'Vue', 'Angular', 'Next.js', 'TypeScript'][i % 5]}的文章`,

@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, Typography, Button, Tooltip } from 'antd';
 import Link from 'next/link';
 import { ClockCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import styles from './comment-item.module.scss';
 
 const { Text, Paragraph, Title } = Typography;
 
@@ -34,33 +35,31 @@ const CommentItem: React.FC<CommentItemProps> = ({
   });
   
   return (
-    <Card className="w-full mb-4 hover:shadow-sm transition-shadow">
+    <Card className={styles.commentCard}>
       <div>
-        <div className="flex justify-between items-start">
+        <div className={styles.commentHeader}>
           <div>
-            <Text type="secondary" style={{ display: 'flex', alignItems: 'center' }}>
+            <Text type="secondary" className={styles.commentLabel}>
               评论于帖子：
             </Text>
-            <Link href={`/article/${comment.postId}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-              <Title level={5} className="mt-1 mb-2 hover:text-blue-500 transition-colors">
+            <Link href={`/article/${comment.postId}`} className={styles.postLink}>
+              <Title level={5} className={styles.postTitle}>
                 {comment.postTitle}
               </Title>
             </Link>
           </div>
           
-          <Text type="secondary" style={{ display: 'flex', alignItems: 'center', fontSize: '12px' }}>
-            <ClockCircleOutlined style={{ marginRight: 4 }} />
+          <Text type="secondary" className={styles.commentDate}>
+            <ClockCircleOutlined className={styles.icon} />
             {formattedDate}
           </Text>
         </div>
         
-        <Paragraph
-          style={{ margin: '12px 0', color: 'rgba(0, 0, 0, 0.85)' }}
-        >
+        <Paragraph className={styles.commentContent}>
           {comment.content}
         </Paragraph>
         
-        <div className="flex justify-end">
+        <div className={styles.commentActions}>
           <Button 
             type="text"
             size="small"

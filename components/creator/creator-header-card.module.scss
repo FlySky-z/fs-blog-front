@@ -1,0 +1,61 @@
+// 设置卡片的样式
+.cardContainer {
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.headerWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.avatarSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatarDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.nickname {
+  margin: 0;
+  font-weight: bold;
+}
+
+.levelTag {
+  margin-top: 4px;
+}
+
+.announcementSection {
+  margin-top: 16px;
+}
+
+.announcementContainer {
+  background-color: #f9f9f9;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.announcementTitle {
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.carousel {
+  .slick-slide {
+    text-align: center;
+  }
+}
+
+.announcementItem {
+  padding: 8px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

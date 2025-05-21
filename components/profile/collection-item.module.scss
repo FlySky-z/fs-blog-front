@@ -1,0 +1,80 @@
+.collectionCard {
+  width: 100%;
+  margin-bottom: 16px;
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.collectionContainer {
+  display: flex;
+}
+
+.coverImage {
+  flex-shrink: 0;
+  margin-right: 16px;
+  width: 80px;
+  height: 80px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  font-size: 32px;
+  color: white;
+}
+
+.collectionContent {
+  flex: 1;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.titleLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.title {
+  margin-bottom: 8px;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #1DA1F2;
+  }
+}
+
+.tag {
+  margin-left: 8px;
+}
+
+.description {
+  margin: 8px 0;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.date {
+  font-size: 13px;
+  color: #999;
+}
+
+.postCount {
+  color: #999;
+}

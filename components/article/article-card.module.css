@@ -4,7 +4,6 @@
 }
 
 .card:hover {
-  transform: translateY(-4px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1) !important;
 }
 
@@ -27,6 +26,10 @@
 .body {
   display: flex;
   gap: 16px;
+}
+
+.body:hover .title {
+  color: #1677ff;
 }
 
 /* 桌面端：水平布局，文字在左，图片在右 */

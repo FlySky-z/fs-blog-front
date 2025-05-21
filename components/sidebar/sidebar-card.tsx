@@ -27,7 +27,6 @@ const SidebarCard: React.FC<SidebarCardProps> = ({
       style={{ marginBottom: 16, width: '100%', ...style }}
       className={`${styles.sidebarCard} ${className || ''}`}
       size="small"
-      bordered
     >
       {children}
     </Card>

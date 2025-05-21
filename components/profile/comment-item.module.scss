@@ -1,0 +1,55 @@
+.commentCard {
+  width: 100%;
+  margin-bottom: 16px;
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.commentLabel {
+  display: flex;
+  align-items: center;
+}
+
+.postLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.postTitle {
+  margin-top: 4px;
+  margin-bottom: 8px;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #1DA1F2;
+  }
+}
+
+.commentDate {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+}
+
+.icon {
+  margin-right: 4px;
+}
+
+.commentContent {
+  margin: 12px 0;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.commentActions {
+  display: flex;
+  justify-content: flex-end;
+}

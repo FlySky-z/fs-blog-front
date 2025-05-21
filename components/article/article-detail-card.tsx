@@ -106,7 +106,6 @@ const ArticleDetailCard: React.FC<ArticleDetailCardProps> = ({
 
   return (
     <Card
-      bordered={false}
       style={{ marginBottom: 24 }}
       bodyStyle={{ padding: '24px' }}
       className="article-detail-card"

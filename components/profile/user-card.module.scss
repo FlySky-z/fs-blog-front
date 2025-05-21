@@ -1,0 +1,61 @@
+.userCard {
+  width: 100%;
+  margin-bottom: 16px;
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.cardContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.userInfoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.avatarLink {
+  display: inline-block;
+}
+
+.userDetails {
+  margin-left: 12px;
+}
+
+.userHeader {
+  display: flex;
+  align-items: center;
+}
+
+.usernameLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.username {
+  transition: color 0.3s;
+
+  &:hover {
+    color: #1DA1F2;
+  }
+}
+
+.tagBadge {
+  margin-left: 8px;
+}
+
+.userBio {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.45);
+  max-width: 200px;
+}
+
+.followButton {
+  font-size: 14px;
+}

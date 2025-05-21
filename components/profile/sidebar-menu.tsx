@@ -11,6 +11,7 @@ import {
   SafetyCertificateOutlined
 } from '@ant-design/icons';
 import MenuItem from '@/components/molecules/center-menu-item';
+import styles from './sidebar-menu.module.scss';
 
 const { Title } = Typography;
 
@@ -91,13 +92,13 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
   ];
 
   const menuContent = (
-    <div className="flex flex-col">
+    <div className={styles.sidebarMenuContainer}>
       {isMobile && (
-        <Title level={5} style={{ padding: '16px 16px 0' }}>
+        <Title level={5} className={styles.sidebarMenuTitle}>
           导航菜单
         </Title>
       )}
-      <Space direction="vertical" className="w-full mt-2">
+      <Space direction="vertical" className={styles.sidebarMenuSpace}>
         {menuItems.map((item) => (
           <MenuItem 
             key={item.key}
@@ -115,7 +116,6 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
 
   // 移动端显示抽屉
   if (isMobile) {
-    console.log('Mobile view');
     return (
       <Drawer
         title="导航菜单"
@@ -131,7 +131,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
 
   // 桌面端显示卡片
   return (
-    <Card className="w-full">
+    <Card className={styles.sidebarMenuCard}>
       {menuContent}
     </Card>
   );

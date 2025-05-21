@@ -1,0 +1,27 @@
+.draftsTable {
+  width: 100%;
+}
+
+.draftTitleCell {
+  display: flex;
+}
+
+.thumbnail {
+  width: 96px;
+  height: 56px;
+  margin-right: 12px;
+  overflow: hidden;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.draftTitleText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.actionsCell {
+  display: flex;
+  gap: 8px;
+}

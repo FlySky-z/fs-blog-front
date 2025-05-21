@@ -1,0 +1,88 @@
+.articleCard {
+  width: 100%;
+  margin-bottom: 16px;
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.articleContainer {
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+}
+
+.articleContent {
+  flex: 1;
+}
+
+.articleTitle {
+  margin: 0;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #1DA1F2;
+  }
+}
+
+.articleMeta {
+  display: flex;
+  align-items: center;
+  color: gray;
+  margin: 8px 0;
+}
+
+.publishDate {
+  margin-left: 4px;
+  font-size: 14px;
+}
+
+.articleExcerpt {
+  color: rgba(0, 0, 0, 0.65);
+  margin: 8px 0;
+}
+
+.articleFooter {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.tagContainer {
+  margin-bottom: 8px;
+}
+
+.statsContainer {
+  color: gray;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+
+  .icon {
+    margin-right: 4px;
+  }
+}
+
+.coverImageContainer {
+  margin-top: 12px;
+
+  @media (min-width: 768px) {
+    margin-top: 0;
+    margin-left: 16px;
+  }
+}
+
+.coverImage {
+  width: 120px;
+  height: 80px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 4px;
+}

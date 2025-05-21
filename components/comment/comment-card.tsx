@@ -150,7 +150,6 @@ const CommentCard: React.FC<CommentCardProps> = ({
 
   return (
     <Card
-      bordered={false}
       style={{ 
         marginBottom: 16, 
         marginLeft: depth > 0 ? `${depth * 32}px` : 0,

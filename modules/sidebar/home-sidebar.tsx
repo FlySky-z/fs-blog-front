@@ -14,10 +14,6 @@ interface HomeSidebarProps {
 const HomeSidebar: React.FC<HomeSidebarProps> = ({
   isLoggedIn = false
 }) => {
-  // 使用之前定义的 useSidebarData，但这里需要扩展它
-  // 由于现有的 useSidebarData 接受 articleId 参数并返回不同的数据格式
-  // 这里我们可以修改它并适配，或者在此组件中模拟数据
-  
   // 模拟数据
   const mockNewsItems = [
     {
@@ -46,7 +42,7 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
       url: '/article/programmer-health-guide'
     }
   ];
-  
+
   const mockRecommendedUsers = [
     {
       id: 'user1',
@@ -73,7 +69,7 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
       isFollowing: false
     }
   ];
-  
+
   const mockQuickEntries = [
     {
       key: 'categories',
@@ -96,7 +92,7 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
       ]
     }
   ];
-  
+
   const mockBanners = [
     {
       id: 'banner1',
@@ -111,17 +107,18 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
       url: '/courses/frontend-bootcamp'
     }
   ];
-  
+
   const mockWelcomeCard = {
     title: '欢迎来到技术博客平台',
     content: '这里是一个分享知识、经验和见解的地方。加入我们，与全球开发者一起成长！',
     imageUrl: 'https://picsum.photos/600/300?random=welcome',
-    buttonText: '立即注册',
+    buttonText: '登录/注册',
     buttonLink: '/register'
   };
 
   // 模拟关注用户的处理函数
   const handleFollowUser = async (userId: string, isFollowing: boolean) => {
+    // TODO: 关注用户的处理函数
     console.log(`${isFollowing ? '关注' : '取消关注'} 用户: ${userId}`);
     // 真实环境下这里会有API调用
     return Promise.resolve();
@@ -129,36 +126,40 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
 
   return (
     <div>
-      {/* 未登录用户显示欢迎卡片 */}
-      {!isLoggedIn && (
-        <WelcomeCard
-          title={mockWelcomeCard.title}
-          content={mockWelcomeCard.content}
-          imageUrl={mockWelcomeCard.imageUrl}
-          buttonText={mockWelcomeCard.buttonText}
-          buttonLink={mockWelcomeCard.buttonLink}
-        />
-      )}
-      
+      {/* 显示欢迎卡片 */}
+      <WelcomeCard
+        title={mockWelcomeCard.title}
+        content={mockWelcomeCard.content}
+        imageUrl={"https://picsum.photos/600/800?random=welcome"}
+        buttonText={mockWelcomeCard.buttonText}
+        buttonLink={mockWelcomeCard.buttonLink}
+        isLoggedIn={isLoggedIn}
+        userInfo={{
+          name: '张三',
+          avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=1',
+          description: '前端开发者'
+        }}
+      />
+
       {/* 广告Banner */}
       <PromoBanner
         banners={mockBanners}
         autoplay={true}
       />
-      
+
       {/* 官方资讯 */}
       <OfficialNews
         newsItems={mockNewsItems}
         title="官方资讯"
       />
-      
+
       {/* 推荐用户 */}
       <RecommendedUsers
         users={mockRecommendedUsers}
         title="推荐关注"
         onFollow={handleFollowUser}
       />
-      
+
       {/* 快速入口 */}
       <QuickEntryTabs
         entries={mockQuickEntries}

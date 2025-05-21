@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, Typography, Space, Tag, Avatar } from 'antd';
 import Link from 'next/link';
 import { EyeOutlined, LikeOutlined, CommentOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import styles from './article-item.module.scss';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -31,33 +32,43 @@ const ArticleItem: React.FC<ArticleItemProps> = ({ article: article }) => {
 
   return (
     <Card 
-      className="w-full mb-4 hover:shadow-md transition-shadow"
-      bodyStyle={{ padding: '16px' }}
+      className={styles.articleCard}
     >
-      <div className="flex flex-col md:flex-row">
-        <div className="flex-1">
+      <div className={styles.articleContainer}>
+        <div className={styles.articleContent}>
           <Link href={`/article/${article.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Title level={5} className="m-0 hover:text-blue-500 transition-colors">
+            <Title level={5} className={styles.articleTitle}>
               {article.title}
             </Title>
           </Link>
           
-          <div className="flex items-center text-gray-500 mt-2 mb-2">
-            <ClockCircleOutlined style={{ fontSize: '14px' }} />
-            <Text type="secondary" style={{ marginLeft: '4px', fontSize: '14px' }}>
+          <div className={styles.articleMeta}>
+            <ClockCircleOutlined className={styles.icon} />
+            <Text type="secondary" className={styles.publishDate}>
               {formattedDate}
             </Text>
           </div>
           
           <Paragraph 
             ellipsis={{ rows: 2 }}
-            style={{ color: 'rgba(0, 0, 0, 0.65)', margin: '8px 0' }}
+            className={styles.articleExcerpt}
           >
             {article.excerpt}
           </Paragraph>
           
-          <div className="flex flex-wrap justify-between mt-3">
-            <Space wrap size={[0, 8]} style={{ marginBottom: '8px' }}>
+        </div>
+        
+        {article.coverImage && (
+          <div className={styles.coverImageContainer}>
+            <div 
+              className={styles.coverImage}
+              style={{ backgroundImage: `url(${article.coverImage})` }}
+            />
+          </div>
+        )}
+      </div>
+      <div className={styles.articleFooter}>
+            <Space wrap size={[0, 8]} className={styles.tagContainer}>
               {article.tags?.map(tag => (
                 <Tag key={tag.id} color={tag.color || '#108ee9'}>
                   {tag.name}
@@ -65,38 +76,21 @@ const ArticleItem: React.FC<ArticleItemProps> = ({ article: article }) => {
               ))}
             </Space>
             
-            <Space className="text-gray-500">
-              <span className="flex items-center">
-                <EyeOutlined style={{ marginRight: 4 }} />
+            <Space className={styles.statsContainer}>
+              <span className={styles.statItem}>
+                <EyeOutlined className={styles.icon} />
                 {article.viewCount}
               </span>
-              <span className="flex items-center">
-                <LikeOutlined style={{ marginRight: 4 }} />
+              <span className={styles.statItem}>
+                <LikeOutlined className={styles.icon} />
                 {article.likeCount}
               </span>
-              <span className="flex items-center">
-                <CommentOutlined style={{ marginRight: 4 }} />
+              <span className={styles.statItem}>
+                <CommentOutlined className={styles.icon} />
                 {article.commentCount}
               </span>
             </Space>
           </div>
-        </div>
-        
-        {article.coverImage && (
-          <div className="md:ml-4 mt-3 md:mt-0">
-            <div 
-              style={{
-                width: '120px',
-                height: '80px',
-                backgroundImage: `url(${article.coverImage})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                borderRadius: '4px',
-              }}
-            />
-          </div>
-        )}
-      </div>
     </Card>
   );
 };

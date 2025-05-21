@@ -53,7 +53,6 @@ const CommentList: React.FC<CommentListProps> = ({
 
   return (
     <Card
-      bordered={false}
       style={{ marginBottom: 24 }}
       bodyStyle={{ padding: '24px' }}
       className="comment-list-card"

@@ -59,7 +59,6 @@ const PostCard: React.FC<PostCardProps> = ({
   return (
     <Card 
       className={styles.card}
-      bordered={false}
       hoverable
     >
       <div className={styles.cardContent}>
@@ -79,12 +78,9 @@ const PostCard: React.FC<PostCardProps> = ({
         </div>
 
         {/* 主体内容 */}
-        <div className={styles.body}>
+        <Link href={`/article/${id}`} className={styles.body} style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}>
           <div className={styles.textContent}>
-            <Link href={`/article/${id}`} className={styles.titleLink}>
-              <Title level={4} className={styles.title}>{title}</Title>
-            </Link>
-            
+            <Title level={4} className={styles.title}>{title}</Title>
             {description && (
               <Text className={styles.description}>{description}</Text>
             )}
@@ -105,7 +101,7 @@ const PostCard: React.FC<PostCardProps> = ({
               )}
             </div>
           )}
-        </div>
+        </Link>
 
         {/* 底部统计信息和标签 */}
         <div className={styles.footer}>

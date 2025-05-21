@@ -1,0 +1,67 @@
+.avatarHeaderCard {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.avatarHeaderContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+}
+
+.userInfoContainer {
+  display: flex;
+  align-items: flex-start;
+}
+
+.userDetails {
+  margin-left: 16px;
+}
+
+.userTitleContainer {
+  display: flex;
+  align-items: center;
+}
+
+.userTitle {
+  margin: 0;
+  margin-right: 8px;
+}
+
+.userId {
+  margin-left: 8px;
+}
+
+.userBio {
+  margin: 8px 0;
+  display: block;
+  color: rgba(0, 0, 0, 0.65);
+  max-width: 600px;
+}
+
+.userTagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
+.userActionsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+
+  @media (min-width: 768px) {
+    align-items: flex-end;
+    margin-top: 0;
+  }
+}
+
+.actionButtonContainer {
+  margin-top: 16px;
+}

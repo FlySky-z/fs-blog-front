@@ -2,8 +2,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Input, Avatar, Dropdown, Space, Badge, Layout } from 'antd';
-import { SearchOutlined, BellOutlined, DownOutlined, HeartOutlined, UserOutlined } from '@ant-design/icons';
+import { Input, Avatar, Dropdown, Space, Badge, Layout, Button } from 'antd';
+import { SearchOutlined, BellOutlined, DownOutlined, HeartOutlined, UserOutlined, LoginOutlined } from '@ant-design/icons';
+import { useAuthModal } from '@/modules/auth/AuthWrapper';
 import styles from './header-nav.module.scss';
 
 export default function HeaderNav() {
@@ -11,6 +12,19 @@ export default function HeaderNav() {
     const [searchFocused, setSearchFocused] = useState(false);
     const [hasNotification, setHasNotification] = useState(true);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
+    
+    // 获取认证状态和方法
+    console.log('Header Nav: Before useAuthModal call');
+    const authModal = useAuthModal();
+    console.log('Header Nav: After useAuthModal call', authModal);
+    
+    // 显式检查并记录每个需要的属性
+    console.log('authModal.isAuthenticated:', authModal?.isAuthenticated);
+    console.log('authModal.user:', authModal?.user);
+    console.log('authModal.openLoginModal:', !!authModal?.openLoginModal);
+    console.log('authModal.openRegisterModal:', !!authModal?.openRegisterModal);
+    
+    const { isAuthenticated, user, openLoginModal, openRegisterModal, handleLogout } = authModal;
 
     // 监听滚动事件，用于改变顶部导航栏样式
     useEffect(() => {
@@ -49,18 +63,14 @@ export default function HeaderNav() {
             key: 'logout', 
             label: '退出登录', 
             danger: true,
-            onClick: () => {
-                console.log('用户登出');
-                // 这里可以添加登出逻辑
-            }
+            onClick: handleLogout
         },
     ];
 
     // 站点切换菜单项
     const siteMenuItems = [
         { key: 'blog', label: '博客' },
-        { key: 'forum', label: '论坛' },
-        { key: 'docs', label: '文档' },
+        { key: 'chat', label: '聊天' },
     ];
 
     return (
@@ -125,17 +135,49 @@ export default function HeaderNav() {
                     </div>
 
                     {/* 头像下拉菜单 */}
-                    <Dropdown 
-                        menu={{ items: userMenuItems }} 
-                        placement="bottomRight"
-                        trigger={['click']}
-                        open={userMenuOpen}
-                        onOpenChange={(flag) => setUserMenuOpen(flag)}
-                    >
-                        <div className={styles.avatarDropdown}>
-                            <Avatar icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
-                        </div>
-                    </Dropdown>
+                    {isAuthenticated ? (
+                        <Dropdown 
+                            menu={{ items: userMenuItems }} 
+                            placement="bottomRight"
+                            trigger={['click']}
+                            open={userMenuOpen}
+                            onOpenChange={(flag) => setUserMenuOpen(flag)}
+                        >
+                            <div className={styles.avatarDropdown}>
+                                <Avatar src={user?.avatar ? user.avatar : null} style={{ cursor: 'pointer' }} />
+                            </div>
+                        </Dropdown>
+                    ) : (
+                        <Space>
+                            <Button 
+                                type="link" 
+                                icon={<LoginOutlined />} 
+                                onClick={() => {
+                                    console.log('Login button clicked');
+                                    if (openLoginModal) {
+                                        openLoginModal();
+                                    } else {
+                                        console.error('openLoginModal is undefined');
+                                    }
+                                }}
+                            >
+                                登录
+                            </Button>
+                            <Button 
+                                type="link" 
+                                onClick={() => {
+                                    console.log('Register button clicked');
+                                    if (openRegisterModal) {
+                                        openRegisterModal();
+                                    } else {
+                                        console.error('openRegisterModal is undefined');
+                                    }
+                                }}
+                            >
+                                注册
+                            </Button>
+                        </Space>
+                    )}
                 </div>
             </div>
         </Layout.Header>

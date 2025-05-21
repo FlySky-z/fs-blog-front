@@ -7,6 +7,7 @@ import CollectionItem, { CollectionItemData } from '@/components/profile/collect
 import UserCard, { UserCardData } from '@/components/profile/user-card';
 import AccountSettings from '@/components/profile/account-settings';
 import CertificationCenter from '@/components/profile/certification-center';
+import styles from './profile-tab-panel.module.scss';
 
 const { Title } = Typography;
 
@@ -47,8 +48,8 @@ const ProfileTabPanel: React.FC<ProfileTabPanelProps> = ({
   // 渲染加载状态
   if (loading) {
     return (
-      <Card className="w-full">
-        <div className="flex justify-center py-12">
+      <Card className={styles.profileTabCard}>
+        <div className={styles.loadingContainer}>
           <Spin size="large" />
         </div>
       </Card>
@@ -58,12 +59,12 @@ const ProfileTabPanel: React.FC<ProfileTabPanelProps> = ({
   // 渲染空状态
   if (!tabData || (Array.isArray(tabData.data) && tabData.data.length === 0)) {
     return (
-      <Card className="w-full">
+      <Card className={styles.profileTabCard}>
         <Title level={4}>{title}</Title>
         <Empty
           description={`暂无${title}内容`}
           image={Empty.PRESENTED_IMAGE_SIMPLE}
-          style={{ margin: '40px 0' }}
+          className={styles.emptyState}
         />
       </Card>
     );
@@ -117,15 +118,15 @@ const ProfileTabPanel: React.FC<ProfileTabPanelProps> = ({
   };
 
   return (
-    <Card className="w-full">
-      <Title level={4} style={{ marginBottom: '24px' }}>
+    <Card className={styles.profileTabCard}>
+      <Title level={4} className={styles.tabTitle}>
         {title}
       </Title>
 
       <div>{renderContent()}</div>
 
       {hasMore && onLoadMore && (
-        <div className="flex justify-center mt-4">
+        <div className={styles.loadMoreContainer}>
           <Button 
             onClick={onLoadMore} 
             loading={loadMoreLoading}

@@ -4,6 +4,7 @@ import { Card, Avatar, Typography, Button } from 'antd';
 import { UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import TagBadge from '@/components/atoms/tag-badge';
+import styles from './user-card.module.scss';
 
 const { Text, Paragraph } = Typography;
 
@@ -28,10 +29,10 @@ const UserCard: React.FC<UserCardProps> = ({
   loading = false
 }) => {
   return (
-    <Card className="w-full mb-4 hover:shadow-sm transition-shadow">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <Link href={`/accountCenter?userId=${user.id}`}>
+    <Card className={styles.userCard}>
+      <div className={styles.cardContainer}>
+        <div className={styles.userInfoContainer}>
+          <Link href={`/accountCenter?userId=${user.id}`} className={styles.avatarLink}>
             <Avatar 
               src={user.avatarUrl} 
               size={48}
@@ -39,28 +40,23 @@ const UserCard: React.FC<UserCardProps> = ({
             />
           </Link>
           
-          <div className="ml-3">
-            <div className="flex items-center">
+          <div className={styles.userDetails}>
+            <div className={styles.userHeader}>
               <Link 
                 href={`/accountCenter?userId=${user.id}`}
-                style={{ color: 'inherit', textDecoration: 'none' }}
+                className={styles.usernameLink}
               >
-                <Text strong className="hover:text-blue-500 transition-colors">
+                <Text strong className={styles.username}>
                   {user.username}
                 </Text>
               </Link>
-              <TagBadge level={user.level} type="level" className="ml-2" />
+              <TagBadge level={user.level} type="level" className={styles.tagBadge} />
             </div>
             
             {user.bio && (
               <Paragraph 
                 ellipsis={{ rows: 1 }} 
-                style={{ 
-                  margin: '4px 0 0', 
-                  fontSize: '13px', 
-                  color: 'rgba(0, 0, 0, 0.45)',
-                  maxWidth: '200px'
-                }}
+                className={styles.userBio}
               >
                 {user.bio}
               </Paragraph>
@@ -74,6 +70,7 @@ const UserCard: React.FC<UserCardProps> = ({
           size="small"
           onClick={() => onToggleFollow(user.id, !user.isFollowing)}
           loading={loading}
+          className={styles.followButton}
         >
           {user.isFollowing ? '已关注' : '关注'}
         </Button>

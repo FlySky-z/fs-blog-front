@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import StatItem from '@/components/atoms/stat-item';
+import styles from './user-stats.module.scss';
 
 export interface UserStatsData {
   followers: number;
@@ -23,19 +24,19 @@ const UserStats: React.FC<UserStatsProps> = ({
   onFollowingClick
 }) => {
   return (
-    <div className="flex items-center">
+    <div className={styles.userStatsContainer}>
       <StatItem
         value={stats.followers}
         label="粉丝"
         onClick={onFollowersClick}
       />
-      <div className="h-10 w-px bg-gray-200 mx-2" />
+      <div className={styles.divider} />
       <StatItem
         value={stats.following}
         label="关注"
         onClick={onFollowingClick}
       />
-      <div className="h-10 w-px bg-gray-200 mx-2" />
+      <div className={styles.divider} />
       <StatItem
         value={stats.likes}
         label="获赞"

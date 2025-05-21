@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, Typography, Space, Tag } from 'antd';
 import Link from 'next/link';
 import { FileOutlined } from '@ant-design/icons';
+import styles from './collection-item.module.scss';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -28,38 +29,30 @@ const CollectionItem: React.FC<CollectionItemProps> = ({ collection }) => {
   });
 
   return (
-    <Card className="w-full mb-4 hover:shadow-md transition-shadow">
-      <div className="flex">
+    <Card className={styles.collectionCard}>
+      <div className={styles.collectionContainer}>
         <div 
-          className="shrink-0 mr-4"
+          className={styles.coverImage}
           style={{
-            width: '80px',
-            height: '80px',
             backgroundImage: collection.coverImage 
               ? `url(${collection.coverImage})` 
               : 'linear-gradient(135deg, #e0f7fa 0%, #80deea 100%)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            borderRadius: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
           }}
         >
           {!collection.coverImage && (
-            <FileOutlined style={{ fontSize: '32px', color: 'white' }} />
+            <FileOutlined className={styles.icon} />
           )}
         </div>
         
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <Link href={`/collection/${collection.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-              <Title level={5} className="mb-2 hover:text-blue-500 transition-colors">
+        <div className={styles.collectionContent}>
+          <div className={styles.header}>
+            <Link href={`/collection/${collection.id}`} className={styles.titleLink}>
+              <Title level={5} className={styles.title}>
                 {collection.title}
               </Title>
             </Link>
             
-            <Tag color={collection.isPublic ? 'green' : 'default'}>
+            <Tag className={styles.tag} color={collection.isPublic ? 'green' : 'default'}>
               {collection.isPublic ? '公开' : '私密'}
             </Tag>
           </div>
@@ -67,18 +60,18 @@ const CollectionItem: React.FC<CollectionItemProps> = ({ collection }) => {
           {collection.description && (
             <Paragraph 
               ellipsis={{ rows: 2 }} 
-              style={{ margin: '8px 0', color: 'rgba(0, 0, 0, 0.65)' }}
+              className={styles.description}
             >
               {collection.description}
             </Paragraph>
           )}
           
-          <div className="flex justify-between items-center mt-2">
-            <Text type="secondary" style={{ fontSize: '13px' }}>
+          <div className={styles.footer}>
+            <Text type="secondary" className={styles.date}>
               创建于 {formattedDate}
             </Text>
             
-            <Text style={{ color: '#1677ff' }}>
+            <Text className={styles.postCount}>
               {collection.postCount} 篇文章
             </Text>
           </div>

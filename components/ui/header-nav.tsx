@@ -13,16 +13,7 @@ export default function HeaderNav() {
     const [hasNotification, setHasNotification] = useState(true);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     
-    // 获取认证状态和方法
-    console.log('Header Nav: Before useAuthModal call');
     const authModal = useAuthModal();
-    console.log('Header Nav: After useAuthModal call', authModal);
-    
-    // 显式检查并记录每个需要的属性
-    console.log('authModal.isAuthenticated:', authModal?.isAuthenticated);
-    console.log('authModal.user:', authModal?.user);
-    console.log('authModal.openLoginModal:', !!authModal?.openLoginModal);
-    console.log('authModal.openRegisterModal:', !!authModal?.openRegisterModal);
     
     const { isAuthenticated, user, openLoginModal, openRegisterModal, handleLogout } = authModal;
 

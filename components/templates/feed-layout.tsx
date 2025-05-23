@@ -94,7 +94,7 @@ const FeedLayout: React.FC<FeedLayoutProps> = ({
           >
             {/* 创建文章 */}
             <a
-              href="/creatorCenter/createArticle"
+              href="/create"
               style={{
                 display: 'flex',
                 alignItems: 'center',

@@ -135,11 +135,18 @@ export const useProfileTabs = (tab: string, userId: string) => {
             break;
         }
         
-        setTabData({
-          type: tabData.type,
-          // @ts-ignore - 类型扩展有点复杂，为简化示例忽略类型错误
-          data: [...tabData.data, ...newData]
-        });
+        if (
+          Array.isArray(tabData.data) &&
+          Array.isArray(newData) &&
+          tabData.type !== 'settings' &&
+          tabData.type !== 'certification'
+        ) {
+          setTabData({
+            type: tabData.type,
+            // @ts-ignore - 类型扩展有点复杂，为简化示例忽略类型错误
+            data: [...tabData.data, ...newData]
+          });
+        }
       }
       
       setPage(nextPage);

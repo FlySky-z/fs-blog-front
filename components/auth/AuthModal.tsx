@@ -1,8 +1,8 @@
 'use client';
 import React, { useState } from 'react';
 import { Modal } from 'antd';
-import LoginForm from './LoginForm';
-import RegisterForm from './RegisterForm';
+import LoginForm from './login/LoginForm';
+import RegisterForm from './register/RegisterForm';
 import styles from './auth-modal.module.scss';
 
 interface AuthModalProps {

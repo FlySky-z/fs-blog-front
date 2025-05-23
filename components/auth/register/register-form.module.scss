@@ -25,11 +25,15 @@
     flex: 1;
     margin-right: 8px;
   }
+
+  .verifyCodeButton {
+  min-width: 110px;
+  height: 40px;
+  margin-left: 6px;
+}
 }
 
-.verifyCodeButton {
-  min-width: 110px;
-}
+
 
 .agreement {
   margin-bottom: 16px;

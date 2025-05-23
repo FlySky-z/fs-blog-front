@@ -12,11 +12,12 @@ import useCreatorApplyStatus from '@/modules/creator/hooks/use-creator-apply-sta
 import useCreatorTasks from '@/modules/creator/hooks/use-creator-tasks';
 import useArticleManagement from '@/modules/creator/hooks/use-article-management';
 import useCreatorAnnouncements from '@/modules/creator/hooks/use-creator-announcements';
+import { withProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 /**
  * 创作中心页面
  */
-export default function CreatorCenterPage() {
+function CreatorCenterPageInner() {
   // 请求数据
   const { loading: summaryLoading, weekData, monthData, totalData } = useCreatorSummary();
   const { loading: applyLoading, applyStatus } = useCreatorApplyStatus();
@@ -68,3 +69,17 @@ export default function CreatorCenterPage() {
     </CreatorLayout>
   );
 }
+
+function CreatorCenterPage() {
+  return (
+    <Suspense fallback={<Spin size="large" />}>
+      <CreatorCenterPageInner />
+    </Suspense>
+  );
+}
+
+// 使用高阶组件为创作中心页面添加路由保护
+export default withProtectedRoute(CreatorCenterPage, {
+  redirectPath: '/', // 未登录时重定向到首页
+  roles: ['creator'] // 只有有创作者角色的用户才能访问
+});

@@ -20,6 +20,31 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## 环境变量配置
+
+项目使用以下环境变量文件来管理不同环境下的配置：
+
+- `.env.development` - 开发环境配置，应用于 `npm run dev`
+- `.env.production` - 生产环境配置，应用于 `npm run build` 和 `npm run start`
+- `.env.local` - 本地配置覆盖（不应提交到版本控制）
+
+### 可用的环境变量
+
+| 环境变量 | 描述 | 默认值 |
+|---------|------|-------|
+| `NEXT_PUBLIC_API_BASE_URL` | API 服务端点 | 开发: `http://localhost:8000/api`<br>生产: 使用公网 IP |
+| `NEXT_PUBLIC_SITE_URL` | 站点 URL | 开发: `http://localhost:3000`<br>生产: 使用公网 IP |
+
+### 配置生产环境
+
+部署到生产环境前，请修改 `.env.production` 文件中的 `NEXT_PUBLIC_API_BASE_URL` 和 `NEXT_PUBLIC_SITE_URL`，设置为实际的公网 IP 或域名。
+
+```bash
+# .env.production 示例
+NEXT_PUBLIC_API_BASE_URL=http://your-domain-or-ip:8000/api
+NEXT_PUBLIC_SITE_URL=http://your-domain-or-ip
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { use } from 'react';
 import { Skeleton, Empty, Alert, Card } from 'antd';
 import DetailLayout from '@/components/templates/detail-layout';
 import ArticleDetailCard from '@/components/article/article-detail-card';
@@ -16,24 +17,25 @@ import useSidebarData from '@/modules/sidebar/hooks/use-sidebar-data';
 import { message } from 'antd';
 
 interface ArticleDetailPageProps {
-  params: {
-    id: string;
-  };
+  id: string;
 }
+export default function ArticleDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = use(params);
 
-export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
-  const { id } = params;
-  
   // 获取文章详情
-  const { 
-    article, 
-    loading: articleLoading, 
+  const {
+    article,
+    loading: articleLoading,
     error: articleError,
     handleLike,
     handleFavorite,
     handleFollow
   } = useArticleDetail(id);
-  
+
   // 获取评论数据
   const {
     comments,
@@ -43,26 +45,26 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
     addComment,
     likeComment
   } = useComments(id);
-  
+
   // 类型适配器函数
   const handleAddComment = async (content: string): Promise<void> => {
     await addComment(content);
   };
-  
+
   const handleFollowAuthor = async (id: string, isFollowing: boolean): Promise<void> => {
     await handleFollow(id, isFollowing);
   };
-  
+
   const handleLikeComment = async (id: string, liked: boolean): Promise<void> => {
     await likeComment(id, liked);
   };
-  
+
   // 获取侧边栏数据
   const {
     data: sidebarData,
     loading: sidebarLoading
   } = useSidebarData(id);
-  
+
   // 渲染主内容区
   const renderMainContent = () => {
     if (articleError) {
@@ -75,7 +77,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
         />
       );
     }
-    
+
     if (articleLoading || !article) {
       return (
         <>
@@ -85,7 +87,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
             <Skeleton active paragraph={{ rows: 4 }} />
             <Skeleton active paragraph={{ rows: 2 }} />
           </Card>
-          
+
           {/* 评论骨架屏 */}
           <Card>
             <Skeleton active avatar paragraph={{ rows: 1 }} />
@@ -94,7 +96,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
         </>
       );
     }
-    
+
     // 文章不存在
     if (!article) {
       return (
@@ -104,7 +106,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
         />
       );
     }
-    
+
     return (
       <>
         {/* 文章详情卡片 */}
@@ -121,7 +123,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
           onLike={(_, liked) => handleLike(liked)}
           onFavorite={(_, favorited) => handleFavorite(favorited)}
         />
-        
+
         {/* 评论列表 */}
         <CommentList
           articleId={id}
@@ -135,7 +137,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
       </>
     );
   };
-  
+
   // 渲染侧边栏
   const renderSidebar = () => {
     // 侧边栏骨架屏
@@ -154,7 +156,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
         </>
       );
     }
-    
+
     return (
       <>
         {/* 作者卡片 */}
@@ -171,7 +173,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
             onFollow={handleFollowAuthor}
           />
         )}
-        
+
         {/* 欢迎卡片 */}
         {sidebarData.welcomeCard && (
           <WelcomeCard
@@ -182,12 +184,12 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
             buttonLink={sidebarData.welcomeCard.buttonLink}
           />
         )}
-        
+
         {/* 话题标签列表 */}
         {article && article.topics && (
           <TopicTagList topics={article.topics} />
         )}
-        
+
         {/* 推荐文章 */}
         {sidebarData.recommendedArticles && (
           <RecommendedArticles articles={sidebarData.recommendedArticles} />
@@ -195,7 +197,7 @@ export default function ArticleDetailPage({ params }: ArticleDetailPageProps) {
       </>
     );
   };
-  
+
   // 渲染整体布局
   return (
     <DetailLayout

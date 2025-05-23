@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Divider, Tabs, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, MobileOutlined } from '@ant-design/icons';
-import SliderVerify from './SliderVerify';
+import SliderVerify from '../SliderVerify';
 import styles from './login-form.module.scss';
 
 interface LoginFormProps {
@@ -17,28 +17,28 @@ const LoginForm: React.FC<LoginFormProps> = ({
   loading = false
 }) => {
   const [form] = Form.useForm();
-  const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
+  const [loginMethod, setLoginMethod] = useState<'username' | 'phone'>('username');
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [needVerify, setNeedVerify] = useState(false);
   const [verified, setVerified] = useState(false);
-  
+
   const handleSubmit = async (values: any) => {
     if (needVerify && !verified) {
       message.error('请先完成滑块验证');
       return;
     }
-    
+
     try {
       const success = await onLogin({
         ...values,
         loginMethod
       });
-      
+
       if (!success) {
         // 登录失败，增加尝试次数
         const newAttempts = loginAttempts + 1;
         setLoginAttempts(newAttempts);
-        
+
         // 超过3次尝试，需要验证
         if (newAttempts >= 3) {
           setNeedVerify(true);
@@ -54,50 +54,50 @@ const LoginForm: React.FC<LoginFormProps> = ({
       console.error('登录表单提交错误:', error);
     }
   };
-  
+
   const handleVerifySuccess = () => {
     setVerified(true);
     message.success('验证成功，请继续登录');
   };
-  
+
   const renderEmailLoginForm = () => (
     <Form
       form={form}
-      name="login_email"
+      name="login_username"
       className={styles.loginForm}
       onFinish={handleSubmit}
     >
       <Form.Item
-        name="email"
+        name="username"
         rules={[
-          { required: true, message: '请输入邮箱地址' },
-          { type: 'email', message: '请输入有效的邮箱地址' }
+          { required: true, message: '请输入用户名地址' },
+          { type: 'string', message: '请输入有效的用户名地址' }
         ]}
       >
-        <Input 
-          prefix={<MailOutlined />} 
-          placeholder="邮箱" 
+        <Input
+          prefix={<MailOutlined />}
+          placeholder="用户名"
           size="large"
-          autoComplete="email" 
+          autoComplete="username"
         />
       </Form.Item>
-      
+
       <Form.Item
         name="password"
         rules={[{ required: true, message: '请输入密码' }]}
       >
-        <Input.Password 
-          prefix={<LockOutlined />} 
-          placeholder="密码" 
+        <Input.Password
+          prefix={<LockOutlined />}
+          placeholder="密码"
           size="large"
-          autoComplete="current-password" 
+          autoComplete="current-password"
         />
       </Form.Item>
-      
+
       {renderCommonFormItems()}
     </Form>
   );
-  
+
   const renderPhoneLoginForm = () => (
     <Form
       form={form}
@@ -112,45 +112,45 @@ const LoginForm: React.FC<LoginFormProps> = ({
           { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号' }
         ]}
       >
-        <Input 
-          prefix={<MobileOutlined />} 
-          placeholder="手机号" 
+        <Input
+          prefix={<MobileOutlined />}
+          placeholder="手机号"
           size="large"
-          autoComplete="tel" 
+          autoComplete="tel"
         />
       </Form.Item>
-      
+
       <Form.Item
         name="password"
         rules={[{ required: true, message: '请输入密码' }]}
       >
-        <Input.Password 
-          prefix={<LockOutlined />} 
-          placeholder="密码" 
+        <Input.Password
+          prefix={<LockOutlined />}
+          placeholder="密码"
           size="large"
-          autoComplete="current-password" 
+          autoComplete="current-password"
         />
       </Form.Item>
-      
+
       {renderCommonFormItems()}
     </Form>
   );
-  
+
   const renderCommonFormItems = () => (
     <>
       {needVerify && (
         <Form.Item>
-          <SliderVerify onSuccess={handleVerifySuccess} />
-        </Form.Item>
+            <SliderVerify onSuccess={handleVerifySuccess} userId={form.getFieldValue('username')} />
+          </Form.Item>
       )}
-      
+
       <Form.Item className={styles.actions}>
         <div className={styles.remember}>
           <a className={styles.forgotLink} href="#">
             忘记密码？
           </a>
         </div>
-        
+
         <Button
           type="primary"
           htmlType="submit"
@@ -162,7 +162,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           登录
         </Button>
       </Form.Item>
-      
+
       <div className={styles.registerPrompt}>
         <span>还没有账号？</span>
         <Button type="link" onClick={onSwitchToRegister}>
@@ -171,18 +171,18 @@ const LoginForm: React.FC<LoginFormProps> = ({
       </div>
     </>
   );
-  
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>欢迎回来</h2>
-      
+
       <Tabs
         activeKey={loginMethod}
-        onChange={(key) => setLoginMethod(key as 'email' | 'phone')}
+        onChange={(key) => setLoginMethod(key as 'username' | 'phone')}
         items={[
           {
-            key: 'email',
-            label: '邮箱登录',
+            key: 'username',
+            label: '用户名登录',
             children: renderEmailLoginForm(),
           },
           {
@@ -192,11 +192,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
           },
         ]}
       />
-      
+
       <Divider>
         <span className={styles.dividerText}>其他登录方式</span>
       </Divider>
-      
+
       <div className={styles.socialLogin}>
         <Button shape="circle" icon={<span className={styles.socialIcon}>微</span>} size="large" />
         <Button shape="circle" icon={<span className={styles.socialIcon}>QQ</span>} size="large" />

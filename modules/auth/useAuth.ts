@@ -1,12 +1,10 @@
 'use client';
 import { useState, useCallback } from 'react';
+import authService, { LoginParams, UserInfo } from './authService';
+import apiClient from '@/utils/apiClient';
 
-interface User {
-  id: string;
-  username: string;
-  email?: string;
-  phone?: string;
-  avatar?: string;
+// 扩展 UserInfo 接口，添加 isLoggedIn 属性
+interface User extends UserInfo {
   isLoggedIn: boolean;
 }
 
@@ -37,11 +35,23 @@ export const useAuth = () => {
   const checkAuth = useCallback(async () => {
     try {
       setLoading(true);
-      // 实际项目中应该从API获取用户信息或检查本地存储
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
+      // 使用 authService 检查认证状态
+      const isAuthenticated = authService.isAuthenticated();
+      
+      if (isAuthenticated) {
+        const currentUser = authService.getCurrentUser();
+        if (currentUser) {
+          // 转换为包含 isLoggedIn 属性的 User 对象
+          const userData = {
+            ...currentUser,
+            isLoggedIn: true
+          };
+          setUser(userData);
+          return;
+        }
       }
+      
+      setUser(null);
     } catch (err) {
       console.error('认证检查失败:', err);
       setUser(null);
@@ -56,23 +66,22 @@ export const useAuth = () => {
     setError(null);
     
     try {
-      // 实际项目中应该调用API进行登录
-      console.log('登录数据:', data);
+      // 将 LoginData 转换为 LoginParams
+      const params: LoginParams = {
+        ...data,
+        loginMethod: data.loginMethod
+      };
       
-      // 模拟登录成功
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // 调用 authService 的登录方法
+      const response = await authService.login(params);
       
-      const newUser = {
-        id: '123',
-        username: 'demo_user',
-        email: data.email,
-        phone: data.phone,
-        avatar: '',
+      // 处理登录成功的情况
+      const userData = {
+        ...response.user,
         isLoggedIn: true
       };
       
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
+      setUser(userData);
       return true;
     } catch (err: any) {
       console.error('登录失败:', err);
@@ -89,13 +98,19 @@ export const useAuth = () => {
     setError(null);
     
     try {
-      // 实际项目中应该调用API进行注册
-      console.log('注册数据:', data);
+      // 调用 API 进行注册
+      // 注意：目前 authService 中没有直接提供注册方法，这里可能需要使用 apiClient 或扩展 authService
       
-      // 模拟注册成功
-      await new Promise(resolve => setTimeout(resolve, 800));
+      // 使用 apiClient 直接发送注册请求
+      const response = await apiClient.post('/auth/register', {
+        username: data.username,
+        email: data.email,
+        phone: data.phone,
+        password: data.password,
+        method: data.registerMethod
+      });
       
-      return true;
+      return !!response;
     } catch (err: any) {
       console.error('注册失败:', err);
       setError(err.message || '注册失败，请稍后重试');
@@ -110,11 +125,10 @@ export const useAuth = () => {
     setLoading(true);
     
     try {
-      // 实际项目中应该调用API进行登出
-      console.log('登出');
+      // 调用 authService 的登出方法
+      await authService.logout();
       
-      // 清除本地存储和状态
-      localStorage.removeItem('user');
+      // 清除状态
       setUser(null);
       return true;
     } catch (err: any) {

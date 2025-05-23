@@ -11,18 +11,14 @@ export const useAuthModalState = () => {
   
   // 打开登录模态窗口
   const openLoginModal = useCallback(() => {
-    console.log('openLoginModal called');
     setTab('login');
     setVisible(true);
-    console.log('Visible state set to true');
   }, []);
   
   // 打开注册模态窗口
   const openRegisterModal = useCallback(() => {
-    console.log('openRegisterModal called');
     setTab('register');
     setVisible(true);
-    console.log('Visible state set to true');
   }, []);
   
   // 关闭模态窗口

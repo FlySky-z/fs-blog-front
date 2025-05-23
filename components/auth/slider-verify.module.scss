@@ -6,72 +6,150 @@
   border-radius: 4px;
   margin: 10px 0;
   padding: 10px;
-}
-
-.targetArea {
-  position: absolute;
-  width: 5px;
-  height: 30px;
-  background-color: #1677ff;
-  top: 25px;
-  opacity: 0.5;
-  border-radius: 2px;
-}
-
-.sliderTrack {
-  position: relative;
-  width: 100%;
-  height: 40px;
-  background-color: #e8f0fe;
-  border-radius: 20px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.sliderProgress {
-  position: absolute;
-  height: 100%;
-  background-color: #bae0ff;
-  border-radius: 20px 0 0 20px;
-  transition: width 0.1s;
-}
-
-.sliderHandle {
-  position: absolute;
-  width: 40px;
-  height: 40px;
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
-  background-color: #1677ff;
-  border-radius: 50%;
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  user-select: none;
-  touch-action: none;
-  transition: background-color 0.3s;
-  z-index: 2;
-  font-size: 16px;
-  
-  &:hover {
-    background-color: #4096ff;
-  }
-  
-  &.success {
-    background-color: #52c41a;
-  }
-}
+  overflow: hidden;
 
-.sliderText {
-  margin-top: 10px;
-  text-align: center;
-  color: #8c8c8c;
-  font-size: 14px;
-}
+  &.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 150px;
+  }
 
-.resetBtn {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
+  .loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid #1677ff;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  }
+
+  .targetArea {
+    position: absolute;
+    width: 5px;
+    height: 30px;
+    background-color: #1677ff;
+    top: 25px;
+    opacity: 0.5;
+    border-radius: 2px;
+  }
+
+  .sliderTrack {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    background-color: #e8f0fe;
+    border-radius: 20px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-top: 15px;
+
+    .sliderProgress {
+      position: absolute;
+      height: 100%;
+      background-color: #bae0ff;
+      border-radius: 20px 0 0 20px;
+      transition: width 0.15s ease-out;
+    }
+
+    .sliderHandle {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #1677ff;
+      border-radius: 50%;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      user-select: none;
+      touch-action: none;
+      transition: all 0.15s ease-out;
+      z-index: 2;
+      font-size: 16px;
+
+      &:hover {
+        background-color: #4096ff;
+      }
+
+      &.success {
+        background-color: #52c41a;
+      }
+    }
+  }
+
+  .sliderText {
+    margin-top: 10px;
+    text-align: center;
+    color: #8c8c8c;
+    font-size: 14px;
+
+    .resetBtn {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+    }
+  }
+
+  // 验证码图片容器
+  .captchaImageContainer {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+
+    // 验证码背景图
+    .captchaBackground {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      border-radius: 4px;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none; // 禁止鼠标事件
+    }
+
+    // 验证码滑块图
+    .captchaBlock {
+      position: absolute;
+      display: block;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      z-index: 2;
+      transition: left 0.15s ease-out;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none; // 禁止鼠标事件
+    }
+  }
 }

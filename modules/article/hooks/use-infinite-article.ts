@@ -1,5 +1,12 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import articleService from '@/modules/article/articleService';
+
+// 随机颜色生成函数
+const getRandomColor = () => {
+  const colors = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'blue', 'geekblue', 'purple'];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
 
 export interface Post {
   id: string;
@@ -28,6 +35,11 @@ export interface Post {
 interface UseInfinitePostsOptions {
   initialPosts?: Post[];
   pageSize?: number;
+  tag?: string;
+  keyword?: string;
+  userId?: string;
+  orderBy?: 'time' | 'hot';
+  sortOrder?: 'asc' | 'desc';
 }
 
 interface UseInfinitePostsReturn {
@@ -38,56 +50,88 @@ interface UseInfinitePostsReturn {
   loadMore: () => Promise<void>;
 }
 
-// 模拟获取文章数据的函数
-const mockFetchPosts = async (page: number, pageSize: number): Promise<{ data: Post[]; hasMore: boolean }> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // 创建随机文章数据
-      const posts = Array.from({ length: pageSize }, (_, index) => {
-        const actualIndex = (page - 1) * pageSize + index;
-        const isVideo = Math.random() > 0.7;
-        const hasCover = Math.random() > 0.3;
-        
-        return {
-          id: `post-${actualIndex}`,
-          title: `文章标题 ${actualIndex}: ${['如何提高编程效率', '2025年必学的前端技术', 'TypeScript高级技巧', 'React性能优化指南', '写给初学者的Docker教程'][actualIndex % 5]}`,
-          description: `这是文章 ${actualIndex} 的简短描述。${'这是一些随机的描述内容，展示文章的主要内容和吸引读者继续阅读。'.repeat(Math.floor(Math.random() * 2) + 1)}`,
-          coverImage: hasCover ? `https://picsum.photos/600/300?random=${actualIndex}` : undefined,
-          author: {
-            id: `author-${actualIndex % 10}`,
-            username: `作者 ${actualIndex % 10}`,
-            avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=${actualIndex % 10}`,
-            level: Math.floor(Math.random() * 5) + 1,
-          },
-          publishedAt: new Date(Date.now() - actualIndex * 86400000).toISOString(),
-          viewCount: Math.floor(Math.random() * 1000) + 100,
-          likeCount: Math.floor(Math.random() * 200),
-          commentCount: Math.floor(Math.random() * 50),
-          tags: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, tagIndex) => {
-            const tags = [
-              { id: 'tag-1', name: 'JavaScript', color: 'gold' },
-              { id: 'tag-2', name: 'React', color: 'blue' },
-              { id: 'tag-3', name: 'Vue', color: 'green' },
-              { id: 'tag-4', name: 'Node.js', color: 'lime' },
-              { id: 'tag-5', name: 'TypeScript', color: 'geekblue' }
-            ];
-            return tags[(actualIndex + tagIndex) % tags.length];
-          }),
-          isVideo,
-          videoDuration: isVideo ? `${Math.floor(Math.random() * 10) + 1}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}` : undefined
-        };
-      });
+// 创建延迟函数，用于实现请求间隔和重试
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-      // 模拟只有10页数据
-      const hasMore = page < 10;
-      
-      resolve({ data: posts, hasMore });
-    }, 800); // 添加延迟模拟网络请求
-  });
+// 从API获取文章列表，并转换为前端需要的格式
+const fetchPosts = async (
+  page: number, 
+  pageSize: number, 
+  options?: {
+    tag?: string;
+    keyword?: string;
+    userId?: string;
+    orderBy?: 'time' | 'hot';
+    sortOrder?: 'asc' | 'desc';
+  },
+  retryCount: number = 0,
+  maxRetries: number = 3
+): Promise<{ data: Post[]; hasMore: boolean }> => {
+  try {
+    // 调用API获取文章列表
+    const articleListItems = await articleService.getArticleList({
+      page,
+      limit: pageSize,
+      tag: options?.tag,
+      keyword: options?.keyword,
+      user_id: options?.userId,
+      order_by: options?.orderBy,
+      sort_order: options?.sortOrder
+    });
+    
+    // 转换为前端需要的格式
+    console.log('获取文章列表:', articleListItems);
+    const posts: Post[] = articleListItems.map(item => ({
+      id: item.id,
+      title: item.title,
+      description: item.abstract,
+      coverImage: item.cover_image,
+      author: {
+        id: `user-${item.id}`, // 后端数据中可能缺少这个字段，这里临时生成
+        username: item.author,
+        avatar: `https://api.dicebear.com/7.x/miniavs/svg?seed=${item.id}`, // 使用ID作为随机头像的种子
+        level: 1, // 默认等级
+      },
+      publishedAt: new Date(item.last_modified_date).toISOString(), // 转换为ISO格式字符串
+      viewCount: Math.floor(Math.random() * 1000), // 随机生成浏览量
+      likeCount: parseInt(item.like) || 0,
+      commentCount: Math.floor(Math.random() * 50), // 随机生成评论数
+      tags: item.tags.map((tag, index) => ({
+        id: `tag-${index}`,
+        name: tag,
+        color: getRandomColor() // 随机生成标签颜色
+      }))
+    }));
+    
+    // 根据数据量判断是否还有更多数据
+    const hasMore = articleListItems.length === pageSize;
+    
+    return { data: posts, hasMore };
+  } catch (error) {
+    console.error(`获取文章列表失败 (尝试 ${retryCount + 1}/${maxRetries + 1}):`, error);
+    
+    // 如果还有重试次数，延迟5秒后重试
+    if (retryCount < maxRetries) {
+      console.log(`5秒后重试获取文章列表 (页码: ${page})...`);
+      await delay(5000); // 延迟5秒
+      return fetchPosts(page, pageSize, options, retryCount + 1, maxRetries);
+    }
+    
+    // 超出重试次数，抛出异常
+    throw error;
+  }
 };
 
 export function useInfinitePosts(options: UseInfinitePostsOptions = {}): UseInfinitePostsReturn {
-  const { initialPosts = [], pageSize = 10 } = options;
+  const { 
+    initialPosts = [], 
+    pageSize = 10,
+    tag,
+    keyword,
+    userId,
+    orderBy,
+    sortOrder
+  } = options;
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -101,7 +145,13 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}): UseInfi
     setError(null);
     
     try {
-      const { data, hasMore: moreAvailable } = await mockFetchPosts(1, pageSize);
+      const { data, hasMore: moreAvailable } = await fetchPosts(1, pageSize, {
+        tag,
+        keyword,
+        userId,
+        orderBy,
+        sortOrder
+      });
       setPosts(data);
       setHasMore(moreAvailable);
       setPage(2);
@@ -111,7 +161,7 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}): UseInfi
     } finally {
       setLoading(false);
     }
-  }, [initialPosts.length, pageSize]);
+  }, [initialPosts.length, pageSize, tag, keyword, userId, orderBy, sortOrder]);
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -119,7 +169,13 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}): UseInfi
     setLoading(true);
     
     try {
-      const { data, hasMore: moreAvailable } = await mockFetchPosts(page, pageSize);
+      const { data, hasMore: moreAvailable } = await fetchPosts(page, pageSize, {
+        tag,
+        keyword,
+        userId,
+        orderBy,
+        sortOrder
+      });
       setPosts(prevPosts => [...prevPosts, ...data]);
       setHasMore(moreAvailable);
       setPage(prevPage => prevPage + 1);
@@ -129,7 +185,7 @@ export function useInfinitePosts(options: UseInfinitePostsOptions = {}): UseInfi
     } finally {
       setLoading(false);
     }
-  }, [loading, hasMore, page, pageSize]);
+  }, [loading, hasMore, page, pageSize, tag, keyword, userId, orderBy, sortOrder]);
 
   // 初始加载
   useEffect(() => {

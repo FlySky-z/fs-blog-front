@@ -1,5 +1,6 @@
 'use client';
-import React from 'react';
+
+import React, {Suspense} from 'react';
 import { Card, Tabs, Typography, Spin, Statistic, Row, Col, Progress } from 'antd';
 import { useSearchParams, useRouter } from 'next/navigation';
 import CreatorLayout from '@/components/templates/creator-layout';
@@ -17,7 +18,7 @@ const { TabPane } = Tabs;
 /**
  * 数据中心页面
  */
-export default function DataCenterPage() {
+function DataCenterPageInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -167,5 +168,13 @@ export default function DataCenterPage() {
         </Tabs>
       </Card>
     </CreatorLayout>
+  );
+}
+
+export default function DataCenterPage() {
+  return (
+    <Suspense fallback={<Spin />}>
+      <DataCenterPageInner />
+    </Suspense>
   );
 }

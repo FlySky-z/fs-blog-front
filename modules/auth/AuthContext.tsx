@@ -19,7 +19,7 @@ interface AuthProviderProps {
 }
 
 /**
- * 认证上下文提供者
+ * 提供auth上下文
  */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const auth = useAuth();

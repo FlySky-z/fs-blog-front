@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { message } from 'antd';
 import { ArticleContent } from '@/components/article/article-detail-card';
+import articleService from '@/modules/article/articleService';
 
 // 文章详情接口定义
 interface ArticleDetail {
@@ -30,60 +31,49 @@ interface ArticleDetail {
   }>;
 }
 
-// 模拟从API获取文章详情
+// 从API获取文章详情
 const fetchArticleDetail = async (id: string): Promise<ArticleDetail> => {
-  // 在实际项目中，这里应该是请求后端API的代码
-  // 这里使用setTimeout模拟网络请求延迟
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // 模拟的文章详情数据
-      resolve({
-        id,
-        title: `文章标题 ${id}`,
-        author: {
-          id: 'user-1',
-          username: '示例作者',
-          avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=1',
-          level: 3,
-          bio: '热爱写作和分享的技术爱好者',
-          articleCount: 42,
-          followerCount: 1024,
-          likeCount: 3680
-        },
-        content: [
-          {
-            type: 'text',
-            content: '这是文章的开头部分，介绍了主要内容和背景。这里可以是一段长文本，描述了作者对该主题的见解和观点。'
-          },
-          {
-            type: 'image',
-            content: 'https://picsum.photos/800/400',
-            caption: '这是一张示例图片，展示了相关内容'
-          },
-          {
-            type: 'text',
-            content: '接下来是正文部分，深入探讨了主题的各个方面。这里包含了详细的分析和论证，支持作者的观点。这部分内容可能会比较长，包含多个段落和子主题。\n\n作者在这里分享了自己的经验和见解，并提供了一些实用的建议和指导。这些内容对读者来说可能非常有价值，特别是对那些对该主题感兴趣或正在学习相关知识的人。'
-          },
-          {
-            type: 'text',
-            content: '最后是总结部分，回顾了文章的主要观点和结论。作者可能会在这里提出一些建议或展望，鼓励读者参与讨论或进一步探索该主题。'
-          }
-        ],
-        publishedAt: new Date().toISOString(),
-        likeCount: 128,
-        favoriteCount: 56,
-        viewCount: 1234,
-        isLiked: false,
-        isFavorited: false,
-        topics: [
-          { id: 'topic-1', name: '前端开发' },
-          { id: 'topic-2', name: 'React' },
-          { id: 'topic-3', name: 'TypeScript' },
-          { id: 'topic-4', name: '编程技巧' }
-        ]
-      });
-    }, 800); // 模拟800ms的网络延迟
-  });
+  try {
+    // 使用articleService获取文章详情
+    const apiData = await articleService.getArticleDetail(id);
+    console.log('API数据:', apiData);
+    // 转换为前端需要的格式
+    // 由于后端API数据结构可能与前端需要的不完全一致，这里进行一些转换和补充
+    return {
+      id,
+      title: apiData.title, // 由于后端API没有提供标题，这里临时模拟
+      author: {
+        id: apiData.author_id, // 后端API没有提供作者ID，这里临时模拟
+        username: apiData.author,
+        avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=1', // 模拟头像
+        level: 3, // 模拟等级
+        bio: '作者简介', // 模拟简介
+        articleCount: 42, // 模拟文章数
+        followerCount: 1024, // 模拟粉丝数
+        likeCount: apiData.likes // 模拟点赞数
+      },
+      // 将文章内容转换为前端组件需要的格式
+      content: [
+        {
+          type: 'text',
+          content: apiData.article_detail || '无内容'
+        }
+      ],
+      publishedAt: new Date(apiData.create_time).toISOString(), // 转换为ISO格式字符串
+      likeCount: 128, // 模拟数据
+      favoriteCount: 56, // 模拟数据
+      viewCount: 1234, // 模拟数据
+      isLiked: false,
+      isFavorited: false,
+      topics: apiData.tags.map((tag, index) => ({
+        id: `tag-${index}`,
+        name: tag
+      }))
+    };
+  } catch (error) {
+    console.error(`获取文章详情失败 (ID: ${id}):`, error);
+    throw error;
+  }
 };
 
 // 模拟API操作响应
@@ -162,7 +152,7 @@ export const useArticleDetail = (articleId: string) => {
       return {
         ...prev,
         isFavorited: favorited,
-        favoriteCount: favorited ? prev.favoriteCount + 1 : Math.max(0, prev.favoriteCount - 1)
+        // favoriteCount: favorited ? prev.favoriteCount + 1 : Math.max(0, prev.favoriteCount - 1)
       };
     });
     
@@ -176,7 +166,7 @@ export const useArticleDetail = (articleId: string) => {
         return {
           ...prev,
           isFavorited: !favorited,
-          favoriteCount: !favorited ? prev.favoriteCount + 1 : Math.max(0, prev.favoriteCount - 1)
+          // favoriteCount: !favorited ? prev.favoriteCount + 1 : Math.max(0, prev.favoriteCount - 1)
         };
       });
       message.error('操作失败，请稍后重试');

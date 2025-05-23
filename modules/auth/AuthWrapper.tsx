@@ -11,46 +11,42 @@ interface AuthWrapperProps {
 
 // 内部组件，已经有AuthProvider包裹
 const AuthWrapperInner: React.FC = () => {
-  console.log('AuthWrapperInner: Rendering');
-  
+
   try {
     const modalContext = useModalContext();
-    console.log('AuthWrapperInner: modalContext obtained', modalContext);
     const { modalState, closeAuthModal } = modalContext;
-    console.log('AuthWrapperInner: modalState', modalState);
-    
+
     const authContext = useAuthContext();
-    console.log('AuthWrapperInner: authContext', authContext);
     const { login, register } = authContext;
-    
+
     // 处理登录表单提交
     const handleLogin = useCallback(async (values: any) => {
       const success = await login(values);
-      
+
       if (success) {
         message.success('登录成功');
         closeAuthModal();
       } else {
         message.error('登录失败，请检查账号密码');
       }
-      
+
       return success;
     }, [login, closeAuthModal]);
-    
+
     // 处理注册表单提交
     const handleRegister = useCallback(async (values: any) => {
       const success = await register(values);
-      
+
       if (success) {
         message.success('注册成功，请登录');
         // 不需要关闭模态框，切换到登录页
       } else {
         message.error('注册失败，请稍后重试');
       }
-      
+
       return success;
     }, [register]);
-    
+
     return (
       <AuthModal
         visible={modalState.visible}
@@ -82,22 +78,18 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
  * 创建一个自定义的Hook，结合认证状态和模态框状态
  */
 const useAuthModal = () => {
-  console.log('useAuthModal: Starting');
-  
+
   try {
     const modalContext = useModalContext();
-    console.log('useAuthModal: modalContext', modalContext);
-    
-    const { 
-      modalState, 
-      openLoginModal, 
-      openRegisterModal, 
-      closeAuthModal 
+
+    const {
+      modalState,
+      openLoginModal,
+      openRegisterModal,
+      closeAuthModal
     } = modalContext;
-    
+
     const authContext = useAuthContext();
-    console.log('useAuthModal: authContext obtained', authContext);
-    
     return {
       // 模态框状态和方法
       visible: modalState.visible,
@@ -105,23 +97,22 @@ const useAuthModal = () => {
       openLoginModal,
       openRegisterModal,
       closeAuthModal,
-      
+
       // 认证状态和方法
       ...authContext,
-      
+
       // 处理登出
       handleLogout: async () => {
         const success = await authContext.logout();
-        
+
         if (success) {
           message.success('已退出登录');
         }
-        
+
         return success;
       }
     };
   } catch (error) {
-    console.error('useAuthModal: Error getting context', error);
     // 返回默认值
     return {
       visible: false,

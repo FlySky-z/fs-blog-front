@@ -1,14 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import ProfileContent from '@/modules/profile/profile-content';
 import RocketToTop from '@/components/ui/rocket';
+import { Spin } from 'antd';
+import { withProtectedRoute } from '@/components/auth/ProtectedRoute';
 
-export default function AccountCenterPage() {
+function AccountCenterPage() {
   return (
-    <main>
+    <Suspense fallback={<Spin size="large"/>}>
+      {/* 个人中心内容 */}
       <ProfileContent />
       <RocketToTop />
-    </main>
+    </Suspense>
   );
 }
+
+// 使用高阶组件为个人中心页面添加路由保护
+export default withProtectedRoute(AccountCenterPage, {
+  redirectPath: '/' // 未登录时重定向到首页
+});

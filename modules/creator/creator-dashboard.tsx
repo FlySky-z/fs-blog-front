@@ -22,34 +22,34 @@ const { useBreakpoint } = Grid;
 export const CreatorDashboard: React.FC = () => {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
-  
+
   // 侧边栏状态
   const [activeMenuKey, setActiveMenuKey] = useState('home');
   const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false);
-  
+
   // 请求数据
   const { loading: summaryLoading, weekData, monthData, totalData } = useCreatorSummary();
   const { loading: applyLoading, applyStatus } = useCreatorApplyStatus();
   const { loading: tasksLoading, ongoingTasks, newbieTasks } = useCreatorTasks();
   const { loading: articlesLoading, articles, pagination, ...articleActions } = useArticleManagement();
   const { loading: announcementsLoading, announcements } = useCreatorAnnouncements();
-  
+
   // 滚动回顶部
   const [showScrollTop, setShowScrollTop] = useState(false);
-  
+
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 200);
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
+
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-  
+
   // 处理侧边栏菜单选择
   const handleMenuSelect = (key: string) => {
     setActiveMenuKey(key);
@@ -57,29 +57,29 @@ export const CreatorDashboard: React.FC = () => {
       setMobileDrawerVisible(false);
     }
   };
-  
+
   // 移动端侧边栏开关
   const toggleMobileDrawer = () => {
     setMobileDrawerVisible(prev => !prev);
   };
-  
+
   // 渲染内容区域骨架屏
   const renderSkeletons = () => (
     <>
       <Card className="w-full mb-4">
         <Skeleton avatar paragraph={{ rows: 2 }} active />
       </Card>
-      
+
       <Card className="w-full mb-4">
         <Skeleton paragraph={{ rows: 3 }} active />
       </Card>
-      
+
       <Card className="w-full mb-4">
         <Skeleton paragraph={{ rows: 4 }} active />
       </Card>
     </>
   );
-  
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="grid grid-cols-12 gap-6">
@@ -100,18 +100,18 @@ export const CreatorDashboard: React.FC = () => {
             />
           </div>
         )}
-        
+
         {/* 移动端抽屉控制按钮 */}
         {isMobile && (
           <div className="fixed top-16 left-4 z-30">
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               onClick={toggleMobileDrawer}
               className="mb-4"
             >
               导航菜单
             </Button>
-            
+
             <CreatorSidebarMenu
               activeMenuKey={activeMenuKey}
               onMenuSelect={handleMenuSelect}
@@ -126,7 +126,7 @@ export const CreatorDashboard: React.FC = () => {
             />
           </div>
         )}
-        
+
         {/* 主内容区域 */}
         <div className="col-span-12 md:col-span-9">
           {/* 创作者头像卡片 */}
@@ -136,13 +136,14 @@ export const CreatorDashboard: React.FC = () => {
             </Card>
           ) : (
             <CreatorHeaderCard
+              id="creator-id"
               avatar="https://picsum.photos/200"
               nickname="创作者昵称"
               level={2}
               announcements={announcements}
             />
           )}
-          
+
           {/* 数据概览卡片 */}
           {summaryLoading ? (
             <Card className="w-full mb-4">
@@ -157,7 +158,7 @@ export const CreatorDashboard: React.FC = () => {
               />
             )
           )}
-          
+
           {/* 创作者申请卡片 */}
           {applyLoading ? (
             <Card className="w-full mb-4">
@@ -174,7 +175,7 @@ export const CreatorDashboard: React.FC = () => {
               />
             )
           )}
-          
+
           {/* 任务列表卡片 */}
           {tasksLoading ? (
             <Card className="w-full mb-4">
@@ -186,7 +187,7 @@ export const CreatorDashboard: React.FC = () => {
               newbieTasks={newbieTasks}
             />
           )}
-          
+
           {/* 文章管理卡片 */}
           {articlesLoading && articles.length === 0 ? (
             <Card className="w-full mb-4">
@@ -207,14 +208,14 @@ export const CreatorDashboard: React.FC = () => {
           )}
         </div>
       </div>
-      
+
       {/* 回到顶部按钮 */}
       {showScrollTop && (
         <FloatButton
           icon={<UpOutlined />}
           type="primary"
           onClick={handleScrollToTop}
-          style={{ 
+          style={{
             position: 'fixed',
             right: 24,
             bottom: 24,

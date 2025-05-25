@@ -19,20 +19,15 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 1.5rem;
+  column-gap: 1.5rem;
 }
 
+.mobile-menu {
+  grid-column: span 12 / span 12;
 
-
-.fixed-button {
-  position: fixed;
-  top: 4rem;
-  left: 1rem;
-  z-index: 30;
-}
-
-.button {
-  margin-bottom: 1rem;
+  @media (min-width: 768px) {
+    display: none;
+  }
 }
 
 .main-content {

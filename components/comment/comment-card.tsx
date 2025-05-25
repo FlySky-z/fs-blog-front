@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Card, Button, Typography, Space, Dropdown, Menu, message } from 'antd';
 import { LikeOutlined, LikeFilled, DislikeOutlined, DislikeFilled, CommentOutlined, EllipsisOutlined, MoreOutlined } from '@ant-design/icons';
 import UserMeta from '@/components/molecules/user-meta';
+import { useUIStore } from '@/store/uiStore';
 
 const { Text, Paragraph } = Typography;
 
@@ -46,6 +47,7 @@ const CommentCard: React.FC<CommentCardProps> = ({
   showReplies = true,
   depth = 0,
 }) => {
+  const { theme } = useUIStore();
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [isDisliked, setIsDisliked] = useState(initialIsDisliked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
@@ -72,7 +74,7 @@ const CommentCard: React.FC<CommentCardProps> = ({
     const newLikedState = !isLiked;
     setIsLiked(newLikedState);
     setLikeCount(prev => newLikedState ? prev + 1 : Math.max(0, prev - 1));
-    
+
     if (onLike) {
       try {
         await onLike(id, newLikedState);
@@ -94,7 +96,7 @@ const CommentCard: React.FC<CommentCardProps> = ({
     const newDislikedState = !isDisliked;
     setIsDisliked(newDislikedState);
     setDislikeCount(prev => newDislikedState ? prev + 1 : Math.max(0, prev - 1));
-    
+
     if (onDislike) {
       try {
         await onDislike(id, newDislikedState);
@@ -150,12 +152,18 @@ const CommentCard: React.FC<CommentCardProps> = ({
 
   return (
     <Card
-      style={{ 
-        marginBottom: 16, 
+      style={{
+        marginBottom: 16,
         marginLeft: depth > 0 ? `${depth * 32}px` : 0,
-        backgroundColor: depth > 0 ? '#fafafa' : undefined,
+        backgroundColor: depth > 0
+          ? (theme === 'dark' ? '#23272f' : '#fafafa')
+          : (theme === 'dark' ? '#181a1b' : undefined),
       }}
-      bodyStyle={{ padding: '16px' }}
+      styles={{
+        body: {
+          padding: '16px',
+        }
+      }}
       className="comment-card"
     >
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -169,12 +177,14 @@ const CommentCard: React.FC<CommentCardProps> = ({
           size="small"
         />
 
-        <Dropdown 
-          menu={{ items: menuItems.map(item => ({
-            key: item.key,
-            label: item.label,
-            onClick: item.onClick,
-          }))}} 
+        <Dropdown
+          menu={{
+            items: menuItems.map(item => ({
+              key: item.key,
+              label: item.label,
+              onClick: item.onClick,
+            }))
+          }}
           trigger={['click']}
         >
           <Button type="text" icon={<MoreOutlined />} size="small" />
@@ -186,28 +196,28 @@ const CommentCard: React.FC<CommentCardProps> = ({
       </Paragraph>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <Button 
-          type="text" 
-          size="small" 
-          icon={isLiked ? <LikeFilled /> : <LikeOutlined />} 
+        <Button
+          type="text"
+          size="small"
+          icon={isLiked ? <LikeFilled /> : <LikeOutlined />}
           onClick={handleLike}
           style={{ color: isLiked ? '#1677ff' : undefined }}
         >
           {likeCount > 0 ? likeCount : '赞同'}
         </Button>
-        <Button 
-          type="text" 
-          size="small" 
-          icon={isDisliked ? <DislikeFilled /> : <DislikeOutlined />} 
+        <Button
+          type="text"
+          size="small"
+          icon={isDisliked ? <DislikeFilled /> : <DislikeOutlined />}
           onClick={handleDislike}
           style={{ color: isDisliked ? '#ff4d4f' : undefined }}
         >
           {dislikeCount > 0 ? dislikeCount : '不赞同'}
         </Button>
-        <Button 
-          type="text" 
-          size="small" 
-          icon={<CommentOutlined />} 
+        <Button
+          type="text"
+          size="small"
+          icon={<CommentOutlined />}
           onClick={handleReply}
         >
           回复
@@ -217,15 +227,17 @@ const CommentCard: React.FC<CommentCardProps> = ({
       {/* 回复框 */}
       {isReplying && (
         <div style={{ marginTop: 16 }}>
-          <textarea 
+          <textarea
             value={replyContent}
             onChange={(e) => setReplyContent(e.target.value)}
-            style={{ 
-              width: '100%', 
-              padding: '8px 12px', 
+            style={{
+              width: '100%',
+              padding: '8px 12px',
               border: '1px solid #d9d9d9',
               borderRadius: '6px',
-              minHeight: '80px'
+              minHeight: '80px',
+              background: theme === 'dark' ? '#23272f' : undefined,
+              color: theme === 'dark' ? '#fff' : undefined,
             }}
             placeholder="写下你的评论..."
           />
@@ -247,10 +259,10 @@ const CommentCard: React.FC<CommentCardProps> = ({
               showReplies={depth < 2} // 限制嵌套层级
             />
           ))}
-          
+
           {hasMoreReplies && (
-            <Button 
-              type="link" 
+            <Button
+              type="link"
               onClick={() => setShowAllReplies(true)}
               style={{ padding: '4px 0', marginLeft: '32px' }}
             >

@@ -24,7 +24,6 @@ export interface SidebarData {
     content: string;
     imageUrl?: string;
     buttonText?: string;
-    buttonLink?: string;
   };
 }
 
@@ -59,8 +58,7 @@ const fetchSidebarData = async (articleId: string): Promise<SidebarData> => {
           title: '欢迎来到我们的社区！',
           content: '加入我们，分享你的知识和经验，与其他开发者交流讨论。',
           imageUrl: 'https://picsum.photos/300/200',
-          buttonText: '立即注册',
-          buttonLink: '/register'
+          buttonText: '立即登录',
         }
       });
     }, 600);

@@ -2,7 +2,9 @@
 import HeaderComponent from '@/components/header/header-nav';
 import { useAuthModal } from '@/modules/auth/AuthModal';
 
-export default function HeaderNav() {
+
+export default function HeaderNav(
+) {
     const { 
         isLoggedIn,
         username,

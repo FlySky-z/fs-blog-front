@@ -2,7 +2,7 @@
 import React, { ReactNode } from 'react';
 import { Layout, Grid, Button, ConfigProvider } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
-import styles from './profile-layout.module.css';
+import styles from './profile-layout.module.scss';
 
 const { Content } = Layout;
 const { useBreakpoint } = Grid;

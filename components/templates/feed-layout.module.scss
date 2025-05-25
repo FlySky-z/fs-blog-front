@@ -1,6 +1,6 @@
 .container {
   margin: 0 auto;
-  padding: 24px;
+  padding: 24px 12px;
 }
 
 .layout {
@@ -14,7 +14,6 @@
 
 .sidebar {
   position: sticky;
-  /* 设置为页面2/3处，假设视口高度为100vh，2/3处就是在33.33vh处 */
   top: calc(max(88px, 33.33vh));
   height: fit-content;
   max-width: 320px;
@@ -40,7 +39,7 @@
   margin-top: 24px;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .container {
     padding: 16px;
   }

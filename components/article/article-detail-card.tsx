@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, Typography, Divider, Image, Space } from 'antd';
 import UserMeta from '@/components/molecules/user-meta';
 import ArticleActions from '@/components/molecules/article-actions';
+import styles from './article-detail-card.module.scss';
 
 const { Title, Paragraph } = Typography;
 
@@ -63,20 +64,20 @@ const ArticleDetailCard: React.FC<ArticleDetailCardProps> = ({
       switch (item.type) {
         case 'text':
           return (
-            <Paragraph key={index} style={{ fontSize: '16px', lineHeight: '1.8' }}>
+            <Paragraph key={index} className={styles.textParagraph}>
               {item.content}
             </Paragraph>
           );
         case 'image':
           return (
-            <div key={index} style={{ margin: '16px 0' }}>
+            <div key={index} className={styles.mediaContainer}>
               <Image
                 src={item.content}
                 alt={item.caption || `图片${index + 1}`}
-                style={{ maxWidth: '100%', borderRadius: '8px' }}
+                className={styles.imageContent}
               />
               {item.caption && (
-                <div style={{ textAlign: 'center', color: '#666', margin: '8px 0' }}>
+                <div className={styles.captionText}>
                   {item.caption}
                 </div>
               )}
@@ -84,15 +85,15 @@ const ArticleDetailCard: React.FC<ArticleDetailCardProps> = ({
           );
         case 'video':
           return (
-            <div key={index} style={{ margin: '16px 0' }}>
+            <div key={index} className={styles.mediaContainer}>
               <video
                 src={item.content}
                 controls
-                style={{ width: '100%', borderRadius: '8px' }}
+                className={styles.videoContent}
                 poster={`/thumbnails/${id}-${index}.jpg`} // 假设有视频缩略图
               />
               {item.caption && (
-                <div style={{ textAlign: 'center', color: '#666', margin: '8px 0' }}>
+                <div className={styles.captionText}>
                   {item.caption}
                 </div>
               )}
@@ -106,53 +107,53 @@ const ArticleDetailCard: React.FC<ArticleDetailCardProps> = ({
 
   return (
     <Card
-      style={{ marginBottom: 24 }}
-      bodyStyle={{ padding: '24px' }}
-      className="article-detail-card"
+      className={styles.articleCard}
     >
-      {/* 文章头部：标题 */}
-      <Title level={1} style={{ marginTop: 0, marginBottom: 16 }}>
-        {title}
-      </Title>
+      <div className={styles.cardBody}>
+        {/* 文章头部：标题 */}
+        <Title level={1} className={styles.articleTitle}>
+          {title}
+        </Title>
 
-      {/* 用户信息 */}
-      <Space direction="vertical" size={16} style={{ width: '100%' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <UserMeta
-            id={author.id}
-            username={author.username}
-            avatar={author.avatar}
-            level={author.level}
-            createdAt={formattedDate}
-            showTime={true}
-            size="default"
-          />
-        </div>
+        {/* 用户信息 */}
+        <Space direction="vertical" size={16} className={styles.contentWrapper}>
+          <div className={styles.userInfoContainer}>
+            <UserMeta
+              id={author.id}
+              username={author.username}
+              avatar={author.avatar}
+              level={author.level}
+              createdAt={formattedDate}
+              showTime={true}
+              size="default"
+            />
+          </div>
 
-        <Divider style={{ margin: '12px 0' }} />
+          <Divider className={styles.dividerNormal} />
 
-        {/* 文章内容 */}
-        <div className="article-content">
-          {renderContent()}
-        </div>
+          {/* 文章内容 */}
+          <div className={styles.articleContent}>
+            {renderContent()}
+          </div>
 
-        <Divider style={{ margin: '24px 0 16px' }} />
+          <Divider className={styles.dividerLarge} />
 
-        {/* 文章操作区 */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <ArticleActions
-            articleId={id}
-            likeCount={likeCount}
-            favoriteCount={favoriteCount}
-            isLiked={isLiked}
-            isFavorited={isFavorited}
-            onLike={onLike}
-            onFavorite={onFavorite}
-            onShare={onShare}
-            onReport={onReport}
-          />
-        </div>
-      </Space>
+          {/* 文章操作区 */}
+          <div className={styles.actionsContainer}>
+            <ArticleActions
+              articleId={id}
+              likeCount={likeCount}
+              favoriteCount={favoriteCount}
+              isLiked={isLiked}
+              isFavorited={isFavorited}
+              onLike={onLike}
+              onFavorite={onFavorite}
+              onShare={onShare}
+              onReport={onReport}
+            />
+          </div>
+        </Space>
+      </div>
     </Card>
   );
 };

@@ -1,7 +1,7 @@
 // components/auth/AuthInitializer.tsx
 'use client';
 
-import { useAuthInitializer } from '@/hooks/useAuthInitializer';
+import { useAuthInitializer } from '@/modules/auth/useAuthInitializer';
 import { ReactNode } from 'react';
 
 interface AuthInitializerProps {

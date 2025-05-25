@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, use } from 'react';
 import { Card, Space, Typography, Button, Tag, Alert, message } from 'antd';
-import { useAuth } from '@/hooks/useAuthInitializer';
+import { useAuth } from '@/modules/auth/useAuthInitializer';
 import { useAuthModal } from '@/modules/auth/AuthModal';
 import { apiClient } from '@/utils/apiClient';
 import { useUserStore } from '@/store/userStore';

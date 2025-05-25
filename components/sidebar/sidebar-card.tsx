@@ -1,7 +1,7 @@
 'use client';
 import React, { ReactNode } from 'react';
 import { Card, Typography } from 'antd';
-import styles from './sidebar-card.module.css';
+import styles from './sidebar-card.module.scss';
 
 const { Title } = Typography;
 

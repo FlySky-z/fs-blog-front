@@ -2,7 +2,7 @@
 import React, { useRef, useCallback, useEffect } from 'react';
 import { Spin, Empty, Typography, Button, Tooltip } from 'antd';
 import { useInfiniteArticle, Post } from '@/modules/article/hooks/use-infinite-article';
-import PostCard from '@/components/article/article-card';
+import AritcleCard from '@/components/article/article-card';
 import styles from './article-feed.module.css';
 import { ReloadOutlined, SyncOutlined } from '@ant-design/icons';
 
@@ -75,7 +75,7 @@ const HomeFeed: React.FC<HomeFeedProps> = ({
       
       <div className={styles.posts}>
         {posts.map(post => (
-          <PostCard key={post.id} {...post} />
+          <AritcleCard key={post.id} {...post} />
         ))}
         
         {posts.length === 0 && !loading && (

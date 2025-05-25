@@ -15,7 +15,7 @@ interface ArticleDetail {
     avatar?: string;
     level?: number;
     bio?: string;
-    articleCount: number;
+    followingCount: number;
     followerCount: number;
     likeCount: number;
   };
@@ -50,9 +50,9 @@ const fetchArticleDetail = async (id: string): Promise<ArticleDetail> => {
         // avatar: authorData.avatar_url,
         level: 1, // 模拟等级
         // bio: authorData.abstract,
-        articleCount: 42, // 模拟文章数
-        followerCount: 1024, // 模拟粉丝数
-        likeCount: 110 // 模拟点赞数
+        followingCount: 11, // 模拟文章数
+        followerCount: 4, // 模拟粉丝数
+        likeCount: 514 // 模拟点赞数
       },
       // 将文章内容转换为前端组件需要的格式
       content: [

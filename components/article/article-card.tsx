@@ -4,7 +4,7 @@ import { Card, Typography, Space, Tag, Avatar, Image } from 'antd';
 import Link from 'next/link';
 import { EyeOutlined, LikeOutlined, MessageOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import UserMeta from '@/components/molecules/user-meta';
-import styles from './article-card.module.css';
+import styles from './article-card.module.scss';
 
 const { Title, Text } = Typography;
 
@@ -13,7 +13,8 @@ export interface PostCardProps {
   title: string;
   description?: string;
   coverImage?: string;
-  author: {
+  showAuthor?: boolean;
+  author?: {
     id: string;
     username: string;
     avatar?: string;
@@ -32,11 +33,12 @@ export interface PostCardProps {
   videoDuration?: string;
 }
 
-const PostCard: React.FC<PostCardProps> = ({
+const AritcleCard: React.FC<PostCardProps> = ({
   id,
   title,
   description,
   coverImage,
+  showAuthor = true,
   author,
   publishedAt,
   viewCount,
@@ -57,20 +59,24 @@ const PostCard: React.FC<PostCardProps> = ({
   };
 
   return (
-    <Card 
+    <Card
       className={styles.card}
       hoverable
     >
       <div className={styles.cardContent}>
         {/* 用户信息和时间 */}
         <div className={styles.header}>
-          <UserMeta
-            id={author.id}
-            username={author.username}
-            avatar={author.avatar}
-            level={author.level}
-            size="small"
-          />
+          {showAuthor && author && (
+            <UserMeta
+              id={author.id}
+              username={author.username}
+              avatar={author.avatar}
+              level={author.level}
+              size="small"
+            />)
+          }
+
+
           <Text type="secondary" className={styles.date}>
             <ClockCircleOutlined style={{ marginRight: 5 }} />
             {formatDate(publishedAt)}
@@ -132,4 +138,4 @@ const PostCard: React.FC<PostCardProps> = ({
   );
 };
 
-export default PostCard;
+export default AritcleCard;

@@ -5,7 +5,7 @@ import RecommendedUsers from '@/components/sidebar/recommended-users';
 import QuickEntryTabs from '@/components/sidebar/quick-entry-tabs';
 import PromoBanner from '@/components/sidebar/promo-banner';
 import WelcomeCard from '@/components/sidebar/welcome-card';
-import { useSidebarData } from '@/modules/sidebar/hooks/use-sidebar-data';
+import { useAuthModal } from '@/modules/auth/AuthModal';
 
 interface HomeSidebarProps {
   isLoggedIn?: boolean;
@@ -14,6 +14,7 @@ interface HomeSidebarProps {
 const HomeSidebar: React.FC<HomeSidebarProps> = ({
   isLoggedIn = false
 }) => {
+  const { openLoginModal } = useAuthModal();
   // 模拟数据
   const mockNewsItems = [
     {
@@ -132,13 +133,8 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
         content={mockWelcomeCard.content}
         imageUrl={"https://picsum.photos/600/800?random=welcome"}
         buttonText={mockWelcomeCard.buttonText}
-        buttonLink={mockWelcomeCard.buttonLink}
         isLoggedIn={isLoggedIn}
-        userInfo={{
-          name: '张三',
-          avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=1',
-          description: '前端开发者'
-        }}
+        openLoginModal={openLoginModal}
       />
 
       {/* 广告Banner */}

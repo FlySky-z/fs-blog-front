@@ -1,0 +1,80 @@
+// 文章详情卡片样式
+.articleCard {
+  margin-bottom: 24px;
+}
+
+.cardBody {
+  padding: 24px;
+}
+
+.articleTitle {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.contentWrapper {
+  width: 100%;
+}
+
+.userInfoContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dividerNormal {
+  margin: 12px 0;
+}
+
+.dividerLarge {
+  margin: 24px 0 16px;
+}
+
+.articleContent {
+  // 文章内容区域样式
+}
+
+.actionsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// 文章内容元素样式
+.textParagraph {
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.mediaContainer {
+  margin: 16px 0;
+}
+
+.imageContent {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.videoContent {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.captionText {
+  text-align: center;
+  color: #666;
+  margin: 8px 0;
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .cardBody {
+    padding: 16px;
+  }
+  
+  .articleTitle {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+
+}

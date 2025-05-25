@@ -80,17 +80,19 @@ const FeedLayout: React.FC<FeedLayoutProps> = ({
       >
         <div>
           <Card
-            style={{
-              marginBottom: 24,
-              borderRadius: 8,
+            styles={{
+              body: {
+                borderRadius: 8,
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: 16,
+                gap: 16,
+              }
             }}
-            bodyStyle={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: 16,
-              gap: 16,
+            style={{
+              marginBottom: 16,
             }}
           >
             {/* 创建文章 */}

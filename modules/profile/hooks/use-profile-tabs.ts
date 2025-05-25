@@ -1,10 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { TabDataType } from '@/components/profile/profile-tab-panel';
-import { ArticleItemData } from '@/components/profile/article-item';
+import { ArticleListItem } from '@/modules/article/articleModel';
 import { CommentItemData } from '@/components/profile/comment-item';
 import { CollectionItemData } from '@/components/profile/collection-item';
 import { UserCardData } from '@/components/profile/user-card';
+import { articleService } from '@/modules/article/articleService';
+import { getFollowingList, followUser } from '@/modules/user/userService';
 
 /**
  * 获取用户各标签页数据的 Hook
@@ -20,71 +22,53 @@ export const useProfileTabs = (tab: string, userId: string) => {
   
   // 加载初始数据
   useEffect(() => {
+    const tabType = tab === 'posts' ? 'article' : tab;
     const fetchTabData = async () => {
       setLoading(true);
       setError(null);
       setPage(1);
       
       try {
-        // 模拟 API 延迟
-        await new Promise(resolve => setTimeout(resolve, 600));
-        
         let tabData: TabDataType | undefined;
+        let hasMoreFlag = true;
         
-        // 根据标签类型生成不同的模拟数据
-        switch (tab) {
-          case 'posts':
-            tabData = {
-              type: 'posts',
-              data: generateMockPosts(8)
-            };
+        switch (tabType) {
+          case 'article': {
+            const articles = await articleService.getArticleList({ user_id: userId, page: 1 });
+            tabData = { type: 'article', data: articles };
+            hasMoreFlag = articles.length > 0;
             break;
-            
-          case 'comments':
-            tabData = {
-              type: 'comments',
-              data: generateMockComments(5)
-            };
+          }
+          
+          case 'favorites': {
+            const articles = await articleService.getArticleList({ user_id: userId, page: 1 });
+            tabData = { type: 'favorites', data: articles };
+            hasMoreFlag = articles.length > 0;
             break;
-            
-          case 'collections':
-            tabData = {
-              type: 'collections',
-              data: generateMockCollections(4)
-            };
+          }
+          
+          case 'followers': {
+            const followers = await getFollowingList(userId);
+            // 转换userInfo为UserCardData
+            const followerCards = followers.map(f => ({
+              id: String(f.id),
+              username: f.username,
+              avatarUrl: f.avatar_url,
+              level: f.level || 1,
+              bio: f.abstract,
+              isFollowing: false // 需要根据实际API补充
+            }));
+            tabData = { type: 'followers', data: followerCards };
             break;
-            
-          case 'favorites':
-            tabData = {
-              type: 'favorites',
-              data: generateMockPosts(6)
-            };
-            break;
-            
-          case 'followers':
-            tabData = {
-              type: 'followers',
-              data: generateMockFollowers(10)
-            };
-            break;
-            
-          case 'settings':
-            tabData = { type: 'settings', data: null };
-            break;
-            
-          case 'certification':
-            tabData = { type: 'certification', data: null };
-            break;
-            
+          }
+          
+          // TODO: comments/collections等tab的真实API
           default:
-            tabData = {
-              type: 'posts',
-              data: generateMockPosts(8)
-            };
+            tabData = { type: 'article', data: [] };
         }
         
         setTabData(tabData);
-        setHasMore(tab !== 'settings' && tab !== 'certification');
+        setHasMore(tabType !== 'settings' && tabType !== 'certification' && hasMoreFlag);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('获取数据失败'));
         console.error('获取标签数据失败:', err);
@@ -103,33 +87,29 @@ export const useProfileTabs = (tab: string, userId: string) => {
     setLoadMoreLoading(true);
     
     try {
-      // 模拟 API 延迟
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // 增加页码
       const nextPage = page + 1;
+      let newData: any[] = [];
+      let hasMoreFlag = true;
       
-      // 如果是第三页则没有更多数据
-      const newHasMore = nextPage < 3;
-      
-      // 根据类型添加不同的数据
       if (tabData) {
-        let newData: any[] = [];
-        
         switch (tabData.type) {
-          case 'posts':
-          case 'favorites':
-            newData = generateMockPosts(4);
+          case 'article': {
+            newData = generateMockPosts(3);
+            // newData = await articleService.getArticleList({ user_id: userId, page: nextPage });
+            hasMoreFlag = newData.length > 0;
             break;
-            
+          }
+          case 'favorites': {
+            newData = await articleService.getArticleList({ user_id: userId, page: nextPage });
+            hasMoreFlag = newData.length > 0;
+            break;
+          }
           case 'comments':
             newData = generateMockComments(3);
             break;
-            
           case 'collections':
-            newData = generateMockCollections(2);
+            // newData = generateMockCollections(2);
             break;
-            
           case 'followers':
             newData = generateMockFollowers(5);
             break;
@@ -143,14 +123,14 @@ export const useProfileTabs = (tab: string, userId: string) => {
         ) {
           setTabData({
             type: tabData.type,
-            // @ts-ignore - 类型扩展有点复杂，为简化示例忽略类型错误
+            // @ts-ignore - 为简化忽略类型错误
             data: [...tabData.data, ...newData]
           });
         }
       }
       
       setPage(nextPage);
-      setHasMore(newHasMore);
+      setHasMore(hasMoreFlag && newData.length > 0);
     } catch (err) {
       console.error('加载更多数据失败:', err);
     } finally {
@@ -178,20 +158,18 @@ export const useProfileTabs = (tab: string, userId: string) => {
     }
   };
   
-  // 模拟关注/取消关注
+  // 关注/取消关注
   const handleToggleFollow = async (userId: string, isFollowing: boolean) => {
     setFollowLoading(prev => ({ ...prev, [userId]: true }));
     
     try {
-      // 模拟 API 调用
-      await new Promise(resolve => setTimeout(resolve, 600));
+      await followUser(Number(userId), !isFollowing);
       
-      // 更新 UI
       if (tabData && tabData.type === 'followers') {
         setTabData({
           type: 'followers',
-          data: tabData.data.map(user => 
-            user.id === userId ? { ...user, isFollowing } : user
+          data: tabData.data.map(user =>
+            user.id === userId ? { ...user, isFollowing: !isFollowing } : user
           )
         });
       }
@@ -217,20 +195,24 @@ export const useProfileTabs = (tab: string, userId: string) => {
 };
 
 // 生成模拟文章数据
-function generateMockPosts(count: number): ArticleItemData[] {
+function generateMockPosts(count: number): ArticleListItem[] {
   return Array.from({ length: count }, (_, i) => ({
     id: `post-${Date.now()}-${i}`,
-    title: `这是一篇关于${['React', 'Vue', 'Angular', 'Next.js', 'TypeScript'][i % 5]}的文章`,
-    excerpt: '这是文章的摘要内容，展示部分正文的预览，吸引用户点击阅读全文...',
-    coverImage: i % 3 === 0 ? `https://picsum.photos/300/200?random=${i}` : undefined,
-    publishDate: new Date(Date.now() - Math.random() * 30 * 86400000).toISOString(),
-    viewCount: Math.floor(Math.random() * 1000),
-    likeCount: Math.floor(Math.random() * 100),
-    commentCount: Math.floor(Math.random() * 30),
+    header: `这是一篇关于${['React', 'Vue', 'Angular', 'Next.js', 'TypeScript'][i % 5]}的文章`,
+    article_detail: `这是文章的正文内容，包含了很多关于${['前端开发', '后端开发', '全栈开发', '移动开发', '数据分析'][i % 5]}的知识和技巧。`,
+    author: "测试作者",
+    author_id: `${i}`,
+    abstract: '这是文章的摘要内容，展示部分正文的预览，吸引用户点击阅读全文...',
+    cover_image: i % 3 === 0 ? `https://picsum.photos/300/200?random=${i}` : undefined,
+    create_time: Date.now() - Math.random() * 30 * 86400000,
+    last_modified_date: Date.now(),
+    view: Math.floor(Math.random() * 1000),
+    like: Math.floor(Math.random() * 100),
+    comment: Math.floor(Math.random() * 30),
     tags: [
-      { id: `tag-${i}-1`, name: ['JavaScript', 'React', 'Vue', 'TypeScript', 'Next.js'][i % 5] },
-      { id: `tag-${i}-2`, name: ['前端', '教程', '实战', '经验', '技巧'][i % 5] }
-    ]
+      ['JavaScript', 'React', 'Vue', 'TypeScript', 'Next.js'][i % 5]
+    ],
+    status: 3,
   }));
 }
 

@@ -14,12 +14,15 @@ import TopicTagList from '@/components/sidebar/topic-tag-list';
 import useArticleDetail from '@/modules/article/hooks/use-article-detail';
 import useComments from '@/modules/comment/hooks/use-comments';
 import useSidebarData from '@/modules/sidebar/hooks/use-sidebar-data';
+import { useAuthModal } from '@/modules/auth/AuthModal';
 
 export default function ArticleDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
+  const { openLoginModal } = useAuthModal();
+
   const { id } = use(params);
 
   // 获取文章详情
@@ -163,27 +166,16 @@ export default function ArticleDetailPage({
             avatar={article.author.avatar}
             level={article.author.level}
             bio={article.author.bio}
-            articleCount={article.author.articleCount}
+            followingCount={article.author.followingCount}
             followerCount={article.author.followerCount}
             likeCount={article.author.likeCount}
             onFollow={handleFollowAuthor}
           />
         )}
 
-        {/* 欢迎卡片 */}
-        {sidebarData.welcomeCard && (
-          <WelcomeCard
-            title={sidebarData.welcomeCard.title}
-            content={sidebarData.welcomeCard.content}
-            imageUrl={sidebarData.welcomeCard.imageUrl}
-            buttonText={sidebarData.welcomeCard.buttonText}
-            buttonLink={sidebarData.welcomeCard.buttonLink}
-          />
-        )}
-
         {/* 话题标签列表 */}
         {article && article.topics && (
-          <TopicTagList topics={article.topics} />
+          <TopicTagList topics={article.topics} title='文章标签'/>
         )}
 
         {/* 推荐文章 */}

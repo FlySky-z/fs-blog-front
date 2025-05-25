@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Grid, Button } from 'antd';
+import { Grid } from 'antd';
 import { usePathname } from 'next/navigation';
 import CreatorSidebarMenu from '@/components/creator/sidebar-menu';
 import styles from './creator-layout.module.scss';
@@ -17,7 +17,6 @@ export default function CreatorCenterLayout({
 
     // 侧边栏状态
     const [activeMenuKey, setActiveMenuKey] = useState('home');
-    const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false);
 
 
     // 从路径中提取活动菜单项
@@ -36,14 +35,6 @@ export default function CreatorCenterLayout({
     // 处理侧边栏菜单选择
     const handleMenuSelect = (key: string) => {
         setActiveMenuKey(key);
-        if (isMobile) {
-            setMobileDrawerVisible(false);
-        }
-    };
-
-    // 移动端侧边栏开关
-    const toggleMobileDrawer = () => {
-        setMobileDrawerVisible(prev => !prev);
     };
 
     return (
@@ -55,9 +46,7 @@ export default function CreatorCenterLayout({
                         <CreatorSidebarMenu
                             activeMenuKey={activeMenuKey}
                             onMenuSelect={handleMenuSelect}
-                            isMobile={isMobile}
-                            mobileDrawerVisible={mobileDrawerVisible}
-                            onMobileDrawerClose={() => setMobileDrawerVisible(false)}
+                            isMobile={false}
                             notificationCounts={{
                                 articles: 2,
                                 drafts: 3,
@@ -67,23 +56,13 @@ export default function CreatorCenterLayout({
                     </div>
                 )}
 
-                {/* 移动端抽屉控制按钮 */}
+                {/* 移动端导航栏 */}
                 {isMobile && (
-                    <div className={styles['fixed-button']}>
-                        <Button
-                            type="primary"
-                            onClick={toggleMobileDrawer}
-                            className={styles.button}
-                        >
-                            导航菜单
-                        </Button>
-
+                    <div className={styles['mobile-menu']}>
                         <CreatorSidebarMenu
                             activeMenuKey={activeMenuKey}
                             onMenuSelect={handleMenuSelect}
                             isMobile={true}
-                            mobileDrawerVisible={mobileDrawerVisible}
-                            onMobileDrawerClose={() => setMobileDrawerVisible(false)}
                             notificationCounts={{
                                 articles: 2,
                                 drafts: 3,

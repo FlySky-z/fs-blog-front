@@ -1,7 +1,8 @@
 'use client';
 import React from 'react';
 import { Card, Spin, Empty, Typography, Button } from 'antd';
-import ArticleItem, { ArticleItemData } from '@/components/profile/article-item';
+import ArticleItem from '@/components/profile/article-item';
+import { ArticleListItem } from '@/modules/article/articleModel';
 import CommentItem, { CommentItemData } from '@/components/profile/comment-item';
 import CollectionItem, { CollectionItemData } from '@/components/profile/collection-item';
 import UserCard, { UserCardData } from '@/components/profile/user-card';
@@ -12,10 +13,10 @@ import styles from './profile-tab-panel.module.scss';
 const { Title } = Typography;
 
 export type TabDataType = 
-  | { type: 'posts'; data: ArticleItemData[] }
+  | { type: 'article'; data: ArticleListItem[] }
   | { type: 'comments'; data: CommentItemData[] }
   | { type: 'collections'; data: CollectionItemData[] }
-  | { type: 'favorites'; data: ArticleItemData[] }
+  | { type: 'favorites'; data: ArticleListItem[] }
   | { type: 'followers'; data: UserCardData[] }
   | { type: 'settings'; data: null }
   | { type: 'certification'; data: null };
@@ -75,7 +76,7 @@ const ProfileTabPanel: React.FC<ProfileTabPanelProps> = ({
     if (!tabData) return null;
 
     switch (tabData.type) {
-      case 'posts':
+      case 'article':
       case 'favorites':
         return tabData.data.map(post => (
           <ArticleItem key={post.id} article={post} />

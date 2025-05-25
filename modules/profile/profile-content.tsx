@@ -8,14 +8,15 @@ import SidebarMenu from '@/components/profile/sidebar-menu';
 import ProfileTabPanel from '@/components/profile/profile-tab-panel';
 import useProfile from '@/modules/profile/hooks/use-profile';
 import useProfileTabs from '@/modules/profile/hooks/use-profile-tabs';
+import { useUserStore } from '@/store/userStore';
+import { useRouter } from 'next/navigation';
 
 interface ProfileContentProps {
-  initialUserId?: string;
   initialTab?: string;
 }
 
 const tabTitles: Record<string, string> = {
-  posts: '我的发帖',
+  article: '我的发帖',
   comments: '我的评论',
   collections: '我的合集',
   favorites: '我的收藏',
@@ -25,25 +26,36 @@ const tabTitles: Record<string, string> = {
 };
 
 const ProfileContent: React.FC<ProfileContentProps> = ({
-  initialUserId = 'current-user',
-  initialTab = 'posts'
+  initialTab = 'article'
 }) => {
   const searchParams = useSearchParams();
-  
+  const router = useRouter();
   // 从URL参数获取用户ID和当前标签
-  const userId = searchParams.get('userId') || initialUserId;
+  const currentUserId = useUserStore.getState().userInfo?.id.toString() || '';
+  if (!currentUserId) {
+    notification.error({
+      message: '用户未登录',
+      description: '请先登录以查看个人资料。',
+    });
+    router.push('/');
+  }
+  
+  const userId = searchParams.get('userId') || currentUserId;
+
   const defaultTab = searchParams.get('tab') || initialTab;
+
+  const isCurrentUser = userId === currentUserId;
   
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false);
   
   // 获取用户资料
-  const { 
-    user, 
+  const {
+    userInfo,
     loading: profileLoading,
     toggleFollowing,
     isFollowingLoading
-  } = useProfile(userId);
+  } = useProfile(userId, currentUserId);
   
   // 获取标签页数据
   const {
@@ -105,9 +117,11 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
   return (
     <ProfileLayout
       profileHeader={
-        user ? (
+        userInfo ? (
           <AvatarHeader 
-            user={user}
+            user={userInfo}
+            isCurrentUser={isCurrentUser}
+            isFollowingLoading={isFollowingLoading}
             onEditProfile={handleEditProfile}
             onToggleFollow={toggleFollowing}
             onFollowersClick={handleFollowersClick}

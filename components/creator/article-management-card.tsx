@@ -118,7 +118,7 @@ const ArticleManagementCard: React.FC<ArticleManagementCardProps> = ({
             <Text
               strong
               ellipsis={{ tooltip: text }}
-              style={{ maxWidth: 250, cursor: 'pointer'}}
+              style={{ maxWidth: 250, cursor: 'pointer' }}
               onClick={() => router.push(`/article/${record.id}`)}
             >
               {text}
@@ -247,16 +247,17 @@ const ArticleManagementCard: React.FC<ArticleManagementCardProps> = ({
       <div>
         <Title level={5} style={{ margin: '0 0 16px', flexShrink: 0 }}>文章管理</Title>
 
-        <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', paddingBottom: '6px', alignItems: 'center' }}>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => router.push('/create')}
-          >
-            新增文章
-          </Button>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '16px', paddingBottom: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
 
-          <div style={{ display: 'flex', gap: '8px', flexGrow: 1 }}>
+
+          <div style={{ display: 'flex', gap: '8px', flexGrow: 1, overflowX: 'auto' }}>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => router.push('/create')}
+            >
+              新增文章
+            </Button>
             <Dropdown overlay={batchActionMenu} disabled={selectedItems.length === 0}>
               <Button>
                 <Space>
@@ -280,18 +281,19 @@ const ArticleManagementCard: React.FC<ArticleManagementCardProps> = ({
               ]}
             />
 
-            <Input
-              prefix={<SearchOutlined />}
-              placeholder="搜索文章标题"
-              value={searchText}
-              onChange={e => setSearchText(e.target.value)}
-              onPressEnter={() => onSearch(searchText)}
-            />
           </div>
+          <Input
+            prefix={<SearchOutlined />}
+            placeholder="搜索文章标题"
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+            onPressEnter={() => onSearch(searchText)}
+          />
         </div>
       </div>
 
       <Table
+        style={{ overflowY: "auto", overflowX: "unset" }}
         rowKey="id"
         dataSource={articles}
         columns={columns}

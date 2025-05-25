@@ -21,10 +21,13 @@ const StatItem: React.FC<StatItemProps> = ({
   onClick
 }) => {
   return (
-    <div 
-      className={`flex flex-col items-center ${className || ''}`}
+    <div
+      className={className || ''}
       onClick={onClick}
-      style={{ 
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         cursor: onClick ? 'pointer' : 'default',
         padding: '0 12px'
       }}

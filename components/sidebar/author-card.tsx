@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
-import { Button, Space, Statistic } from 'antd';
-import { UserOutlined, BookOutlined, LikeOutlined } from '@ant-design/icons';
+import { Button, Statistic } from 'antd';
+import { UserOutlined, EyeOutlined, LikeOutlined } from '@ant-design/icons';
 import SidebarCard from './sidebar-card';
 import UserMeta from '@/components/molecules/user-meta';
 
@@ -11,7 +11,7 @@ export interface AuthorCardProps {
   avatar?: string;
   level?: number;
   bio?: string;
-  articleCount: number;
+  followingCount: number;
   followerCount: number;
   likeCount: number;
   isFollowing?: boolean;
@@ -24,7 +24,7 @@ const AuthorCard: React.FC<AuthorCardProps> = ({
   avatar,
   level = 1,
   bio,
-  articleCount,
+  followingCount,
   followerCount,
   likeCount,
   isFollowing = false,
@@ -72,9 +72,9 @@ const AuthorCard: React.FC<AuthorCardProps> = ({
         textAlign: 'center'
       }}>
         <Statistic 
-          title="文章" 
-          value={articleCount} 
-          prefix={<BookOutlined />} 
+          title="关注" 
+          value={followingCount} 
+          prefix={<EyeOutlined />} 
           valueStyle={{ fontSize: '16px' }}
         />
         <Statistic 

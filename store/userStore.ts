@@ -44,11 +44,11 @@ export const useUserStore = create<UserState>((set, get) => ({
     initializeAuth: async () => {
 
         try {
-
             const token = TokenManager.getAccessToken();
 
             if (!token) {
                 // 没有token，设置为未登录状态
+                console.log('没有access_token，设置为未登录状态');
                 set({
                     isLoggedIn: false,
                     isInitializing: false,
@@ -58,10 +58,12 @@ export const useUserStore = create<UserState>((set, get) => ({
 
             // 尝试刷新token
             try {
+                console.log('尝试刷新token');
                 const refreshResult = await refreshAuthorization();
 
                 if (refreshResult != null) {
                     // 刷新成功
+                    console.log('刷新token成功', refreshResult);
                     var jwtPayload = TokenManager.extractUserInfoFromToken(refreshResult);
                     if (!jwtPayload) {
                         throw new Error('无效的JWT');

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { List, Button, message } from 'antd';
 import SidebarCard from '@/components/sidebar/sidebar-card';
 import UserMeta from '@/components/molecules/user-meta';
-import styles from './recommended-users.module.css';
+import styles from './recommended-users.module.scss';
 
 export interface RecommendedUser {
   id: string;

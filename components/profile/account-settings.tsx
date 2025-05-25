@@ -8,6 +8,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const AccountSettings: React.FC = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [avatarList, setAvatarList] = useState<UploadFile[]>([]);
@@ -19,9 +20,9 @@ const AccountSettings: React.FC = () => {
     try {
       console.log('提交的表单数据:', values);
       await new Promise(resolve => setTimeout(resolve, 800));
-      message.success('保存成功！');
+      messageApi.success('保存成功！');
     } catch (error) {
-      message.error('保存失败，请稍后重试');
+      messageApi.error('保存失败，请稍后重试');
       console.error('保存失败:', error);
     } finally {
       setIsLoading(false);
@@ -30,6 +31,7 @@ const AccountSettings: React.FC = () => {
 
   return (
     <div className="account-settings">
+      {contextHolder}
       <Form
         form={form}
         layout="vertical"
@@ -105,41 +107,13 @@ const AccountSettings: React.FC = () => {
           </div>
         </div>
 
-        <Form.Item
-          name="location"
-          label="所在地区"
-        >
-          <Select placeholder="请选择所在地区">
-            <Option value="beijing">北京</Option>
-            <Option value="shanghai">上海</Option>
-            <Option value="guangzhou">广州</Option>
-            <Option value="shenzhen">深圳</Option>
-            <Option value="hangzhou">杭州</Option>
-            <Option value="other">其他</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          name="profession"
-          label="职业领域"
-        >
-          <Select placeholder="请选择职业领域">
-            <Option value="frontend">前端开发</Option>
-            <Option value="backend">后端开发</Option>
-            <Option value="fullstack">全栈开发</Option>
-            <Option value="design">UI/UX设计</Option>
-            <Option value="product">产品经理</Option>
-            <Option value="other">其他</Option>
-          </Select>
-        </Form.Item>
-
         <Divider />
         
         <h3>账户安全</h3>
         <Button 
           icon={<LockOutlined />}
           style={{ marginBottom: '20px' }}
-          onClick={() => message.info('密码修改功能正在开发中')}
+          onClick={() => messageApi.info('密码修改功能正在开发中')}
         >
           修改密码
         </Button>

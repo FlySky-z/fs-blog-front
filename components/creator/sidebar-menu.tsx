@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
-import { Card, Drawer, Typography, Space } from 'antd';
+import { Card, Typography, Space, Menu } from 'antd';
+import { useRouter } from 'next/navigation';
 import { 
   HomeOutlined,
   BarChartOutlined,
@@ -27,8 +28,6 @@ interface CreatorSidebarMenuProps {
   activeMenuKey: string;
   onMenuSelect: (key: string) => void;
   isMobile: boolean;
-  mobileDrawerVisible: boolean;
-  onMobileDrawerClose: () => void;
   notificationCounts?: Record<string, number>;
 }
 
@@ -36,10 +35,9 @@ const CreatorSidebarMenu: React.FC<CreatorSidebarMenuProps> = ({
   activeMenuKey,
   onMenuSelect,
   isMobile,
-  mobileDrawerVisible,
-  onMobileDrawerClose,
   notificationCounts = {}
 }) => {
+  const router = useRouter();
   // 创作中心菜单项
   const menuItems: CreatorMenuItemData[] = [
     { 
@@ -114,18 +112,31 @@ const CreatorSidebarMenu: React.FC<CreatorSidebarMenuProps> = ({
     </div>
   );
 
-  // 移动端显示抽屉
+  // 移动端显示Menu水平导航
   if (isMobile) {
     return (
-      <Drawer
-        title="创作中心导航"
-        placement="left"
-        onClose={onMobileDrawerClose}
-        open={mobileDrawerVisible}
-        bodyStyle={{ padding: '12px' }}
-      >
-        {menuContent}
-      </Drawer>
+      <Menu
+        mode="horizontal"
+        selectedKeys={[activeMenuKey]}
+        onClick={({ key }) => {
+          onMenuSelect(key as string);
+          const item = menuItems.find(item => item.key === key);
+          if (item) {
+            router.push(item.href);
+          }
+        }}
+        style={{ width: '100%', borderBottom: 0, marginBottom: 12 }}
+        items={menuItems.map(item => ({
+          key: item.key,
+          icon: item.icon,
+          label: (
+        <>
+          {item.text}
+          {item.notification ? <span style={{ color: 'red', marginLeft: 4 }}>({item.notification})</span> : null}
+        </>
+          ),
+        }))}
+      />
     );
   }
 

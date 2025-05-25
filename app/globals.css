@@ -1,1 +1,3 @@
-@import 'antd/dist/reset.css';
+@layer reset, antd;
+
+@import 'antd/dist/reset.css' layer(reset);

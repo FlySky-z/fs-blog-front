@@ -10,6 +10,9 @@ import useCreatorApplyStatus from '@/modules/creator/hooks/use-creator-apply-sta
 import useCreatorTasks from '@/modules/creator/hooks/use-creator-tasks';
 import useArticleManagement from '@/modules/creator/hooks/use-article-management';
 import useCreatorAnnouncements from '@/modules/creator/hooks/use-creator-announcements';
+import { useUserStore } from '@/store/userStore';
+import { notification } from 'antd';
+import { useRouter } from 'next/navigation';
 
 /**
  * 创作中心页面
@@ -28,20 +31,31 @@ function CreatorCenterPageInner() {
   if (isLoading) {
     return <CreatorDashboardSkeleton />;
   }
-  // 检查是否有申请状态
+  // 获取用户数据
+  const userInfo = useUserStore.getState().userInfo;
+  if (!userInfo) {
+    notification.error({
+      message: '用户未登录或无法获取用户信息',
+      description: '请先登录以查看创作中心。',
+      });
+    const router = useRouter();
+    router.push('/');
+    return null;
+  }
 
   return (
+
     <CreatorLayout>
       {/* 创作者头像卡片 */}
       <CreatorHeaderCard
-        id="creator-id"
-        avatar="https://picsum.photos/200"
-        nickname="创作者"
-        level={2}
+        id={userInfo?.id.toString()}
+        avatar={userInfo?.avatar_url}
+        nickname={userInfo?.username}
+        level={1}
         announcements={announcements || []}
         style={{ marginBottom: '20px' }}
       />
-      
+
       {/* 数据概览卡片 */}
       {weekData && monthData && totalData && (
         <SummaryDataCard
@@ -51,7 +65,7 @@ function CreatorCenterPageInner() {
           style={{ marginBottom: '20px' }}
         />
       )}
-      
+
       {/* 文章管理卡片 */}
       <ArticleManagementCard
         articles={articles}

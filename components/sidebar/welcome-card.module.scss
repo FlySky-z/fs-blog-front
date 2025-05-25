@@ -1,0 +1,11 @@
+.welcomeCardInfo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+.welcomeCardInfo:hover .welcomeCardUsername {
+    color: #1677ff;
+}
+

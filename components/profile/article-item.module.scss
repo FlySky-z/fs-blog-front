@@ -19,15 +19,14 @@
 
 .articleContent {
   flex: 1;
+  &:hover .articleTitle{
+    color: #1DA1F2;
+  }
 }
 
 .articleTitle {
   margin: 0;
   transition: color 0.3s;
-
-  &:hover {
-    color: #1DA1F2;
-  }
 }
 
 .articleMeta {
@@ -80,9 +79,10 @@
 }
 
 .coverImage {
-  width: 120px;
-  height: 80px;
-  background-size: cover;
-  background-position: center;
-  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 8px;
 }
+

@@ -254,7 +254,7 @@ const ArticleManagementCard: React.FC<ArticleManagementCardProps> = ({
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => router.push('/create')}
+              onClick={() => router.push('/editor')}
             >
               新增文章
             </Button>
@@ -308,7 +308,7 @@ const ArticleManagementCard: React.FC<ArticleManagementCardProps> = ({
             >
               <Button
                 type="primary"
-                onClick={() => router.push('/create')}
+                onClick={() => router.push('/editor')}
               >
                 创建第一篇文章
               </Button>

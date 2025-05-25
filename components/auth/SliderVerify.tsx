@@ -54,7 +54,6 @@ const SliderVerify: React.FC<SliderVerifyProps> = ({ userId, onSuccess, onFail }
     
     // 如果userId没有变化且已经请求过验证码，不重复请求
     if (userId === currentUserIdRef.current && captchaRequestedRef.current) {
-      console.log('避免重复请求验证码');
       return;
     }
     
@@ -68,7 +67,6 @@ const SliderVerify: React.FC<SliderVerifyProps> = ({ userId, onSuccess, onFail }
     setPosition(0);
     
     // 获取新的验证码
-    console.log('请求新的验证码，userId:', userId);
     fetchCaptcha();
     
     // 组件卸载时清理状态

@@ -22,7 +22,7 @@ export default function ForbiddenPage() {
           </Link>,
           <Link href="/accountCenter" key="account-center">
             <Button>前往个人中心</Button>
-          </Link>,
+          </Link>
         ]}
       />
     </div>

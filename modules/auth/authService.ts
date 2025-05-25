@@ -30,7 +30,7 @@ class AuthService {
             if (!params.username && !params.email && !params.phone) {
                 throw new Error('用户名、邮箱或手机号不能为空');
             }
-            
+
             const loginRequest: LoginRequest = {
                 username: params.username || params.email || params.phone || '',
                 password: params.password
@@ -143,16 +143,11 @@ class AuthService {
      * @returns 是否可用
      */
     async checkUsername(username: string): Promise<boolean> {
-        try {
-            const response = await apiClient.get<CheckUsernameResponse>(
-                `/api/user/check_username/${encodeURIComponent(username)}`
-            );
+        const response = await apiClient.get<CheckUsernameResponse>(
+            `/api/user/check_username/${encodeURIComponent(username)}`
+        );
 
-            return response.code === 200;
-        } catch (error) {
-            console.error('Username check failed:', error);
-            return false;
-        }
+        return response.code === 200;
     }
 
     /**

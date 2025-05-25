@@ -28,6 +28,7 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
       id: '2',
       title: '如何利用人工智能提升你的写作效率',
       publishedAt: '2025-05-03T10:30:00Z',
+      coverImage: 'https://picsum.photos/600/300?random=1',
       url: '/article/ai-writing-tips'
     },
     {
@@ -71,28 +72,28 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
     }
   ];
 
-  const mockQuickEntries = [
-    {
-      key: 'categories',
-      label: '分类',
-      items: [
-        { key: 'frontend', label: '前端开发', url: '/category/frontend', icon: <span>🌐</span> },
-        { key: 'backend', label: '后端开发', url: '/category/backend', icon: <span>⚙️</span> },
-        { key: 'mobile', label: '移动开发', url: '/category/mobile', icon: <span>📱</span> },
-        { key: 'ai', label: '人工智能', url: '/category/ai', icon: <span>🤖</span> }
-      ]
-    },
-    {
-      key: 'resources',
-      label: '资源',
-      items: [
-        { key: 'ebooks', label: '免费电子书', url: '/resources/ebooks', icon: <span>📚</span> },
-        { key: 'courses', label: '在线课程', url: '/resources/courses', icon: <span>🎓</span> },
-        { key: 'tools', label: '开发工具', url: '/resources/tools', icon: <span>🛠️</span> },
-        { key: 'communities', label: '开发社区', url: '/resources/communities', icon: <span>👥</span> }
-      ]
-    }
-  ];
+  // const mockQuickEntries = [
+  //   {
+  //     key: 'categories',
+  //     label: '分类',
+  //     items: [
+  //       { key: 'frontend', label: '前端开发', url: '/category/frontend', icon: <span>🌐</span> },
+  //       { key: 'backend', label: '后端开发', url: '/category/backend', icon: <span>⚙️</span> },
+  //       { key: 'mobile', label: '移动开发', url: '/category/mobile', icon: <span>📱</span> },
+  //       { key: 'ai', label: '人工智能', url: '/category/ai', icon: <span>🤖</span> }
+  //     ]
+  //   },
+  //   {
+  //     key: 'resources',
+  //     label: '资源',
+  //     items: [
+  //       { key: 'ebooks', label: '免费电子书', url: '/resources/ebooks', icon: <span>📚</span> },
+  //       { key: 'courses', label: '在线课程', url: '/resources/courses', icon: <span>🎓</span> },
+  //       { key: 'tools', label: '开发工具', url: '/resources/tools', icon: <span>🛠️</span> },
+  //       { key: 'communities', label: '开发社区', url: '/resources/communities', icon: <span>👥</span> }
+  //     ]
+  //   }
+  // ];
 
   const mockBanners = [
     {
@@ -113,8 +114,7 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
     title: '欢迎来到技术博客平台',
     content: '这里是一个分享知识、经验和见解的地方。加入我们，与全球开发者一起成长！',
     imageUrl: 'https://picsum.photos/600/300?random=welcome',
-    buttonText: '登录/注册',
-    buttonLink: '/register'
+    buttonText: '登录',
   };
 
   // 模拟关注用户的处理函数
@@ -133,7 +133,6 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
         content={mockWelcomeCard.content}
         imageUrl={"https://picsum.photos/600/800?random=welcome"}
         buttonText={mockWelcomeCard.buttonText}
-        isLoggedIn={isLoggedIn}
         openLoginModal={openLoginModal}
       />
 
@@ -157,10 +156,10 @@ const HomeSidebar: React.FC<HomeSidebarProps> = ({
       />
 
       {/* 快速入口 */}
-      <QuickEntryTabs
+      {/* <QuickEntryTabs
         entries={mockQuickEntries}
         title="发现更多"
-      />
+      /> */}
     </div>
   );
 };

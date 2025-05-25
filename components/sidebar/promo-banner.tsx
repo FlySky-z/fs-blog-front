@@ -4,6 +4,7 @@ import { Carousel, Image } from 'antd';
 import SidebarCard from '@/components/sidebar/sidebar-card';
 import styles from './promo-banner.module.css';
 import Link from 'next/link';
+import ImageCard from '../atoms/image-card';
 
 export interface BannerItem {
   id: string;
@@ -27,7 +28,7 @@ const PromoBanner: React.FC<PromoBannerProps> = ({
 
   return (
     <SidebarCard title={title} className={styles.promoBannerCard}>
-      <Carousel 
+      <Carousel
         autoplay={autoplay && banners.length > 1}
         dots={{ className: styles.dots }}
         className={styles.carousel}
@@ -36,12 +37,11 @@ const PromoBanner: React.FC<PromoBannerProps> = ({
           <div key={banner.id}>
             <Link href={banner.url} className={styles.bannerLink}>
               <div className={styles.bannerContainer}>
-                <Image 
-                  src={banner.imageUrl} 
-                  alt={banner.title}
-                  preview={false} 
-                  className={styles.bannerImage}
-                />
+                <ImageCard
+                  image_url={banner.imageUrl}
+                  ratio={16 / 9}
+                  style={{ width: '100%', height: '100%' }}
+                ></ImageCard>
                 <div className={styles.bannerTitle}>{banner.title}</div>
               </div>
             </Link>

@@ -1,5 +1,5 @@
 import { apiClient } from '@/utils/apiClient';
-import { userInfo } from './userModel';
+import { getUserListQuery, getUserListResponse, userInfo, userUpdateRequest } from './userModel';
 import { use } from 'react';
 
 
@@ -41,7 +41,67 @@ export async function getUserInfoById(userId: string): Promise<userInfo> {
 }
 
 /**
- * 关注/取关用户
+ * 更新用户信息
+ */
+export async function updateUserInfo(param: userUpdateRequest): Promise<boolean> {
+    const response = await apiClient.post<{ code: number, msg: string, data: {} }>(`/api/user/update`, param);
+    if (response.code !== 200) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * 获取用户列表
+ * @param page 页码
+ * @param count 每页数量
+ */
+export async function getUserList(query: getUserListQuery): Promise<getUserListResponse> {
+    const { page, count, ...rest } = query;
+    // 支持更多查询参数
+    const params = new URLSearchParams({ page: String(page), count: String(count), ...rest as any }).toString();
+    const response = await apiClient.get<getUserListResponse>(`/api/user/list?${params}`);
+    if (response.code !== 200) {
+        throw new Error(response.msg || '获取用户列表失败');
+    }
+    return response;
+}
+
+/**
+ * 删除用户/api/user/delete/{id}
+ */
+export async function deleteUser(userId: string): Promise<boolean> {
+    const response = await apiClient.delete<{ code: number; msg: string; data: {} }>(`/api/user/delete/${userId}`);
+    if (response.code !== 200) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * 拉黑用户/api/user/block
+ */
+export async function blockUser(userId: string, isBlock: boolean): Promise<boolean> {
+    const response = await apiClient.post<{ code: number; msg: string; data: {} }>(`/api/user/block`, { id: userId, is_block: isBlock });
+    if (response.code !== 200) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * 踢出用户
+ */
+export async function kickUser(userId: string): Promise<boolean> {
+    const response = await apiClient.post<{ code: number; msg: string; data: {} }>(`/api/user/kick/${userId}`, {});
+    if (response.code !== 200) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * TODO: 关注/取关用户
  * @param userId 用户ID
  * @param follow true为关注，false为取关
  */
@@ -62,7 +122,7 @@ export const userService = new UserService();
  * @param userId 用户ID
  * @returns 是否关注
  */
-export async function isFollowingUser(userId: string): Promise<{isFollowing: boolean}> {
+export async function isFollowingUser(userId: string): Promise<{ isFollowing: boolean }> {
     // mock 数据
     const response = {
         code: 200,
@@ -92,24 +152,20 @@ export async function getFollowingList(userId: string): Promise<userInfo[]> {
         msg: 'success',
         data: [
             {
-                id: '1',
+                id: 1,
                 username: 'user1',
-                avatar: 'https://example.com/avatar1.jpg',
+                avatar_url: 'https://example.com/avatar1.jpg',
                 stats: {
                     followers: 100,
                     following: 50,
                     likes: 10
-                }
-            },
-            {
-                id: '2',
-                username: 'user2',
-                avatar: 'https://example.com/avatar2.jpg',
-                stats: {
-                    followers: 200,
-                    following: 100,
-                    likes: 20
-                }
+                },
+                abstract: '热爱编程与开源',
+                create_time: '2023-01-01T00:00:00Z',
+                level: 5,
+                email: "",
+                phone: "",
+                tags: ['developer', 'tech']
             }
         ]
     }

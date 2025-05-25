@@ -13,6 +13,7 @@ import useCreatorAnnouncements from '@/modules/creator/hooks/use-creator-announc
 import { useUserStore } from '@/store/userStore';
 import { notification } from 'antd';
 import { useRouter } from 'next/navigation';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 /**
  * 创作中心页面
@@ -82,18 +83,10 @@ function CreatorCenterPageInner() {
   );
 }
 
-function CreatorCenterPage() {
+export default function CreatorCenterPage() {
   return (
     <Suspense fallback={<CreatorDashboardSkeleton />}>
       <CreatorCenterPageInner />
     </Suspense>
   );
 }
-
-// 使用高阶组件为创作中心页面添加路由保护
-// export default withProtectedRoute(CreatorCenterPage, {
-//   redirectPath: '/', // 未登录时重定向到首页
-//   roles: ['creator'] // 只有有创作者角色的用户才能访问
-// });
-
-export default CreatorCenterPage;

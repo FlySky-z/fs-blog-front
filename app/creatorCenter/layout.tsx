@@ -4,6 +4,7 @@ import { Grid } from 'antd';
 import { usePathname } from 'next/navigation';
 import CreatorSidebarMenu from '@/components/creator/sidebar-menu';
 import styles from './creator-layout.module.scss';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 const { useBreakpoint } = Grid;
 export default function CreatorCenterLayout({
@@ -38,45 +39,48 @@ export default function CreatorCenterLayout({
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.grid}>
-                {/* 侧边栏区域 */}
-                {!isMobile && (
-                    <div className={styles.sidebar}>
-                        <CreatorSidebarMenu
-                            activeMenuKey={activeMenuKey}
-                            onMenuSelect={handleMenuSelect}
-                            isMobile={false}
-                            notificationCounts={{
-                                articles: 2,
-                                drafts: 3,
-                                announcements: 1
-                            }}
-                        />
-                    </div>
-                )}
+        <ProtectedRoute role={0} redirectPath="/400">
+            <div className={styles.container}>
+                <div className={styles.grid}>
+                    {/* 侧边栏区域 */}
+                    {!isMobile && (
+                        <div className={styles.sidebar}>
+                            <CreatorSidebarMenu
+                                activeMenuKey={activeMenuKey}
+                                onMenuSelect={handleMenuSelect}
+                                isMobile={false}
+                                notificationCounts={{
+                                    articles: 2,
+                                    drafts: 3,
+                                    announcements: 1
+                                }}
+                            />
+                        </div>
+                    )}
 
-                {/* 移动端导航栏 */}
-                {isMobile && (
-                    <div className={styles['mobile-menu']}>
-                        <CreatorSidebarMenu
-                            activeMenuKey={activeMenuKey}
-                            onMenuSelect={handleMenuSelect}
-                            isMobile={true}
-                            notificationCounts={{
-                                articles: 2,
-                                drafts: 3,
-                                announcements: 1
-                            }}
-                        />
-                    </div>
-                )}
+                    {/* 移动端导航栏 */}
+                    {isMobile && (
+                        <div className={styles['mobile-menu']}>
+                            <CreatorSidebarMenu
+                                activeMenuKey={activeMenuKey}
+                                onMenuSelect={handleMenuSelect}
+                                isMobile={true}
+                                notificationCounts={{
+                                    articles: 2,
+                                    drafts: 3,
+                                    announcements: 1
+                                }}
+                            />
+                        </div>
+                    )}
 
-                {/* 主内容区域 */}
-                <div className={styles['main-content']}>
-                    {children}
+                    {/* 主内容区域 */}
+                    <div className={styles['main-content']}>
+                        {children}
+                    </div>
                 </div>
             </div>
-        </div>
+        </ProtectedRoute>
+
     );
 }

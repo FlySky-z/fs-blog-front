@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from 'antd';
 import LoginForm from './login/LoginForm';
 import RegisterForm from './register/RegisterForm';
@@ -25,6 +25,18 @@ const AuthModal: React.FC<AuthModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>(defaultTab);
   const [loading, setLoading] = useState(false);
+  
+  // 同步外部 defaultTab 的变化
+  useEffect(() => {
+    setActiveTab(defaultTab);
+  }, [defaultTab]);
+  
+  // 当Modal关闭时重置到默认标签页
+  useEffect(() => {
+    if (!visible) {
+      setActiveTab(defaultTab);
+    }
+  }, [visible, defaultTab]);
   
   // 处理切换到注册表单
   const handleSwitchToRegister = () => {

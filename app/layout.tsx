@@ -1,5 +1,5 @@
 'use client';
-import "./globals.css";
+import "./globals.scss";
 import '@ant-design/v5-patch-for-react-19';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import HeaderNav from "@/modules/navigator/header";
@@ -41,19 +41,18 @@ export default function RootLayout({
               <ModalProvider>
                 <Layout style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
-                  <HeaderNav /> {/* Props removed as HeaderNav now uses the store */}
+                  <HeaderNav />
 
                   <Layout.Content style={{ paddingTop: 64 }}>
                     <AuthInitializer>
                       {children}
                     </AuthInitializer>
                   </Layout.Content>
-                  
+
                 </Layout>
               </ModalProvider>
             </ConfigProvider>
           </StyleProvider>
-
         </AntdRegistry>
       </body>
     </html>

@@ -18,6 +18,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   onSwitchToLogin,
   loading = false
 }) => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
   const [regMethod, setRegMethod] = useState<'username' | 'phone'>('username');
   const [verified, setVerified] = useState(false);
@@ -38,6 +39,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       return isValid;
     } catch (error) {
       console.error('检查用户名失败:', error);
+      messageApi.error('检查用户名失败，请稍后重试');
       setUsernameVerified(false);
       return false;
     }
@@ -46,12 +48,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   // 手机号检查（通常只需要验证格式，这里假设服务端也可以验证手机号是否已注册）
   const checkPhone = useCallback(async (phone: string) => {
     try {
-      // 这里假设有一个checkPhone API，如果没有，可以只进行格式验证
+      // TODO: checkPhone API，如果没有，可以只进行格式验证
       const isValid = /^1[3-9]\d{9}$/.test(phone);
       setPhoneVerified(isValid);
       return isValid;
     } catch (error) {
       console.error('检查手机号失败:', error);
+      messageApi.error('检查手机号失败，请稍后重试');
       setPhoneVerified(false);
       return false;
     }
@@ -90,7 +93,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       const success = await authService.register(registerData);
 
       if (success) {
-        message.success('注册成功');
+        messageApi.success('注册成功');
         // 注册成功，重置表单
         form.resetFields();
         setVerified(false);
@@ -102,7 +105,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       }
     } catch (error) {
       console.error('注册表单提交错误:', error);
-      message.error('注册失败，请稍后重试');
+      messageApi.error('注册失败，请稍后重试');
     }
   };
 
@@ -110,7 +113,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     setCaptchaId(id);
     setCaptchaPosition(position);
     setVerified(true);
-    message.success('验证成功，请继续注册');
+    messageApi.success('验证成功，请继续注册');
   };
 
   // 当注册方式改变时重置验证状态
@@ -344,6 +347,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
   return (
     <div className={styles.container}>
+      {contextHolder}
       <h2 className={styles.title}>注册新账号</h2>
 
       <Tabs

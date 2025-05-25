@@ -47,10 +47,6 @@ export const CreatorDashboard: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleScrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   // 处理侧边栏菜单选择
   const handleMenuSelect = (key: string) => {
     setActiveMenuKey(key);
@@ -91,8 +87,6 @@ export const CreatorDashboard: React.FC = () => {
               activeMenuKey={activeMenuKey}
               onMenuSelect={handleMenuSelect}
               isMobile={isMobile}
-              mobileDrawerVisible={mobileDrawerVisible}
-              onMobileDrawerClose={() => setMobileDrawerVisible(false)}
               notificationCounts={{
                 articles: 2,
                 drafts: 3,
@@ -117,8 +111,6 @@ export const CreatorDashboard: React.FC = () => {
               activeMenuKey={activeMenuKey}
               onMenuSelect={handleMenuSelect}
               isMobile={true}
-              mobileDrawerVisible={mobileDrawerVisible}
-              onMobileDrawerClose={() => setMobileDrawerVisible(false)}
               notificationCounts={{
                 articles: 2,
                 drafts: 3,

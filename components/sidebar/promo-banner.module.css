@@ -4,7 +4,8 @@
 }
 
 .carousel {
-  margin: -16px -16px 0; /* 抵消内边距 */
+  margin: -16px -16px;
+  /* 抵消内边距 */
 }
 
 .bannerLink {
@@ -20,7 +21,8 @@
 
 .bannerImage {
   width: 100%;
-  aspect-ratio: 21 / 9; /* 广告Banner通常是较宽的比例 */
+  height: 100%;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
 }
 
@@ -30,7 +32,7 @@
   left: 0;
   right: 0;
   padding: 8px 16px;
-  background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
   color: white;
   font-size: 14px;
   font-weight: 500;
@@ -40,16 +42,12 @@
   bottom: 8px !important;
 }
 
-.dots li {
-  margin: 0 3px !important;
-}
+.dots li {}
 
 .dots li button {
-  background-color: white !important;
   opacity: 0.5;
 }
 
 .dots li.slick-active button {
-  background-color: white !important;
   opacity: 1;
 }

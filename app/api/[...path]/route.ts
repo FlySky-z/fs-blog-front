@@ -21,6 +21,8 @@ async function handleRequest(req: NextRequest, method: string) {
   const apiPath = pathSegments.join('/');
   const backendUrl = `${BACKEND_BASE}/api/${apiPath}${query ? `?${query}` : ''}`;
   
+  console.log(`[API Proxy] ${method} ${pathname} -> ${backendUrl}`);
+  
   // 获取并转发所有请求头（排除掉 host 和 connection 等特殊头）
   const headers = new Headers();
   req.headers.forEach((value, key) => {
@@ -42,24 +44,29 @@ async function handleRequest(req: NextRequest, method: string) {
   
   // 对于有请求体的方法，添加请求体
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
-    // 根据 Content-Type 决定如何处理请求体
-    const contentType = headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-      try {
-        const json = await req.json();
-        options.body = JSON.stringify(json);
-      } catch (e) {
-        const text = await req.text();
-        if (text) {
-          options.body = text;
+    try {
+      // 先获取原始请求体
+      const bodyText = await req.text();
+      
+      if (bodyText) {
+        // 根据 Content-Type 决定如何处理请求体
+        const contentType = headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          try {
+            // 验证是否为有效的 JSON
+            JSON.parse(bodyText);
+            options.body = bodyText;
+          } catch (e) {
+            // 如果不是有效的 JSON，直接使用文本
+            options.body = bodyText;
+          }
+        } else {
+          // 其他类型（表单数据、文本等）直接转发
+          options.body = bodyText;
         }
       }
-    } else {
-      // 其他类型（表单数据、文本等）直接转发
-      const body = await req.text();
-      if (body) {
-        options.body = body;
-      }
+    } catch (e) {
+      console.error('Error reading request body:', e);
     }
   }
   

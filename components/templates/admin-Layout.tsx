@@ -1,11 +1,11 @@
 'use client';
 import React, { useState } from 'react';
 import { Layout } from 'antd';
-import SidebarMenu from './SidebarMenu';
-import ArticleManagePanel from './ArticleManagePanel';
-import AccountManagePanel from './AccountManagePanel';
-import AbnormalDetectPanel from './AbnormalDetectPanel';
-import FeedbackButton from './FeedbackButton';
+import SidebarMenu from '../admin/SidebarMenu';
+import ArticleManagePanel from '../admin/ArticleManagePanel';
+import AccountManagePanel from '../admin/AccountManagePanel';
+import AbnormalDetectPanel from '../admin/AbnormalDetectPanel';
+import DashBoardPanel from '../admin/DashBoardPanel';
 import styles from './admin-layout.module.scss';
 import RocketToTop from '../header/rocket';
 
@@ -32,13 +32,13 @@ const AdminLayout: React.FC = () => {
       </Sider>
       <Layout>
         <Content className={styles.content}>
+          {activeKey === 'dashboard' && <DashBoardPanel />}
           {activeKey === 'article' && <ArticleManagePanel />}
           {activeKey === 'account' && <AccountManagePanel />}
           {activeKey === 'abnormal' && <AbnormalDetectPanel />}
         </Content>
       </Layout>
       <RocketToTop />
-      <FeedbackButton />
     </Layout>
   );
 };

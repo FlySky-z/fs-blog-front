@@ -138,7 +138,7 @@ export default function HeaderComponent(props: HeaderComponentProps) {
 
                     {/* Center Section */}
                     <Col flex="auto" style={{ display: 'flex', justifyContent: isMobile ? 'flex-start' : 'center', minWidth: 0 }}>
-                        <NavMenu isMobile={isMobile} isTablet={isTablet} navMenu={navMenu} navItems={navItems} />
+                        <NavMenu isMobile={isMobile} isTablet={isTablet} navMenu={navMenu} />
                     </Col>
 
                     {/* Right Section */}

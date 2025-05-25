@@ -117,6 +117,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 
     // 登出
     logout: () => {
+        authService.logout();
         TokenManager.clearAllTokens();
         set({
             isLoggedIn: false,

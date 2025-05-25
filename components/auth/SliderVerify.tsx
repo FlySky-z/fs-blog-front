@@ -1,9 +1,7 @@
 'use client';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Button } from 'antd';
 import styles from './slider-verify.module.scss';
 import { authService } from '@/modules/auth/authService';
-import { CaptchaGetResponse } from '@/modules/auth/authModel';
 
 interface SliderVerifyProps {
   userId: string; // 用户ID
@@ -28,17 +26,56 @@ const SliderVerify: React.FC<SliderVerifyProps> = ({ userId, onSuccess, onFail }
   const [blockHeight, setBlockHeight] = useState(0);
   const [blockY, setBlockY] = useState(0);
   const [loading, setLoading] = useState(true);
-  
   // 使用useRef替代普通变量，确保值在组件生命周期内持久存在
   const sliderPositionRef = useRef(0);
+  // 添加一个 ref 来跟踪当前的 userId，避免重复请求
+  const currentUserIdRef = useRef<string>('');
+  // 添加一个 ref 来跟踪是否已经请求过验证码
+  const captchaRequestedRef = useRef<boolean>(false);
   
   const sliderRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // 组件加载时获取验证码
+  // 组件加载时获取验证码，但只在 userId 存在时才获取
   useEffect(() => {
+    // 如果userId不存在，重置状态
+    if (!userId) {
+      setIsVerified(false);
+      setSliderLeft(0);
+      setPosition(0);
+      setCaptchaId('');
+      setBackgroundImage('');
+      setBlockImage('');
+      setLoading(false);
+      captchaRequestedRef.current = false;
+      currentUserIdRef.current = '';
+      return;
+    }
+    
+    // 如果userId没有变化且已经请求过验证码，不重复请求
+    if (userId === currentUserIdRef.current && captchaRequestedRef.current) {
+      console.log('避免重复请求验证码');
+      return;
+    }
+    
+    // 更新当前userId和请求状态
+    currentUserIdRef.current = userId;
+    captchaRequestedRef.current = true;
+    
+    // 重置组件状态
+    setIsVerified(false);
+    setSliderLeft(0);
+    setPosition(0);
+    
+    // 获取新的验证码
+    console.log('请求新的验证码，userId:', userId);
     fetchCaptcha();
-  }, []);
+    
+    // 组件卸载时清理状态
+    return () => {
+      // 不重置captchaRequestedRef，让它在组件生命周期内保持
+    };
+  }, [userId]);
   
   // 获取滑块数据
   const fetchCaptcha = async () => {
@@ -158,6 +195,8 @@ const SliderVerify: React.FC<SliderVerifyProps> = ({ userId, onSuccess, onFail }
       
       if (isSuccess) {
         setIsVerified(true);
+        // 验证成功后，维持当前状态，不再请求新验证码
+        captchaRequestedRef.current = true;
         onSuccess(captchaId, actualXPosition); // 将验证结果传递给父组件
       } else {
         // 失败时重置
@@ -181,6 +220,8 @@ const SliderVerify: React.FC<SliderVerifyProps> = ({ userId, onSuccess, onFail }
     setIsVerified(false);
     setSliderLeft(0);
     setPosition(0);
+    // 重置请求状态，允许重新请求验证码
+    captchaRequestedRef.current = false;
     fetchCaptcha();
   };
   
@@ -190,14 +231,20 @@ const SliderVerify: React.FC<SliderVerifyProps> = ({ userId, onSuccess, onFail }
       ref={containerRef}
       style={{ height: backgroundImage ? `${bgHeight + 120}px` : '200px' }}
     >
-      {loading && (
+      {!userId && (
+        <div className={styles.emptyState}>
+          <div>请先完成用户信息验证</div>
+        </div>
+      )}
+      
+      {userId && loading && (
         <div className={styles.loadingContainer}>
           <div className={styles.spinner}></div>
           <div>加载验证码...</div>
         </div>
       )}
       
-      {!loading && backgroundImage && blockImage && (
+      {userId && !loading && backgroundImage && blockImage && (
         <div 
           className={styles.captchaImageContainer} 
           style={{ 
@@ -236,37 +283,30 @@ const SliderVerify: React.FC<SliderVerifyProps> = ({ userId, onSuccess, onFail }
         </div>
       )}
       
-      <div className={styles.sliderTrack}>
-        <div 
-          className={styles.sliderProgress} 
-          style={{ width: `${position}%` }} 
-        />
-        
-        <div 
-          className={`${styles.sliderHandle} ${isVerified ? styles.success : ''}`}
-          ref={sliderRef}
-          style={{ left: `${sliderLeft}px` }}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          aria-label="滑动验证"
-        >
-          {isVerified ? '✓' : isDraggingRef.current ? '··':'→'}
+      {userId && (
+        <div className={styles.sliderTrack}>
+          <div 
+            className={styles.sliderProgress} 
+            style={{ width: `${position}%` }} 
+          />
+          
+          <div 
+            className={`${styles.sliderHandle} ${isVerified ? styles.success : ''}`}
+            ref={sliderRef}
+            style={{ left: `${sliderLeft}px` }}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+            aria-label="滑动验证"
+          >
+            {isVerified ? '✓' : isDraggingRef.current ? '··':'→'}
+          </div>
         </div>
-      </div>
+      )}
       
-      <div className={styles.sliderText}>
-        {isVerified ? '验证成功' : '请滑动滑块完成验证'}
-      </div>
-      
-      {isVerified && (
-        <Button 
-          type="link" 
-          size="small" 
-          onClick={resetSlider}
-          className={styles.resetBtn}
-        >
-          重置
-        </Button>
+      {userId && (
+        <div className={styles.sliderText}>
+          {isVerified ? '验证成功' : '请滑动滑块完成验证'}
+        </div>
       )}
     </div>
   );

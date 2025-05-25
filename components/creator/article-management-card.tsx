@@ -272,7 +272,7 @@ const ArticleManagementCard: React.FC<ArticleManagementCardProps> = ({
               style={{ width: 120 }}
               onChange={onStatusFilter}
               options={[
-                { value: null, label: '全部' },
+                { value: "", label: '全部' },
                 { value: ArticleStatus.PUBLISHED, label: '已发布' },
                 { value: ArticleStatus.PENDING, label: '审核中' },
                 { value: ArticleStatus.REJECTED, label: '未通过' },

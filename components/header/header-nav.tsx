@@ -2,20 +2,28 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Input, Avatar, Dropdown, Space, Badge, Layout, Button } from 'antd';
+import { Input, Avatar, Dropdown, Space, Badge, Layout, Button, message } from 'antd';
 import { SearchOutlined, BellOutlined, DownOutlined, HeartOutlined, UserOutlined, LoginOutlined } from '@ant-design/icons';
-import { useAuthModal } from '@/modules/auth/AuthWrapper';
 import styles from './header-nav.module.scss';
 
-export default function HeaderNav() {
+interface HeaderComponentProps {
+    isLogin: boolean;
+    user: {
+        avatar?: string;
+        name?: string;
+    };
+    openLoginModal: () => void;
+    openRegisterModal: () => void;
+    logout: () => void;
+}
+
+export default function HeaderComponent(props: HeaderComponentProps) {
+    const { isLogin, user, openLoginModal, openRegisterModal, logout } = props;
+
     const [isScrolled, setIsScrolled] = useState(false);
     const [searchFocused, setSearchFocused] = useState(false);
     const [hasNotification, setHasNotification] = useState(true);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
-    
-    const authModal = useAuthModal();
-    
-    const { isAuthenticated, user, openLoginModal, openRegisterModal, handleLogout } = authModal;
 
     // 监听滚动事件，用于改变顶部导航栏样式
     useEffect(() => {
@@ -23,22 +31,9 @@ export default function HeaderNav() {
             setIsScrolled(window.scrollY > 20);
         };
         window.addEventListener('scroll', handleScroll);
-        // 初始化时也检查一下
         handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
-
-    // 监听键盘快捷键
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === '/' && !searchFocused) {
-                e.preventDefault();
-                document.getElementById('header-search')?.focus();
-            }
-        };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [searchFocused]);
 
     // 头像下拉菜单项
     const userMenuItems = [
@@ -54,7 +49,7 @@ export default function HeaderNav() {
             key: 'logout', 
             label: '退出登录', 
             danger: true,
-            onClick: handleLogout
+            onClick: logout
         },
     ];
 
@@ -65,7 +60,7 @@ export default function HeaderNav() {
     ];
 
     return (
-        <Layout.Header className={`${styles.headerContainer} ${isScrolled ? styles.scrolled : ''} theme: light`}>
+        <Layout.Header className={`${styles.headerContainer}`}>
             <div className={styles.headerInner}>
                 {/* 左侧区域: Logo + 站点切换 */}
                 <div className={styles.headerLeft}>
@@ -78,7 +73,7 @@ export default function HeaderNav() {
                             className={styles.logo} 
                         />
                     </Link>
-                    <Dropdown 
+                    {/* <Dropdown 
                         menu={{ items: siteMenuItems }}
                         placement="bottomLeft"
                     >
@@ -86,7 +81,7 @@ export default function HeaderNav() {
                             <span>博客</span>
                             <DownOutlined className={styles.arrowIcon} />
                         </div>
-                    </Dropdown>
+                    </Dropdown> */}
                 </div>
 
                 {/* 中部区域: 导航链接 */}
@@ -126,7 +121,7 @@ export default function HeaderNav() {
                     </div>
 
                     {/* 头像下拉菜单 */}
-                    {isAuthenticated ? (
+                    {isLogin ? (
                         <Dropdown 
                             menu={{ items: userMenuItems }} 
                             placement="bottomRight"
@@ -144,11 +139,11 @@ export default function HeaderNav() {
                                 type="link" 
                                 icon={<LoginOutlined />} 
                                 onClick={() => {
-                                    console.log('Login button clicked');
                                     if (openLoginModal) {
                                         openLoginModal();
                                     } else {
                                         console.error('openLoginModal is undefined');
+                                        message.error('登录窗口加载失败');
                                     }
                                 }}
                             >
@@ -157,11 +152,11 @@ export default function HeaderNav() {
                             <Button 
                                 type="link" 
                                 onClick={() => {
-                                    console.log('Register button clicked');
                                     if (openRegisterModal) {
                                         openRegisterModal();
                                     } else {
                                         console.error('openRegisterModal is undefined');
+                                        message.error('注册窗口加载失败');
                                     }
                                 }}
                             >

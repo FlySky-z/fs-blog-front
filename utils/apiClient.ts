@@ -5,7 +5,12 @@
 
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { API_BASE_URL } from '@/config/env';
-import authService from '@/modules/auth/authService';
+import { TokenManager } from '@/utils/tokenManager';
+
+// 扩展 InternalAxiosRequestConfig 类型，添加 _retry 属性
+interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 // 创建 axios 实例
 const axiosInstance = axios.create({
@@ -23,22 +28,24 @@ let requestInterceptor: ((config: InternalAxiosRequestConfig) => InternalAxiosRe
 // 请求拦截器
 axiosInstance.interceptors.request.use(
   (config) => {
-    // 应用自定义拦截器（如果存在）
+    // 打印出来当前的cookie
+    console.log('当前的 cookie:', document.cookie);
+    // 应用自定义拦截器
     if (requestInterceptor) {
       config = requestInterceptor(config);
     }
-    
-    // 可以在发送请求前做一些处理
-    // 例如：添加公共参数、处理请求数据等
+
+    // 自动添加 Access Token（通过 TokenManager）
+    if (TokenManager.hasValidToken()) {
+      config.headers['Authorization'] = `Bearer ${TokenManager.getAccessToken()}`;
+    }
+
     return config;
   },
   (error) => {
     return Promise.reject(error);
   }
 );
-
-// 原始请求存储
-const originalRequests = new Map();
 
 // 是否正在刷新 token
 let isRefreshing = false;
@@ -56,134 +63,138 @@ const onTokenRefreshed = (token: string) => {
   refreshSubscribers = [];
 };
 
+/**
+ * 独立的刷新授权函数，方便外部调用
+ * @returns Promise<string | null> 返回新的 access token 或 null
+ */
+const refreshAuthorization = async (): Promise<string | null> => {
+  try {
+    const refreshResponse = await axiosInstance.get('/api/auth/fresh');
+    
+    if (refreshResponse.status === 200 && refreshResponse.data?.code === 200) {
+      // 从响应头提取并保存新的 access token（通过 TokenManager）
+      const newToken = TokenManager.extractAndSaveTokenFromHeaders(refreshResponse.headers);
+      return newToken;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('刷新授权失败:', error);
+    return null;
+  }
+};
+
 // 响应拦截器
 axiosInstance.interceptors.response.use(
-  (response) => {
-    // 可以在获取响应数据前做一些处理
-    // 例如：统一处理某些业务逻辑、转换数据格式等
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
-    const status = error.response?.status;
-    
-    // 处理 401 未授权错误
-    if (status === 401 && !originalRequest._retry) {
-      // 如果是刷新 token 的请求失败，直接返回错误
-      if (originalRequest.url === '/auth/refresh') {
-        // 清除认证信息
-        if (typeof window !== 'undefined') {
-          console.warn('刷新 token 失败，清除认证信息');
-        }
-        return Promise.reject(error);
+  async (response) => {
+    // 如果响应头中有新的 access token，则保存
+    if (response.config.url === '/api/auth/login' || response.config.url === '/api/auth/fresh') {
+      TokenManager.extractAndSaveTokenFromHeaders(response.headers);
+    }
+
+    // 处理成功响应中的 401 code（未授权）
+    if (response.data?.code === 401) {
+      console.warn('响应数据中检测到 401 未授权，需要刷新 token');
+      
+      const originalConfig = response.config as ExtendedAxiosRequestConfig;
+      
+      // 如果是刷新 token 的请求失败，直接清除认证信息
+      if (originalConfig.url === '/api/auth/fresh') {
+        console.warn('刷新 token 请求返回 401，清除认证信息');
+        TokenManager.clearAllTokens();
+        return response;
       }
-      
-      // 标记请求已经尝试过重试
-      originalRequest._retry = true;
-      
+
+      // 如果已经重试过，不再重试
+      if (originalConfig._retry) {
+        TokenManager.clearAllTokens();
+        return response;
+      }
+
+      // 标记为已重试
+      originalConfig._retry = true;
+
       // 如果已经在刷新 token，则等待
       if (isRefreshing) {
         try {
-          // 添加到等待队列
-          const newToken = await new Promise<string>((resolve) => {
+          const newToken = await new Promise<string>((resolve, reject) => {
             subscribeTokenRefresh((token: string) => {
-              resolve(token);
+              if (token) {
+                resolve(token);
+              } else {
+                reject(new Error('Token 刷新失败'));
+              }
             });
           });
-          
-          // 更新 token 并重试请求
-          originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-          return axiosInstance(originalRequest);
+
+          // 更新 token 并重新发送请求
+          originalConfig.headers['Authorization'] = `Bearer ${newToken}`;
+          return axiosInstance(originalConfig);
         } catch (refreshError) {
-          return Promise.reject(refreshError);
+          TokenManager.clearAllTokens();
+          return response;
         }
       }
-      
+
       // 开始刷新 token
       isRefreshing = true;
-      
+
       try {
-        // 调用刷新 token 的方法
-        const refreshSuccess = await authService.refreshToken();
-        
-        if (refreshSuccess) {
-          const newToken = authService.getToken();
-          if (newToken) {
-            // 更新当前请求的 token
-            originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-            
-            // 通知所有等待的请求
-            onTokenRefreshed(newToken);
-            
-            // 重试原始请求
-            return axiosInstance(originalRequest);
-          }
+        const newToken = await refreshAuthorization();
+
+        if (newToken) {
+          // 更新当前请求的 token
+          originalConfig.headers['Authorization'] = `Bearer ${newToken}`;
+
+          // 通知所有等待的请求
+          onTokenRefreshed(newToken);
+
+          // 重新发送原始请求
+          return axiosInstance(originalConfig);
+        } else {
+          // 刷新失败，清除认证信息
+          console.warn('Token 刷新失败，需要重新登录');
+          TokenManager.clearAllTokens();
+          onTokenRefreshed('');
+          return response;
         }
-        
-        // 刷新失败，需要重新登录
-        console.warn('Token 已过期，请重新登录');
-        // 可以触发重定向到登录页或者显示登录模态框
-        // window.location.href = '/login';
-        
-        return Promise.reject(error);
       } catch (refreshError) {
         console.error('刷新 token 失败:', refreshError);
-        return Promise.reject(refreshError);
+        TokenManager.clearAllTokens();
+        onTokenRefreshed('');
+        return response;
       } finally {
         isRefreshing = false;
       }
     }
     
-    // 其他错误直接返回
-    return Promise.reject(error);
-  }
+    return response;
+  },
 );
 
 /**
  * 默认请求选项
  */
 interface RequestOptions extends Omit<AxiosRequestConfig, 'url' | 'baseURL'> {
-  token?: string;
 }
 
 /**
  * 发送 HTTP 请求
  * @param endpoint API 端点
  * @param options 请求选项
- * @returns Promise with response data
+ * @returns Promise with response
  */
 async function fetchApi<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const { token, ...axiosOptions } = options;
-  
-  // 构建请求头
-  const headers: Record<string, string> = {
-    ...(axiosOptions.headers as Record<string, string> || {}),
-  };
-
-  // 添加认证 token（如果提供）
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
   try {
     const response: AxiosResponse<T> = await axiosInstance({
       url: endpoint,
-      ...axiosOptions,
-      headers,
+      ...options,
     });
 
-    // 如果是登录请求，保存 token
-    if (endpoint.includes("/login") && response.status === 200) {
-      const token = response.headers['authorization'];
-      if (token) {
-        localStorage.setItem('token', token.split(' ')[1]);
-      }
-    }
-    
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<any>;
-    
+
     if (axiosError.response) {
       const errorData = axiosError.response.data;
       throw new Error(errorData?.message || `请求失败: ${axiosError.response.status}`);
@@ -191,7 +202,6 @@ async function fetchApi<T>(endpoint: string, options: RequestOptions = {}): Prom
       console.error('请求已发送但未收到响应');
       throw new Error('网络错误，未收到服务器响应');
     }
-    
     console.error(`API 请求失败 (${endpoint}):`, error);
     throw error;
   }
@@ -242,14 +252,15 @@ export const apiClient = {
       method: 'DELETE',
     });
   },
-  
+
   /**
    * 设置请求拦截器
    * @param interceptor 拦截器函数
    */
   setRequestInterceptor: (interceptor: (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig) => {
     requestInterceptor = interceptor;
-  },
+  }
 };
 
 export default apiClient;
+export { TokenManager, refreshAuthorization };

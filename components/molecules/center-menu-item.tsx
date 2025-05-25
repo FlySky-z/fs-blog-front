@@ -30,7 +30,6 @@ const MenuItem: React.FC<MenuItemProps> = ({
       href={href}
       onClick={(e) => {
         if (onClick) {
-          e.preventDefault();
           onClick();
         }
       }}

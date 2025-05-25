@@ -1,13 +1,12 @@
 'use client';
-import type { Metadata } from "next";
 import '@ant-design/v5-patch-for-react-19';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import "./globals.css";
 import { Content, Footer, Header } from "antd/es/layout/layout";
-import HeaderNav from "@/components/ui/header-nav";
+import HeaderNav from "@/modules/navigator/header";
 import { ConfigProvider, Layout, theme } from "antd";
-import AuthWrapper from "@/modules/auth/AuthWrapper";
-import { ModalProvider } from "@/modules/auth/ModalContext";
+import { ModalProvider } from "@/modules/auth/AuthModal";
+import { AuthInitializer } from "@/components/auth/AuthInitializer";
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 export default function RootLayout({
@@ -24,29 +23,31 @@ export default function RootLayout({
   return (
     <html lang="cn">
       <body>
-        <ConfigProvider
-          theme={{
-            algorithm: theme.defaultAlgorithm,
-          }}
-        >
-          <ModalProvider>
-            <AuthWrapper>
-              <Layout>
+        <AntdRegistry>
+          <ConfigProvider
+            theme={{
+              algorithm: theme.defaultAlgorithm,
+            }}
+          >
+            <ModalProvider>
+              <Layout style={{ minHeight: '101vh', display: 'flex', flexDirection: 'column' }}>
 
                 <HeaderNav />
-                <AntdRegistry>
-                  <Content style={{ paddingTop: 64 }}>
+
+                <Content style={{ paddingTop: 64, flex: '1 0 auto' }}>
+                  <AuthInitializer>
                     {children}
-                  </Content>
-                </AntdRegistry>
-                <Footer>
+                  </AuthInitializer>
+
+                </Content>
+                <Footer style={{ flexShrink: 0 }}>
 
                 </Footer>
-              </Layout>
 
-            </AuthWrapper>
-          </ModalProvider>
-        </ConfigProvider>
+              </Layout>
+            </ModalProvider>
+          </ConfigProvider>
+        </AntdRegistry>
       </body>
     </html>
   );

@@ -1,0 +1,45 @@
+// Converted from Tailwind CSS to SCSS
+
+.container {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+
+    .sidebar {
+        grid-column: span 12;
+        display: none;
+
+        @media (min-width: 768px) {
+            grid-column: span 3;
+            display: block;
+        }
+    }
+
+    .main {
+        grid-column: span 12;
+
+        // @media (min-width: 768px) {
+        //     grid-column: span 9;
+        // }
+        .cardWithMargin {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    .cardWithMargin {
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
+
+}

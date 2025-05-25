@@ -16,41 +16,16 @@ import useCreatorAnnouncements from '@/modules/creator/hooks/use-creator-announc
  */
 function CreatorCenterPageInner() {
   // 请求数据
-  const { loading: summaryLoading, weekData, monthData, totalData } = useCreatorSummary();
-  const { loading: applyLoading, applyStatus } = useCreatorApplyStatus();
-  const { loading: tasksLoading, ongoingTasks, newbieTasks } = useCreatorTasks();
+
   const { loading: articlesLoading, articles, pagination, ...articleActions } = useArticleManagement();
-  const { loading: announcementsLoading, announcements } = useCreatorAnnouncements();
 
   // 检查是否所有数据都在加载
-  const isLoading = summaryLoading && applyLoading && tasksLoading && articlesLoading && announcementsLoading;
+  const isLoading = articlesLoading;
 
-  if (isLoading) {
-    return <CreatorDashboardSkeleton />;
-  }
   // 检查是否有申请状态
 
   return (
     <CreatorLayout>
-      {/* 创作者头像卡片 */}
-      <CreatorHeaderCard
-        id="creator-id"
-        avatar="https://picsum.photos/200"
-        nickname="创作者"
-        level={2}
-        announcements={announcements || []}
-        style={{ marginBottom: '20px' }}
-      />
-      
-      {/* 数据概览卡片 */}
-      {weekData && monthData && totalData && (
-        <SummaryDataCard
-          weekData={weekData}
-          monthData={monthData}
-          totalData={totalData}
-          style={{ marginBottom: '20px' }}
-        />
-      )}
       
       {/* 文章管理卡片 */}
       <ArticleManagementCard
@@ -75,11 +50,5 @@ function CreatorCenterPage() {
     </Suspense>
   );
 }
-
-// 使用高阶组件为创作中心页面添加路由保护
-// export default withProtectedRoute(CreatorCenterPage, {
-//   redirectPath: '/', // 未登录时重定向到首页
-//   roles: ['creator'] // 只有有创作者角色的用户才能访问
-// });
 
 export default CreatorCenterPage;

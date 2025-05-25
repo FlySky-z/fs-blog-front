@@ -19,7 +19,9 @@ export interface RegisterResponse {
 }
 
 export interface LoginRequest {
-    username: string;
+    username?: string;
+    email?: string;
+    phone?: string;
     password: string;
 }
 
@@ -69,3 +71,9 @@ export interface CaptchaCheckResponse {
     msg: string;
     data: Record<string, unknown>;
 }
+
+export interface RefreshTokenResponse {
+    code: number;
+    msg: string;
+}
+

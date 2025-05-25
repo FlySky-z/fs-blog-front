@@ -2,6 +2,7 @@
 import React, { ReactNode, useEffect, useState, useRef } from 'react';
 import { Layout, Grid, Card } from 'antd';
 import { EditOutlined, FundProjectionScreenOutlined } from '@ant-design/icons';
+import Link from 'next/link';
 import styles from './feed-layout.module.scss';
 
 const { Content } = Layout;
@@ -93,7 +94,7 @@ const FeedLayout: React.FC<FeedLayoutProps> = ({
             }}
           >
             {/* 创建文章 */}
-            <a
+            <Link
               href="/create"
               style={{
                 display: 'flex',
@@ -106,9 +107,9 @@ const FeedLayout: React.FC<FeedLayoutProps> = ({
             >
               <EditOutlined />
               创建文章
-            </a>
+            </Link>
             {/* 进入创作中心 */}
-            <a
+            <Link
               href="/creatorCenter"
               style={{
                 display: 'flex',
@@ -121,7 +122,7 @@ const FeedLayout: React.FC<FeedLayoutProps> = ({
             >
               <FundProjectionScreenOutlined />
               创作中心
-            </a>
+            </Link>
           </Card>
         </div>
         <div className={styles.layout} style={{

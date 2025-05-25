@@ -37,7 +37,7 @@ export default forwardRef<HTMLDivElement, AIEditorProps>(function AIEditor(
         content: defaultValue,
         onChange: (ed) => {
           if (typeof onChange === "function") {
-            onChange(ed.getHtml());
+            onChange(ed.getMarkdown());
           }
         },
         ...options,
@@ -52,7 +52,6 @@ export default forwardRef<HTMLDivElement, AIEditorProps>(function AIEditor(
         aiEditorRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

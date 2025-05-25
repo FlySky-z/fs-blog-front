@@ -73,7 +73,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
       // 默认处理逻辑（当未提供外部处理函数时）
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // 模拟注册成功，切换到登录表单
+      // 
       handleSwitchToLogin();
       return true;
     } catch (error) {

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { message } from 'antd';
 import { ArticleContent } from '@/components/article/article-detail-card';
 import articleService from '@/modules/article/articleService';
+import { userService } from '@/modules/user/userService';
 
 // 文章详情接口定义
 interface ArticleDetail {
@@ -35,37 +36,38 @@ interface ArticleDetail {
 const fetchArticleDetail = async (id: string): Promise<ArticleDetail> => {
   try {
     // 使用articleService获取文章详情
-    const apiData = await articleService.getArticleDetail(id);
-    console.log('API数据:', apiData);
+    const articleData = await articleService.getArticleDetail(id);
+    const authorData = await userService.getUserInfoById(articleData.author_id);
+    console.log('API数据:', articleData);
     // 转换为前端需要的格式
     // 由于后端API数据结构可能与前端需要的不完全一致，这里进行一些转换和补充
     return {
       id,
-      title: apiData.title, // 由于后端API没有提供标题，这里临时模拟
+      title: articleData.header,
       author: {
-        id: apiData.author_id, // 后端API没有提供作者ID，这里临时模拟
-        username: apiData.author,
-        avatar: 'https://api.dicebear.com/7.x/miniavs/svg?seed=1', // 模拟头像
-        level: 3, // 模拟等级
-        bio: '作者简介', // 模拟简介
+        id: articleData.author_id,
+        username: authorData.username,
+        avatar: authorData.avatar_url,
+        level: 1, // 模拟等级
+        bio: authorData.abstract, // 模拟简介
         articleCount: 42, // 模拟文章数
         followerCount: 1024, // 模拟粉丝数
-        likeCount: apiData.likes // 模拟点赞数
+        likeCount: 110 // 模拟点赞数
       },
       // 将文章内容转换为前端组件需要的格式
       content: [
         {
           type: 'text',
-          content: apiData.article_detail || '无内容'
+          content: articleData.article_detail || '无内容'
         }
       ],
-      publishedAt: new Date(apiData.create_time).toISOString(), // 转换为ISO格式字符串
-      likeCount: 128, // 模拟数据
+      publishedAt: new Date(articleData.create_time).toISOString(), // 转换为ISO格式字符串
+      likeCount: articleData.like, // 模拟数据
       favoriteCount: 56, // 模拟数据
-      viewCount: 1234, // 模拟数据
+      viewCount: 1234,
       isLiked: false,
       isFavorited: false,
-      topics: apiData.tags.map((tag, index) => ({
+      topics: articleData.tags.map((tag, index) => ({
         id: `tag-${index}`,
         name: tag
       }))
@@ -99,7 +101,7 @@ export const useArticleDetail = (articleId: string) => {
   const getArticleDetail = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+    console.log("执行次数");
     try {
       const data = await fetchArticleDetail(articleId);
       setArticle(data);

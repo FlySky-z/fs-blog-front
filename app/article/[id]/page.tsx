@@ -14,11 +14,7 @@ import TopicTagList from '@/components/sidebar/topic-tag-list';
 import useArticleDetail from '@/modules/article/hooks/use-article-detail';
 import useComments from '@/modules/comment/hooks/use-comments';
 import useSidebarData from '@/modules/sidebar/hooks/use-sidebar-data';
-import { message } from 'antd';
 
-interface ArticleDetailPageProps {
-  id: string;
-}
 export default function ArticleDetailPage({
   params,
 }: {

@@ -1,0 +1,52 @@
+.announcementsContainer {
+  width: 100%;
+  
+  .breadcrumbNav {
+    margin-bottom: 1rem;
+  }
+  
+  .pageHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    
+    .headerIcon {
+      font-size: 24px;
+      margin-right: 8px;
+    }
+    
+    .headerTitle {
+      margin: 0;
+    }
+  }
+  
+  .announcementsList {
+    .announcementItem {
+      display: flex;
+      align-items: flex-start;
+      
+      .itemIcon {
+        font-size: 24px;
+        margin-right: 16px;
+        
+        &.new {
+          color: #1677ff;
+        }
+        
+        &.old {
+          color: #8c8c8c;
+        }
+      }
+      
+      .itemContent {
+        .itemText {
+          font-weight: bold;
+        }
+        
+        .itemDate {
+          color: rgba(0, 0, 0, 0.45);
+        }
+      }
+    }
+  }
+}

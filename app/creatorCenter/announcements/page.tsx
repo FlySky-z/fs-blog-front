@@ -5,6 +5,7 @@ import { BellOutlined, NotificationOutlined, HomeOutlined } from '@ant-design/ic
 import Link from 'next/link';
 import CreatorLayout from '@/components/templates/creator-layout';
 import useCreatorAnnouncements from '@/modules/creator/hooks/use-creator-announcements';
+import styles from './announcements.module.scss';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -52,6 +53,7 @@ export default function AnnouncementsPage() {
       <List
         itemLayout="vertical"
         dataSource={extendedAnnouncements}
+        className={styles.announcementsList}
         renderItem={(item, index) => (
           <List.Item
             key={item.id}
@@ -59,20 +61,16 @@ export default function AnnouncementsPage() {
               index < 3 && <Tag color="red">NEW</Tag>
             }
           >
-            <div className="flex items-start">
+            <div className={styles.announcementItem}>
               <NotificationOutlined 
-                style={{ 
-                  fontSize: '24px', 
-                  marginRight: '16px',
-                  color: index < 3 ? '#1677ff' : '#8c8c8c'
-                }} 
+                className={`${styles.itemIcon} ${index < 3 ? styles.new : styles.old}`}
               />
               
-              <div>
+              <div className={styles.itemContent}>
                 <Paragraph>
-                  <Text strong>{item.content}</Text>
+                  <Text className={styles.itemText}>{item.content}</Text>
                 </Paragraph>
-                <Text type="secondary">{item.date}</Text>
+                <Text className={styles.itemDate}>{item.date}</Text>
               </div>
             </div>
           </List.Item>
@@ -83,21 +81,11 @@ export default function AnnouncementsPage() {
   
   return (
     <CreatorLayout>
-      <Card className="w-full">
-        <Breadcrumb className="mb-4">
-          <Breadcrumb.Item>
-            <Link href="/creatorCenter">
-              <HomeOutlined /> 创作中心
-            </Link>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item>
-            <BellOutlined /> 创作公告
-          </Breadcrumb.Item>
-        </Breadcrumb>
+      <Card className={styles.announcementsContainer}>
         
-        <div className="flex items-center mb-4">
-          <BellOutlined style={{ fontSize: '24px', marginRight: '8px' }} />
-          <Title level={4} style={{ margin: 0 }}>创作公告</Title>
+        <div className={styles.pageHeader}>
+          <BellOutlined className={styles.headerIcon} />
+          <Title level={4} className={styles.headerTitle}>创作公告</Title>
         </div>
         
         {renderContent()}

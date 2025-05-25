@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { Card, Skeleton } from 'antd';
+import styles from './creator-skeleton.module.scss';
 
 interface SkeletonLoadingProps {
   rows?: number;
@@ -17,12 +18,12 @@ export const SkeletonLoading: React.FC<SkeletonLoadingProps> = ({
   title = true
 }) => {
   return (
-    <Card className="w-full mb-4">
+    <Card className={styles.cardWithMargin}>
       <Skeleton 
         active 
         avatar={avatar} 
         title={title}
-        paragraph={{ rows }} 
+        paragraph={{ rows }}
       />
     </Card>
   );
@@ -33,18 +34,18 @@ export const SkeletonLoading: React.FC<SkeletonLoadingProps> = ({
  */
 export const CreatorDashboardSkeleton: React.FC = () => {
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="grid grid-cols-12 gap-6">
+    <div className={styles.container}>
+      <div className={styles.grid}>
         {/* 侧边栏骨架屏 */}
-        <div className="col-span-12 md:col-span-3 hidden md:block">
-          <Card className="w-full">
+        {/* <div className={styles.sidebar}>
+          <Card className={styles.card}>
             <Skeleton active paragraph={{ rows: 6 }} />
           </Card>
-        </div>
+        </div> */}
         
         {/* 主内容区骨架屏 */}
-        <div className="col-span-12 md:col-span-9">
-          <SkeletonLoading avatar rows={2} />
+        <div className={styles.main}>
+          <SkeletonLoading avatar rows={2}/>
           <SkeletonLoading rows={3} />
           <SkeletonLoading rows={4} />
           <SkeletonLoading rows={6} />

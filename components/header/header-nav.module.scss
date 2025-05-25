@@ -7,18 +7,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px !important;
-  background-color: var(--ant-component-background) !important;
-  backdrop-filter: blur(16px);
+  // padding: 0 24px !important;
+  background-color: var(--ant-background-color-base) !important;
+  // backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--ant-border-color-split);
-  box-shadow: 0 1px 3px var(--ant-shadow-color);
   transition: all 0.3s;
   height: 64px;
   line-height: 64px;
-
-  &.scrolled {
-    box-shadow: 0 2px 8px var(--ant-shadow-color);
-  }
 }
 
 .headerInner {
@@ -37,9 +32,6 @@
 }
 
 .logo {
-  height: 32px;
-  width: auto;
-  cursor: pointer;
   margin-right: 12px;
 }
 

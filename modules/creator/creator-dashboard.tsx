@@ -13,6 +13,7 @@ import useCreatorApplyStatus from './hooks/use-creator-apply-status';
 import useCreatorTasks from './hooks/use-creator-tasks';
 import useArticleManagement from './hooks/use-article-management';
 import useCreatorAnnouncements from './hooks/use-creator-announcements';
+import RocketToTop from '@/components/header/rocket';
 
 const { useBreakpoint } = Grid;
 
@@ -210,18 +211,7 @@ export const CreatorDashboard: React.FC = () => {
       </div>
 
       {/* 回到顶部按钮 */}
-      {showScrollTop && (
-        <FloatButton
-          icon={<UpOutlined />}
-          type="primary"
-          onClick={handleScrollToTop}
-          style={{
-            position: 'fixed',
-            right: 24,
-            bottom: 24,
-          }}
-        />
-      )}
+      <RocketToTop />
     </div>
   );
 };

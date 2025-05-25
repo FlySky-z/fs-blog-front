@@ -53,20 +53,6 @@ const CreatorSidebarMenu: React.FC<CreatorSidebarMenuProps> = ({
       text: '数据中心', 
       icon: <BarChartOutlined />,
       href: `/creatorCenter/data`,
-      subItems: [
-        {
-          key: 'overview',
-          text: '综合数据',
-          icon: <BarChartOutlined />,
-          href: `/creatorCenter/data/overview`
-        },
-        {
-          key: 'fans',
-          text: '粉丝分析',
-          icon: <BarChartOutlined />,
-          href: `/creatorCenter/data/fans`
-        }
-      ]
     },
     { 
       key: 'articles', 
@@ -74,27 +60,6 @@ const CreatorSidebarMenu: React.FC<CreatorSidebarMenuProps> = ({
       icon: <FileTextOutlined />,
       href: `/creatorCenter/articles`,
       notification: notificationCounts.articles,
-      subItems: [
-        {
-          key: 'new',
-          text: '新增文章',
-          icon: <EditOutlined />,
-          href: `/create`
-        },
-        {
-          key: 'manage',
-          text: '管理文章',
-          icon: <FileTextOutlined />,
-          href: `/creatorCenter/articles/manage`
-        },
-        {
-          key: 'drafts',
-          text: '草稿箱',
-          icon: <InboxOutlined />,
-          href: `/creatorCenter/articles/drafts`,
-          notification: notificationCounts.drafts
-        }
-      ]
     },
     { 
       key: 'announcements', 

@@ -14,7 +14,7 @@ interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
 
 // 创建 axios 实例
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  // baseURL: API_BASE_URL,
   timeout: 10000, // 10 秒超时
   headers: {
     'Content-Type': 'application/json',

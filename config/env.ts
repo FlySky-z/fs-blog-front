@@ -7,7 +7,6 @@
  * API基础URL
  * 开发环境: http://localhost:3000/api
  * 生产环境: http://你的公网IP:8000/api
- * 注意：我们现在使用Next.js的API路由来代理请求，避免CORS问题
  */
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
 

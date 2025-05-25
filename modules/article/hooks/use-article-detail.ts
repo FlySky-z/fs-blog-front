@@ -37,7 +37,7 @@ const fetchArticleDetail = async (id: string): Promise<ArticleDetail> => {
   try {
     // 使用articleService获取文章详情
     const articleData = await articleService.getArticleDetail(id);
-    const authorData = await userService.getUserInfoById(articleData.author_id);
+    // const authorData = await userService.getUserInfoById(articleData.author_id);
     console.log('API数据:', articleData);
     // 转换为前端需要的格式
     // 由于后端API数据结构可能与前端需要的不完全一致，这里进行一些转换和补充
@@ -46,10 +46,10 @@ const fetchArticleDetail = async (id: string): Promise<ArticleDetail> => {
       title: articleData.header,
       author: {
         id: articleData.author_id,
-        username: authorData.username,
-        avatar: authorData.avatar_url,
+        username: articleData.author,
+        // avatar: authorData.avatar_url,
         level: 1, // 模拟等级
-        bio: authorData.abstract, // 模拟简介
+        // bio: authorData.abstract,
         articleCount: 42, // 模拟文章数
         followerCount: 1024, // 模拟粉丝数
         likeCount: 110 // 模拟点赞数
@@ -101,7 +101,6 @@ export const useArticleDetail = (articleId: string) => {
   const getArticleDetail = useCallback(async () => {
     setLoading(true);
     setError(null);
-    console.log("执行次数");
     try {
       const data = await fetchArticleDetail(articleId);
       setArticle(data);

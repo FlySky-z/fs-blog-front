@@ -12,16 +12,31 @@ interface HomeFeedProps {
   title?: string;
   initialPosts?: Post[];
   pageSize?: number;
+  keyword?: string;
+  orderBy?: 'time' | 'hot';
+  sortOrder?: 'asc' | 'desc';
+  tag?: string;
+  userId?: string;
 }
 
 const HomeFeed: React.FC<HomeFeedProps> = ({
   title = '最新文章',
   initialPosts,
-  pageSize = 10
+  pageSize = 10,
+  keyword,
+  orderBy,
+  sortOrder,
+  tag,
+  userId
 }) => {
   const { posts, loading, hasMore, error, loadMore, refresh } = useInfiniteArticle({
     initialPosts,
-    pageSize
+    pageSize,
+    keyword,
+    orderBy,
+    sortOrder,
+    tag,
+    userId
   });
   
   // 手动刷新文章列表
@@ -29,6 +44,13 @@ const HomeFeed: React.FC<HomeFeedProps> = ({
     // 使用 refresh 方法重新加载文章，而不是刷新整个页面
     refresh();
   }, [refresh]);
+
+  // keyword 变化时自动刷新
+  useEffect(() => {
+    if (keyword) {
+      refresh();
+    }
+  }, [keyword, refresh]);
   
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useCallback((node: HTMLDivElement | null) => {

@@ -1,0 +1,47 @@
+/* filepath: /Volumes/FlyskyDisk/project/miniProject/blog_front/mblog/app/(public)/search/page.module.scss */
+.searchHeader {
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.searchContainer {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.searchButton {
+  cursor: pointer;
+  color: #1677ff;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.emptySearchContainer {
+  padding: 64px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.searchResultHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.searchResultCount {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .searchHeader {
+    padding: 0 12px;
+  }
+}

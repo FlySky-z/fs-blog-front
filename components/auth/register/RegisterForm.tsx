@@ -6,6 +6,7 @@ import SliderVerify from '../SliderVerify';
 import styles from './register-form.module.scss';
 import { authService } from '@/modules/auth/authService';
 import { RegisterRequest } from '@/modules/auth/authModel';
+import { hashPassword } from '@/utils/passwordUtils';
 
 interface RegisterFormProps {
   onRegister: (values: RegisterRequest) => Promise<boolean>;
@@ -26,6 +27,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   const [captchaPosition, setCaptchaPosition] = useState<number>(0);
   const [usernameVerified, setUsernameVerified] = useState(false);
   const [phoneVerified, setPhoneVerified] = useState(false);
+  const [isHashingPassword, setIsHashingPassword] = useState(false);
 
   // 用户名检查
   const checkUsername = useCallback(async (username: string) => {
@@ -44,7 +46,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       return false;
     }
   }, []);
-  
+
   // 手机号检查（通常只需要验证格式，这里假设服务端也可以验证手机号是否已注册）
   const checkPhone = useCallback(async (phone: string) => {
     try {
@@ -62,12 +64,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
   const handleSubmit = async (values: any) => {
     // 检查是否已验证用户名/手机号
-    if ((regMethod === 'username' && !usernameVerified) || 
-        (regMethod === 'phone' && !phoneVerified)) {
+    if ((regMethod === 'username' && !usernameVerified) ||
+      (regMethod === 'phone' && !phoneVerified)) {
       message.error(`请先验证${regMethod === 'username' ? '用户名' : '手机号'}`);
       return;
     }
-    
+
     if (!verified) {
       message.error('请先完成滑块验证');
       return;
@@ -79,11 +81,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     }
 
     try {
+      // 设置哈希处理中状态
+      setIsHashingPassword(true);
+
+      // 在发送前对密码进行哈希处理
+      const hashedPassword = await hashPassword(values.password);
+
       // 构建注册请求参数
       const registerData: RegisterRequest = {
         username: values.username,
-        password: values.password,
-        email: values.email,
+        password: hashedPassword,
+        email: values.email,  
         phone: values.phone,
         captcha_id: captchaId,
         captcha_code: Math.round(captchaPosition)
@@ -106,6 +114,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     } catch (error) {
       console.error('注册表单提交错误:', error);
       messageApi.error('注册失败，请稍后重试');
+    } finally {
+      // 无论成功还是失败，都重置哈希处理状态
+      setIsHashingPassword(false);
     }
   };
 
@@ -122,7 +133,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     setVerified(false);
     setCaptchaId('');
     setCaptchaPosition(0);
-    
+
     // 重置验证方式特定的状态
     if (regMethod === 'username') {
       setPhoneVerified(false);
@@ -131,13 +142,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       setUsernameVerified(false);
       // 不重置手机验证状态，保留之前的验证结果
     }
-    
+
     // 清空表单中与另一种注册方式相关的字段
     const currentFields = form.getFieldsValue();
-    const fieldsToReset = regMethod === 'username' 
-      ? ['phone', 'verificationCode'] 
+    const fieldsToReset = regMethod === 'username'
+      ? ['phone', 'verificationCode']
       : ['username'];
-    
+
     fieldsToReset.forEach(field => {
       if (currentFields[field]) {
         // 只重置另一种注册方式的字段
@@ -187,10 +198,33 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         name="password"
         rules={[
           { required: true, message: '请输入密码' },
-          { min: 6, message: '密码长度至少为6位' },
+          { min: 6, message: '• 密码长度至少为6位' },
           {
-            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/,
-            message: '密码需包含大小写字母和数字'
+            validator: (_, value) => {
+              if (!value) return Promise.resolve();
+              if (/[A-Z]/.test(value)) {
+                return Promise.resolve();
+              }
+              return Promise.reject('• 密码必须包含至少一个大写字母');
+            }
+          },
+          {
+            validator: (_, value) => {
+              if (!value) return Promise.resolve();
+              if (/\d/.test(value)) {
+                return Promise.resolve();
+              }
+              return Promise.reject('• 密码必须包含至少一个数字');
+            }
+          },
+          {
+            validator: (_, value) => {
+              if (!value) return Promise.resolve();
+              if (/[a-z]/.test(value)) {
+                return Promise.resolve();
+              }
+              return Promise.reject('• 密码必须包含至少一个小写字母');
+            }
           }
         ]}
         hasFeedback
@@ -228,7 +262,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       </Form.Item>
 
       {renderCommonFormItems()}
-    </Form>
+    </Form >
   );
 
   const renderPhoneRegisterForm = () => (
@@ -289,7 +323,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   const renderCommonFormItems = () => (
     <>
       {/* 仅当用户名或手机号验证通过时，才显示滑块验证 */}
-      {((regMethod === 'username' && usernameVerified) || 
+      {((regMethod === 'username' && usernameVerified) ||
         (regMethod === 'phone' && phoneVerified)) ? (
         <Form.Item>
           <SliderVerify
@@ -328,7 +362,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           type="primary"
           htmlType="submit"
           className={styles.submitButton}
-          loading={loading}
+          loading={loading || isHashingPassword}
           size="large"
           block
         >

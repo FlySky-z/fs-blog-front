@@ -1,9 +1,10 @@
 'use client';
 import React, { useState } from 'react';
 import { Form, Input, Button, Divider, Tabs, message } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, MobileOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MobileOutlined, WechatOutlined, QqOutlined, GithubOutlined } from '@ant-design/icons';
 import SliderVerify from '../SliderVerify';
 import styles from './login-form.module.scss';
+import { hashPassword } from '@/utils/passwordUtils';
 
 interface LoginFormProps {
   onLogin: (values: any) => Promise<boolean>;
@@ -21,6 +22,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [needVerify, setNeedVerify] = useState(false);
   const [verified, setVerified] = useState(false);
+  const [isHashingPassword, setIsHashingPassword] = useState(false);
 
   const handleSubmit = async (values: any) => {
     if (needVerify && !verified) {
@@ -29,8 +31,15 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
 
     try {
+      // 设置哈希处理中状态
+      setIsHashingPassword(true);
+      
+      // 在发送前对密码进行哈希处理
+      const hashedPassword = await hashPassword(values.password);
+      
       const success = await onLogin({
         ...values,
+        password: hashedPassword,
         loginMethod
       });
 
@@ -52,6 +61,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
       }
     } catch (error) {
       console.error('登录表单提交错误:', error);
+    } finally {
+      // 无论成功还是失败，都重置哈希处理状态
+      setIsHashingPassword(false);
     }
   };
 
@@ -70,12 +82,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
       <Form.Item
         name="username"
         rules={[
-          { required: true, message: '请输入用户名地址' },
-          { type: 'string', message: '请输入有效的用户名地址' }
+          { required: true, message: '请输入用户名' },
+          { type: 'string', message: '请输入有效的用户名' }
         ]}
       >
         <Input
-          prefix={<MailOutlined />}
+          prefix={<UserOutlined />}
           placeholder="用户名"
           size="large"
           autoComplete="username"
@@ -155,7 +167,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           type="primary"
           htmlType="submit"
           className={styles.submitButton}
-          loading={loading}
+          loading={loading || isHashingPassword}
           size="large"
           block
         >
@@ -198,9 +210,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
       </Divider>
 
       <div className={styles.socialLogin}>
-        <Button shape="circle" icon={<span className={styles.socialIcon}>微</span>} size="large" />
-        <Button shape="circle" icon={<span className={styles.socialIcon}>QQ</span>} size="large" />
-        <Button shape="circle" icon={<span className={styles.socialIcon}>钉</span>} size="large" />
+        <Button shape="circle" icon={<WechatOutlined />} size="large" />
+        <Button shape="circle" icon={<QqOutlined />} size="large" />
+        <Button shape="circle" icon={<GithubOutlined />} size="large" />
       </div>
     </div>
   );

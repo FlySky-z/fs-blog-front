@@ -7,12 +7,7 @@ import PromoBanner from '@/components/sidebar/promo-banner';
 import WelcomeCard from '@/components/sidebar/welcome-card';
 import { useAuthModal } from '@/modules/auth/AuthModal';
 
-interface HomeSidebarProps {
-  isLoggedIn?: boolean;
-}
-
-const HomeSidebar: React.FC<HomeSidebarProps> = ({
-  isLoggedIn = false
+const HomeSidebar: React.FC = ({
 }) => {
   const { openLoginModal } = useAuthModal();
   // 模拟数据

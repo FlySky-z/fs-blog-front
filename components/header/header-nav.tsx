@@ -20,6 +20,7 @@ interface HeaderComponentProps {
     };
     openLoginModal: () => void;
     openRegisterModal: () => void;
+    handleSearch: (keyword: string) => void;
     logout: () => void;
 }
 
@@ -51,7 +52,6 @@ export default function HeaderComponent(props: HeaderComponentProps) {
         return () => window.removeEventListener('resize', checkScreenSize);
     }, []);
 
-    // 变量声明顺序修正，将Menu相关JSX定义放到所有items变量声明之后
     const userMenuItems = [
         {
             key: 'profile',
@@ -144,7 +144,7 @@ export default function HeaderComponent(props: HeaderComponentProps) {
                     {/* Right Section */}
                     <Col flex="none">
                         <Space>
-                            <SearchBox isMobile={isMobile} />
+                            <SearchBox isMobile={isMobile} handleSearch={props.handleSearch} />
                             <NotificationButton hasNotification={hasNotification} onClick={() => setHasNotification(!hasNotification)} />
                             {toggleTheme && (
                                 <ThemeToggle currentTheme={currentTheme} toggleTheme={toggleTheme} />

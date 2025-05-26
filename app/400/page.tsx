@@ -22,11 +22,7 @@ export default function ForbiddenPage() {
                     <Link href="/" key="back-home">
                         <Button type="primary">返回首页</Button>
                     </Link>,
-                    <Link href="/accountCenter" key="account-center">
-                        <Button onClick={() => {
-                            openLoginModal
-                        }}>登录</Button>
-                    </Link>,
+                    <Button onClick={openLoginModal}>登录</Button>
                 ]}
             />
         </div>

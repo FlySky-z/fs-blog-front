@@ -1,6 +1,5 @@
 import { Menu, Button, Dropdown, Space, MenuProps } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/navigation';
 
 interface NavMenuProps {
   isMobile: boolean;
@@ -9,7 +8,6 @@ interface NavMenuProps {
 }
 
 export default function NavMenu({ isMobile, isTablet, navMenu }: NavMenuProps) {
-  const router = useRouter();
   return (
     <Space>
       {(isMobile || isTablet) ? (

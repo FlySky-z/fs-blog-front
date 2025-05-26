@@ -4,6 +4,7 @@ import { List, Typography, Image, Space } from 'antd';
 import Link from 'next/link';
 import SidebarCard from '@/components/sidebar/sidebar-card';
 import styles from './official-news.module.css';
+import ImageCard from '../atoms/image-card';
 
 const { Text, Title } = Typography;
 
@@ -42,11 +43,10 @@ const OfficialNews: React.FC<OfficialNewsProps> = ({
             <Link href={newsItems[0].url} className={styles.featuredLink}>
               {newsItems[0].coverImage && (
                 <div className={styles.imageContainer}>
-                  <Image
-                    src={newsItems[0].coverImage}
-                    alt={newsItems[0].title}
-                    preview={false}
-                    className={styles.featuredImage}
+                  <ImageCard
+                    image_url={newsItems[0].coverImage}
+                    ratio={16 / 9}
+                    style={{ width: '100%', height: '100%' }}
                   />
                 </div>
               )}
@@ -59,7 +59,7 @@ const OfficialNews: React.FC<OfficialNewsProps> = ({
             </Link>
           </div>
 
-          {/* 其他新闻列表 */}
+          {/* 其余不显示图片 */}
           <List
             className={styles.newsList}
             dataSource={newsItems.slice(1)}

@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <main>
       <FeedLayout
-        main={<HomeFeed title="推荐内容" />}
+        main={<HomeFeed title="最新内容" />}
         sidebar={<HomeSidebar/>}
       />
       <RocketToTop />

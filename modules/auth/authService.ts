@@ -26,30 +26,23 @@ class AuthService {
      * @returns 登录响应
      */
     async login(params: LoginRequest): Promise<LoginResponse> {
-        try {
-            if (!params.username && !params.email && !params.phone) {
-                throw new Error('用户名、邮箱或手机号不能为空');
-            }
-
-            const loginRequest: LoginRequest = {
-                username: params.username || params.email || params.phone || '',
-                password: params.password
-            };
-
-            // 发送登录请求
-            const apiResponse = await apiClient.post<LoginResponse>('/api/auth/login', loginRequest);
-
-            if (apiResponse.code !== 200 || !apiResponse.data?.id) {
-                throw new Error(apiResponse.msg || '登录失败');
-            }
-
-            useUserStore.getState().login(apiResponse.data.id);
-
-            return apiResponse;
-        } catch (error) {
-            console.error('Login failed:', error);
-            throw error;
+        if (!params.username && !params.email && !params.phone) {
+            throw new Error('用户名、邮箱或手机号不能为空');
         }
+
+        const loginRequest: LoginRequest = {
+            username: params.username || params.email || params.phone || '',
+            password: params.password
+        };
+
+        // 发送登录请求
+        const apiResponse = await apiClient.post<LoginResponse>('/api/auth/login', loginRequest);
+
+        if (apiResponse.code !== 200 || !apiResponse.data?.id) {
+            throw new Error(apiResponse.msg || '登录失败');
+        }
+
+        return apiResponse;
     }
 
     /**

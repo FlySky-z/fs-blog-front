@@ -1,5 +1,4 @@
 import React from 'react';
-import { Skeleton } from 'antd';
 import Image from "next/image";
 
 interface ImageCardProps {
@@ -27,10 +26,13 @@ const ImageCard: React.FC<ImageCardProps> = ({
             <Image
                 src={image_url}
                 alt="Image Card"
-                layout="fill"
-                objectFit="cover"
+                fill
+                style={{
+                    objectFit: 'cover',
+                }}
                 placeholder="blur"
                 blurDataURL='...'
+                sizes='100%'
             />
         </div>
     );

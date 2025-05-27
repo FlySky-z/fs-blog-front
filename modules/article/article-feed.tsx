@@ -1,16 +1,18 @@
 'use client';
 import React, { useRef, useCallback, useEffect } from 'react';
 import { Spin, Empty, Typography, Button, Tooltip } from 'antd';
-import { useInfiniteArticle, Post } from '@/modules/article/hooks/use-infinite-article';
-import AritcleCard from '@/components/article/article-card';
-import styles from './article-feed.module.css';
+import { useInfiniteArticle } from '@/modules/article/hooks/use-infinite-article';
+import AritcleCard, { PostCardProps } from '@/components/article/article-card';
+import styles from './article-feed.module.scss';
 import { ReloadOutlined, SyncOutlined } from '@ant-design/icons';
+import QuickHeader from '@/components/creator/quick-header';
+import { ArticleListItem } from './articleModel';
+
 
 const { Title } = Typography;
 
-interface HomeFeedProps {
+interface ArticleFeedProps {
   title?: string;
-  initialPosts?: Post[];
   pageSize?: number;
   keyword?: string;
   orderBy?: 'time' | 'hot';
@@ -19,59 +21,95 @@ interface HomeFeedProps {
   userId?: string;
 }
 
-const HomeFeed: React.FC<HomeFeedProps> = ({
+/**
+ * 将后端文章数据转换为文章卡片需要的格式
+ */
+const mapArticleToCardProps = (article: ArticleListItem): PostCardProps => {
+  return {
+    id: article.id,
+    title: article.header,
+    description: article.abstract,
+    coverImage: article.cover_image,
+    showAuthor: true,
+    author: {
+      id: article.author_id,
+      username: article.author,
+    },
+    publishedAt: new Date(article.create_time).toISOString(),
+    viewCount: article.view,
+    likeCount: article.like,
+    commentCount: article.comment,
+    tags: article.tags.map((tag, index) => ({
+      id: `${article.id}-tag-${index}`,
+      name: tag
+    }))
+  };
+};
+
+/**
+ * 文章列表组件，支持无限滚动加载
+ */
+const ArticleFeed: React.FC<ArticleFeedProps> = ({
   title = '最新文章',
-  initialPosts,
   pageSize = 10,
-  keyword,
   orderBy,
   sortOrder,
   tag,
-  userId
+  userId,
+  keyword
 }) => {
-  const { posts, loading, hasMore, error, loadMore, refresh } = useInfiniteArticle({
-    initialPosts,
-    pageSize,
-    keyword,
+  // 获取文章数据
+  const { articles, loading, hasMore, error, loadMore, refresh } = useInfiniteArticle({
+    pageSize: 1,
     orderBy,
     sortOrder,
     tag,
-    userId
+    userId,
+    keyword
   });
-  
+
   // 手动刷新文章列表
   const handleRefresh = useCallback(() => {
-    // 使用 refresh 方法重新加载文章，而不是刷新整个页面
     refresh();
   }, [refresh]);
 
-  // keyword 变化时自动刷新
-  useEffect(() => {
-    if (keyword) {
-      refresh();
-    }
-  }, [keyword, refresh]);
-  
+  // 使用 Intersection Observer 实现无限滚动
   const observerRef = useRef<IntersectionObserver | null>(null);
   const loadMoreRef = useCallback((node: HTMLDivElement | null) => {
-    if (loading || error) return; // 如果正在加载或有错误，不设置观察者
-    
+    if (loading || error || !hasMore) {
+      if (observerRef.current && !hasMore) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+      return;
+    }
+
+    // 清除之前的观察者
     if (observerRef.current) {
       observerRef.current.disconnect();
     }
-    
+
+    // 创建新的观察者
     observerRef.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore) {
         loadMore();
       }
     }, { threshold: 0.1 });
-    
+
+    // 开始观察
     if (node) {
       observerRef.current.observe(node);
     }
   }, [loading, hasMore, loadMore, error]);
+  // 监听 hasMore 变化，当没有更多数据时断开观察者
+  useEffect(() => {
+    if (!hasMore && observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+  }, [hasMore]);
 
-  // 清理observer
+  // 组件卸载时清理观察者
   useEffect(() => {
     return () => {
       if (observerRef.current) {
@@ -82,36 +120,41 @@ const HomeFeed: React.FC<HomeFeedProps> = ({
 
   return (
     <div className={styles.homeFeed}>
+      {/* 快速导航头部 */}
+      <QuickHeader />
+
+      {/* 标题和刷新按钮 */}
       {title && (
         <div className={styles.titleContainer}>
           <Title level={4} className={styles.titleText}>{title}</Title>
           <Tooltip title="刷新">
-            <SyncOutlined 
-              className={styles.refreshIcon} 
+            <SyncOutlined
+              className={styles.refreshIcon}
               onClick={handleRefresh}
               spin={loading}
             />
           </Tooltip>
         </div>
       )}
-      
-      <div className={styles.posts}>
-        {posts.map(post => (
-          <AritcleCard key={post.id} {...post} />
+
+      {/* 文章列表 */}
+      <div className={styles.articles}>
+        {articles.map(article => (
+          <AritcleCard key={article.id} {...mapArticleToCardProps(article)} />
         ))}
-        
-        {posts.length === 0 && !loading && (
-          <Empty 
-            description="暂无文章" 
+
+        {articles.length === 0 && !loading && (
+          <Empty
+            description="暂无文章"
             className={styles.empty}
           />
         )}
       </div>
-      
-      {/* 加载更多触发点 */}
+
+      {/* 更多 */}
       <div ref={loadMoreRef} className={styles.loadingTrigger}>
         {loading && <Spin size="large" className={styles.loadingSpinner} />}
-        {!hasMore && posts.length > 0 && (
+        {!hasMore && articles.length > 0 && (
           <div className={styles.noMore}>没有更多文章了</div>
         )}
         {error && (
@@ -133,4 +176,4 @@ const HomeFeed: React.FC<HomeFeedProps> = ({
   );
 };
 
-export default HomeFeed;
+export default ArticleFeed;

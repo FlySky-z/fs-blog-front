@@ -30,6 +30,7 @@ axiosInstance.interceptors.request.use(
   (config) => {
     // 打印出来当前的cookie
     console.log('当前的 cookie:', document.cookie);
+    console.trace("当前请求: ", config.url);
     // 应用自定义拦截器
     if (requestInterceptor) {
       config = requestInterceptor(config);

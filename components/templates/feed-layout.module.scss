@@ -14,25 +14,10 @@
 
 .sidebar {
   position: sticky;
-  top: calc(max(88px, 33.33vh));
-  height: fit-content;
   max-width: 320px;
+  bottom: 0%;
   width: 100%;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  /* 增加平滑滚动效果 */
-  scroll-behavior: smooth;
-  /* 添加滚动条样式 */
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-  }
+  height: fit-content;
 }
 
 .mobileSidebar {

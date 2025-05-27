@@ -3,8 +3,6 @@ import {
   ArticleListItem,
   ArticleListParams, ArticleListResponse,
   ArticleDetailResponse,
-  ArticleDetail,
-  ArticleContent,
   createArticleRequest,
   createArticleResponse,
 } from './articleModel';
@@ -25,19 +23,15 @@ class ArticleService {
   /**
    * 获取文章列表
    * @param params 查询参数
-   * @param retryCount 当前重试次数
-   * @param maxRetries 最大重试次数
    */
   async getArticleList(params: ArticleListParams): Promise<ArticleListItem[]> {
-    try {
       // 构建查询参数
       const queryParams = new URLSearchParams();
-      queryParams.append('page', params.page.toString());
-
-      if (params.limit) queryParams.append('limit', params.limit.toString());
+      queryParams.append('page', (params.page ?? 1).toString()); // 默认第1页
+      queryParams.append('limit', (params.limit ?? 10).toString()); // 默认每页10条数据
+      queryParams.append('order_by', params.order_by || 'time'); // 默认按时间排序
+      queryParams.append('sort_order', params.sort_order || 'desc'); // 默认降序
       if (params.tag) queryParams.append('tag', params.tag);
-      if (params.order_by) queryParams.append('order_by', params.order_by);
-      if (params.sort_order) queryParams.append('sort_order', params.sort_order);
       if (params.keyword) queryParams.append('keyword', params.keyword);
       if (params.user_id) queryParams.append('user_id', params.user_id);
 
@@ -50,9 +44,6 @@ class ArticleService {
       }
 
       throw new Error(response.msg || '获取文章列表失败');
-    } catch (error) {
-      throw error;
-    }
   }
 
   /**
@@ -73,53 +64,18 @@ class ArticleService {
       throw error;
     }
   }
-
+  
   /**
-   * 将后端返回的文章详情转换为前端使用的格式
-   * @param id 文章ID
-   * @param data 后端返回的文章详情
+   * 创建文章
+   * @param createRequest 创建文章请求参数
    */
-  convertArticleDetail(id: string, data: ArticleDetailResponse['data']): ArticleDetail {
-    // 这里需要根据实际情况解析后端返回的文章内容
-    // 例如，将Markdown或HTML内容解析为ArticleContent[]
+  async createArticle(createRequest: createArticleRequest): Promise<createArticleResponse> {
+      const response = await apiClient.post<createArticleResponse>('/api/blog_m/create', createRequest)
 
-    // 简单示例，实际应用中需要根据后端返回格式调整
-    const content: ArticleContent[] = [
-      {
-        type: 'text',
-        content: data.article_detail || '无内容'
+      if (response.code === 200) {
+        return response;
       }
-    ];
-
-    return {
-      id,
-      title: '', // 后端数据中缺少标题字段，需要从其他地方获取
-      author: {
-        id: '',
-        username: data.author,
-      },
-      content,
-      publishedAt: new Date(data.create_time).toISOString(),
-      updatedAt: data.last_modified_time,
-      tags: data.tags,
-    };
-  }
-
-  createArticle(createRequest: createArticleRequest): Promise<createArticleResponse> {
-    return new Promise((resolve, reject) => {
-      apiClient.post<createArticleResponse>('/api/blog_m/create', createRequest)
-        .then((response) => {
-          if (response.code === 200) {
-            resolve(response);
-          } else {
-            reject(new Error(response.msg || '创建文章失败'));
-          }
-        })
-        .catch((error) => {
-          console.error('创建文章失败:', error);
-          reject(error);
-        });
-    });
+      throw new Error(response.msg || '创建文章失败');
   }
 }
 

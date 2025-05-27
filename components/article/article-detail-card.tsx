@@ -4,11 +4,17 @@ import { Card, Typography, Divider, Image, Space } from 'antd';
 import UserMeta from '@/components/molecules/user-meta';
 import ArticleActions from '@/components/molecules/article-actions';
 import styles from './article-detail-card.module.scss';
+import parse from 'html-react-parser';
+import DOMPurify from 'dompurify';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 
 const { Title, Paragraph } = Typography;
 
 export interface ArticleContent {
-  type: 'text' | 'image' | 'video';
+  type: 'text' | 'image' | 'video' | 'html' | 'markdown';
   content: string;
   caption?: string;
 }
@@ -62,11 +68,46 @@ const ArticleDetailCard: React.FC<ArticleDetailCardProps> = ({
   const renderContent = () => {
     return content.map((item, index) => {
       switch (item.type) {
-        case 'text':
+        case 'html':
           return (
-            <Paragraph key={index} className={styles.textParagraph}>
-              {item.content}
-            </Paragraph>
+            <div key={index} className={styles.textParagraph}>
+              {parse(DOMPurify.sanitize(item.content, {
+                USE_PROFILES: { html: true },
+                ADD_ATTR: ['target'] // 允许链接在新标签页打开
+              }))}
+            </div>
+          );
+        case 'markdown':
+          return (
+            <div key={index} className={styles.markdownContent}>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]} // 支持GitHub风格的Markdown（表格、任务列表等）
+                rehypePlugins={[rehypeRaw, rehypeSanitize]} // 允许HTML并进行安全处理
+                components={{
+                  // 自定义各类元素的渲染方式，使用Ant Design样式
+                  h1: ({node, ...props}) => <Typography.Title level={1} {...props} />,
+                  h2: ({node, ...props}) => <Typography.Title level={2} {...props} />,
+                  h3: ({node, ...props}) => <Typography.Title level={3} {...props} />,
+                  h4: ({node, ...props}) => <Typography.Title level={4} {...props} />,
+                  h5: ({node, ...props}) => <Typography.Title level={5} {...props} />,
+                  h6: ({node, ...props}) => <Typography.Title level={5} {...props} />,
+                  p: ({node, ...props}) => <Typography.Paragraph {...props} />,
+                  a: ({node, ...props}) => <a className={styles.link} target="_blank" rel="noopener noreferrer" {...props} />,
+                  blockquote: ({node, ...props}) => <blockquote className={styles.blockquote} {...props} />,
+                  pre: ({node, ...props}) => <pre className={styles.codeBlock} {...props} />,
+                  code: ({node, className, ...props}) => 
+                    className?.includes('inline') 
+                      ? <code className={`${styles.inlineCode} ${className || ''}`} {...props} />
+                      : <code className={className} {...props} />,
+                  ul: ({node, ...props}) => <ul className={styles.list} {...props} />,
+                  ol: ({node, ...props}) => <ol className={styles.list} {...props} />,
+                  li: ({node, ...props}) => <li className={styles.listItem} {...props} />,
+                  table: ({node, ...props}) => <table className={styles.table} {...props} />,
+                }}
+              >
+                {item.content}
+              </ReactMarkdown>
+            </div>
           );
         case 'image':
           return (

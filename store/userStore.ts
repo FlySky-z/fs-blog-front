@@ -58,12 +58,9 @@ export const useUserStore = create<UserState>((set, get) => ({
 
             // 尝试刷新token
             try {
-                console.log('尝试刷新token');
                 const refreshResult = await refreshAuthorization();
 
                 if (refreshResult != null) {
-                    // 刷新成功
-                    console.log('刷新token成功', refreshResult);
                     var jwtPayload = TokenManager.extractUserInfoFromToken(refreshResult);
                     if (!jwtPayload) {
                         throw new Error('无效的JWT');
@@ -102,7 +99,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         // 获取用户信息
         getUserInfoById(userId)
             .then((userInfo) => {
-                set({ userInfo });
+                set({ userInfo: userInfo });
             })
             .catch((error) => {
                 console.error('获取用户信息失败:', error);

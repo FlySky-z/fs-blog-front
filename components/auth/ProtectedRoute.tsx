@@ -22,7 +22,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   redirectPath = '/',
   role = 0,
 }) => {
-  const { isLoggedIn, isInitializing, userInfo } = useUserStore();
+  const { isLoggedIn, isInitializing, userInfo: userInfo } = useUserStore();
   const router = useRouter();
   const pathname = usePathname();
   
@@ -33,18 +33,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     // 如果未登录，跳转到指定路径
     if (!isLoggedIn) {
       // 保存当前访问路径，以便登录后可以重定向回来
-      if (typeof window !== 'undefined' && pathname !== '/login') {
+      if (typeof window !== 'undefined') {
         sessionStorage.setItem('redirectAfterLogin', pathname);
       }
-      
       router.push(redirectPath);
       return;
     }
     
     // 如果指定了角色要求，检查用户是否有权限
     if (role > 0 && userInfo) {
-      // 获取用户角色 (优先使用 level 字段，fallback 到 role 字段)
-      const userRole = userInfo.level === 999 ? 1 : (userInfo as any).role || 0;
+      const userRole = userInfo.role || 0; // 默认角色为0（未定义）
       
       // 如果用户角色不足以访问该页面
       if (userRole < role) {
@@ -76,7 +74,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 export default ProtectedRoute;
 
 /**
- * 高阶组件：为组件添加路由保护
+ * 为组件添加前端路由保护
  * @param Component 要保护的组件
  * @param options 保护选项
  * @returns 包装后的组件

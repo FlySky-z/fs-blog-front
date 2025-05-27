@@ -165,6 +165,10 @@ export async function getFollowingList(userId: string): Promise<userInfo[]> {
                 level: 5,
                 email: "",
                 phone: "",
+                is_blocked: false,
+                is_login: true,
+                role: 0,
+                password_hash: null,
                 tags: ['developer', 'tech']
             }
         ]

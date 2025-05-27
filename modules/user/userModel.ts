@@ -21,9 +21,25 @@ export interface userInfo {
      */
     id: number;
     /**
+     * 是否被拉黑
+     */
+    is_blocked: null | boolean;
+    /**
+     * 是否登录
+     */
+    is_login: boolean;
+    /**
+     * 密码hash
+     */
+    password_hash: null | string;
+    /**
      * 手机号
      */
     phone: null | string;
+    /**
+     * 角色
+     */
+    role: number;
     /**
      * 用户名
      */

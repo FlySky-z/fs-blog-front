@@ -58,10 +58,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
         return await externalLoginHandler(values);
       }
       
-      // 默认处理逻辑（当未提供外部处理函数时）
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // 模拟登录成功
       onClose();
       return true;
     } catch (error) {

@@ -5,6 +5,61 @@ import { ArticleContent } from '@/components/article/article-detail-card';
 import articleService from '@/modules/article/articleService';
 import { userService } from '@/modules/user/userService';
 
+// 判断内容类型：HTML、Markdown 或纯文本
+const detectContentType = (content: string): 'html' | 'markdown' | 'text' => {
+  if (!content) return 'text';
+  
+  // HTML特征判断
+  const htmlFeatures = [
+    /<\/?[a-z][\s\S]*>/i,  // HTML标签
+    /<(br|hr|img|input).*?>/i,  // 自闭合标签
+    /&[a-z]+;/i,  // HTML实体如&nbsp;
+    /<div>|<p>|<span>|<a\s|<img\s|<table>/i  // 常见HTML标签
+  ];
+  
+  // Markdown特征判断
+  const markdownFeatures = [
+    /^#+ .+$/m,  // 标题 (# Title)
+    /\[.+?\]\(.+?\)/,  // 链接 [text](url)
+    /^[\*\-\+] .+$/m,  // 无序列表
+    /^[0-9]+\. .+$/m,  // 有序列表
+    /`{1,3}[^`]+`{1,3}/,  // 行内代码或代码块
+    /\*\*.+?\*\*|\*.+?\*/,  // 粗体或斜体
+    /!\[.+?\]\(.+?\)/,  // 图片 ![alt](src)
+    /^>.+$/m,  // 引用
+    /^(?:[-*_]){3,}$/m,  // 分隔线
+    /^\|.+\|.+\|$/m  // 表格
+  ];
+  
+  // 计算特征匹配数
+  let htmlScore = 0;
+  let markdownScore = 0;
+  
+  htmlFeatures.forEach(pattern => {
+    if (pattern.test(content)) htmlScore++;
+  });
+  
+  markdownFeatures.forEach(pattern => {
+    if (pattern.test(content)) markdownScore++;
+  });
+  
+  // 根据特征匹配数决定内容类型
+  if (htmlScore > markdownScore && htmlScore > 1) {
+    return 'html';
+  } else if (markdownScore > htmlScore && markdownScore > 1) {
+    return 'markdown';
+  } else {
+    // 如果特征不明显，尝试更简单的检测
+    if (content.includes('<') && content.includes('>') && 
+        (content.includes('</') || content.includes('/>'))) {
+      return 'html';
+    }
+    
+    // 默认为纯文本
+    return 'markdown';
+  }
+};
+
 // 文章详情接口定义
 interface ArticleDetail {
   id: string;
@@ -57,7 +112,7 @@ const fetchArticleDetail = async (id: string): Promise<ArticleDetail> => {
       // 将文章内容转换为前端组件需要的格式
       content: [
         {
-          type: 'text',
+          type: detectContentType(articleData.article_detail || 'markdown'),
           content: articleData.article_detail || '无内容'
         }
       ],

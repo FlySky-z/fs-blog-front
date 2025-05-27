@@ -1,8 +1,8 @@
-export interface ArticleContent {
-  type: 'text' | 'image' | 'video';
-  content: string;
-  caption?: string;
-}
+// export interface ArticleContent {
+//   type: 'text' | 'image' | 'video';
+//   content: string;
+//   caption?: string;
+// }
 
 /**
  * 文章列表查询参数
@@ -67,28 +67,6 @@ export interface ArticleDetailResponse {
         cover_image?: string | null;
         status: number;
     };
-}
-
-/**
- * 前端使用的文章详情格式
- */
-export interface ArticleDetail {
-  id: string;
-  title: string;
-  author: {
-    id: string;
-    username: string;
-    avatar?: string;
-    level?: number;
-    bio?: string;
-    articleCount?: number;
-    followerCount?: number;
-    likeCount?: number;
-  };
-  content: ArticleContent[];
-  publishedAt: string;
-  updatedAt: string;
-  tags: string[];
 }
 
 

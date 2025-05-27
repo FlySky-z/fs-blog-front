@@ -35,9 +35,19 @@ export default forwardRef<HTMLDivElement, AIEditorProps>(function AIEditor(
         element: divRef.current,
         placeholder: placeholder,
         content: defaultValue,
+        draggable: false,
         onChange: (ed) => {
           if (typeof onChange === "function") {
-            onChange(ed.getMarkdown());
+            onChange(ed.getHtml());
+          }
+        },
+        ai: {
+          models: {
+            openai: {
+              endpoint: "https://api.cerebras.ai",
+              apiKey: process.env.NEXT_PUBLIC_AI_KEY || "",
+              model: "llama-4-scout-17b-16e-instruct"
+            }
           }
         },
         ...options,
@@ -63,12 +73,6 @@ export default forwardRef<HTMLDivElement, AIEditorProps>(function AIEditor(
       }
     }
   }, [ref]);
-
-  useEffect(() => {
-    if (aiEditorRef.current && value !== aiEditorRef.current.getMarkdown()) {
-      aiEditorRef.current.setContent(value || "");
-    }
-  }, [value]);
 
   return <div ref={divRef} {...props} />;
 });

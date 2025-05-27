@@ -4,7 +4,7 @@ import { Form, Input, Button, Divider, Tabs, message } from 'antd';
 import { UserOutlined, LockOutlined, MobileOutlined, WechatOutlined, QqOutlined, GithubOutlined } from '@ant-design/icons';
 import SliderVerify from '../SliderVerify';
 import styles from './login-form.module.scss';
-import { hashPassword } from '@/utils/passwordUtils';
+// import { hashPassword } from '@/utils/passwordUtils';
 
 interface LoginFormProps {
   onLogin: (values: any) => Promise<boolean>;
@@ -34,8 +34,9 @@ const LoginForm: React.FC<LoginFormProps> = ({
       // 设置哈希处理中状态
       setIsHashingPassword(true);
       
-      // 在发送前对密码进行哈希处理
-      const hashedPassword = await hashPassword(values.password);
+      // TODO: 在发送前对密码进行哈希处理
+      // const hashedPassword = await hashPassword(values.password);
+      const hashedPassword = values.password;
       
       const success = await onLogin({
         ...values,

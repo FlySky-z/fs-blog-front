@@ -6,7 +6,7 @@ import SliderVerify from '../SliderVerify';
 import styles from './register-form.module.scss';
 import { authService } from '@/modules/auth/authService';
 import { RegisterRequest } from '@/modules/auth/authModel';
-import { hashPassword } from '@/utils/passwordUtils';
+// import { hashPassword } from '@/utils/passwordUtils';
 
 interface RegisterFormProps {
   onRegister: (values: RegisterRequest) => Promise<boolean>;
@@ -84,8 +84,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       // 设置哈希处理中状态
       setIsHashingPassword(true);
 
-      // 在发送前对密码进行哈希处理
-      const hashedPassword = await hashPassword(values.password);
+      // TODO: 在发送前对密码进行哈希处理
+      // const hashedPassword = await hashPassword(values.password);
+      const hashedPassword = values.password; // 这里假设密码已经在前端处理过
 
       // 构建注册请求参数
       const registerData: RegisterRequest = {

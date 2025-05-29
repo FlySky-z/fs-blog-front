@@ -64,7 +64,7 @@ export const useUserStore = create<UserState>((set, get) => ({
                     if (!jwtPayload) {
                         throw new Error('无效的JWT');
                     }
-                    var userinfo = await getUserInfoById(jwtPayload.uid);
+                    var userinfo = await getUserInfoById(jwtPayload.uid.toString());
                     set({
                         isLoggedIn: true,
                         isInitializing: false,

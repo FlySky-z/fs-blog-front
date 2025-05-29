@@ -47,13 +47,16 @@ export const TokenManager = {
     return token !== null && token.trim() !== '';
   },
 
-  // 从JWT中提取用户信息
-  extractUserInfoFromToken(token: string): Record<string, any> | null {
+  // 从JWT中安全提取用户信息
+  extractUserInfoFromToken(token: string): JwtPayload | null {
     if (!token) return null;
     try {
       const payload = token.split('.')[1];
-      const decodedPayload = JSON.parse(atob(payload));
-      return decodedPayload;
+      // base64url 解码
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
+      const decodedPayload = JSON.parse(decodeURIComponent(escape(window.atob(padded))));
+      return decodedPayload as JwtPayload;
     } catch (error) {
       console.error('解析JWT失败:', error);
       return null;

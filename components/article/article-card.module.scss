@@ -1,9 +1,14 @@
 .card {
   margin-bottom: 16px;
   transition: all 0.3s ease;
+  padding: 24px; // 用空格分隔而不是逗号
+
+  @media (max-width: 768px) {
+    padding: 12px; // 移动端适配
+  }
 }
 
-.card:hover {
+.card:hover { 
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1) !important;
 }
 
@@ -17,6 +22,57 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+// 用户信息链接样式
+.userLink {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: -4px -8px; // 扩大点击区域
+  
+  &:hover {
+    background-color: rgba(22, 119, 255, 0.06);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// 用户信息链接样式
+.userLink {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: -4px -8px; // 扩大点击区域
+  
+  &:hover {
+    background-color: rgba(22, 119, 255, 0.06);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// 用户信息链接样式
+.userLink {
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: -4px -8px; // 扩大点击区域
+  
+  &:hover {
+    background-color: rgba(22, 119, 255, 0.06);
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 .date {
@@ -89,6 +145,7 @@
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 

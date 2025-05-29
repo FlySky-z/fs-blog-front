@@ -5,10 +5,11 @@ import Link from 'next/link';
 import { EyeOutlined, LikeOutlined, MessageOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import UserMeta from '@/components/molecules/user-meta';
 import styles from './article-card.module.scss';
+import { formatDate } from '@/utils/date'; // 假设有一个日期格式化工具函数
 
 const { Title, Text } = Typography;
 
-export interface PostCardProps {
+export interface ArticleCardProps {
   id: string;
   title: string;
   description?: string;
@@ -20,7 +21,7 @@ export interface PostCardProps {
     avatar?: string;
     level?: number;
   };
-  publishedAt: string;
+  lastModified: number;
   viewCount: number;
   likeCount: number;
   commentCount: number;
@@ -33,14 +34,14 @@ export interface PostCardProps {
   videoDuration?: string;
 }
 
-const AritcleCard: React.FC<PostCardProps> = ({
+const AritcleCard: React.FC<ArticleCardProps> = ({
   id,
   title,
   description,
   coverImage,
   showAuthor = true,
   author,
-  publishedAt,
+  lastModified,
   viewCount,
   likeCount,
   commentCount,
@@ -48,38 +49,32 @@ const AritcleCard: React.FC<PostCardProps> = ({
   isVideo = false,
   videoDuration,
 }) => {
-  // 格式化发布时间
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
-  };
-
   return (
     <Card
       className={styles.card}
       hoverable
+      styles={{
+        body: { padding: 0 },
+      }}
     >
       <div className={styles.cardContent}>
         {/* 用户信息和时间 */}
         <div className={styles.header}>
           {showAuthor && author && (
-            <UserMeta
-              id={author.id}
-              username={author.username}
-              avatar={author.avatar}
-              level={author.level}
-              size="small"
-            />)
+            <Link href={`/accountCenter?tab=article&userId=${author.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <UserMeta
+                id={author.id}
+                username={author.username}
+                avatar={author.avatar}
+                level={author.level}
+                size="small"
+              />
+            </Link>)
           }
-
 
           <Text type="secondary" className={styles.date}>
             <ClockCircleOutlined style={{ marginRight: 5 }} />
-            {formatDate(publishedAt)}
+            {formatDate(lastModified)}
           </Text>
         </div>
 

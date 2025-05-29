@@ -25,17 +25,21 @@ const UserMeta: React.FC<UserMetaProps> = ({
 }) => {
   // 头像大小根据size属性调整
   const avatarSize = size === 'large' ? 48 : size === 'small' ? 24 : 36;
-  
+
   return (
     <Space align="center" size={8}>
-      <Avatar
-        size={avatarSize}
-        src={avatar}
-        icon={!avatar ? <UserOutlined /> : undefined}
-        alt={username}
-      />
+      {avatar && (
+        <Avatar
+          size={avatarSize}
+          src={avatar}
+          icon={!avatar ? <UserOutlined /> : undefined}
+          alt={username}
+        />
+      )
+      }
+
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           <Text strong style={{ fontSize: size === 'small' ? 14 : 16 }}>
             {username}
           </Text>

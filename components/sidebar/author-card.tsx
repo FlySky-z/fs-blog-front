@@ -4,6 +4,8 @@ import { Button, Statistic } from 'antd';
 import { UserOutlined, EyeOutlined, LikeOutlined } from '@ant-design/icons';
 import SidebarCard from './sidebar-card';
 import UserMeta from '@/components/molecules/user-meta';
+import Link from 'next/link';
+import styles from './author-card.module.scss';
 
 export interface AuthorCardProps {
   id: string;
@@ -50,13 +52,18 @@ const AuthorCard: React.FC<AuthorCardProps> = ({
   return (
     <SidebarCard className="author-card">
       <div style={{ marginBottom: 16 }}>
-        <UserMeta
-          id={id}
-          username={username}
-          avatar={avatar}
-          level={level}
-          size="large"
-        />
+        <Link 
+          href={`/accountCenter?tab=article&userId=${id}`}
+          className={styles.authorLink}
+        >
+          <UserMeta
+            id={id}
+            username={username}
+            avatar={avatar}
+            level={level}
+            size="large"
+          />
+        </Link>
       </div>
 
       {bio && (

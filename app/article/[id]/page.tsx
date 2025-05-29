@@ -6,7 +6,6 @@ import DetailLayout from '@/components/templates/detail-layout';
 import ArticleDetailCard from '@/components/article/article-detail-card';
 import CommentList from '@/components/comment/comment-list';
 import AuthorCard from '@/components/sidebar/author-card';
-import WelcomeCard from '@/components/sidebar/welcome-card';
 import RecommendedArticles from '@/components/sidebar/recommended-articles';
 import TopicTagList from '@/components/sidebar/topic-tag-list';
 
@@ -14,15 +13,12 @@ import TopicTagList from '@/components/sidebar/topic-tag-list';
 import useArticleDetail from '@/modules/article/hooks/use-article-detail';
 import useComments from '@/modules/comment/hooks/use-comments';
 import useSidebarData from '@/modules/sidebar/hooks/use-sidebar-data';
-import { useAuthModal } from '@/modules/auth/AuthModal';
 
 export default function ArticleDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { openLoginModal } = useAuthModal();
-
   const { id } = use(params);
 
   // 获取文章详情

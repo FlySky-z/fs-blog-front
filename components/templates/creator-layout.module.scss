@@ -15,32 +15,15 @@
 }
 
 .sidebar {
-  grid-column: span 12 / span 12;
+  grid-column: span 12;
   @media (min-width: 768px) {
-    grid-column: span 3 / span 3;
+    grid-column: span 3;
   }
 }
 
-.fixed-button {
-  position: fixed;
-  top: 4rem;
-  left: 1rem;
-  z-index: 30;
-}
-
-.button {
-  margin-bottom: 1rem;
-}
-
-.main-content {
-  grid-column: span 12 / span 12;
+.mainContent {
+  grid-column: span 12;
   @media (min-width: 768px) {
-    grid-column: span 9 / span 9;
+    grid-column: span 9;
   }
-}
-
-.scroll-top {
-  position: fixed;
-  right: 6rem;
-  bottom: 6rem;
 }

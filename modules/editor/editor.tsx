@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Card, Form, Input, Button, Select, Switch, message, Upload, Divider, Tooltip, Spin, Skeleton } from 'antd';
 import {
@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import styles from './editor.module.scss';
 import type { UploadFile, UploadProps } from 'antd/es/upload/interface';
-import { articleService } from '@/modules/article/articleService';
+import { articleService, updateArticle } from '@/modules/article/articleService';
 import { createArticleRequest } from '@/modules/article/articleModel';
 import { useRouter } from 'next/navigation';
 
@@ -21,25 +21,62 @@ const AIEditor = dynamic(() => import("@/components/editor/ai-editor"), {
     </Skeleton.Node>,
 });
 
-export default function CreateArticlePage() {
+interface EditorLayoutProps {
+    articleId?: string | null;
+}
+
+export default function CreateArticlePage({ articleId }: EditorLayoutProps) {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [isDraft, setIsDraft] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [content, setContent] = useState("");
+    const [pageTitle, setPageTitle] = useState("发布新文章");
+    const [isEdit, setIsEdit] = useState(false);
+    const [contentLoaded, setContentLoaded] = useState(!articleId); // 如果没有articleId，则内容已加载
     const router = useRouter();
 
-    // 当content变化时，打印到控制台
-    React.useEffect(() => {
-        console.log('当前内容:', content);
-    }, [content]);
+    // 根据articleId判断是新建还是编辑
+    useEffect(() => {
+        async function fetchArticleDetail() {
+            if (!articleId) return;
+            
+            try {
+                setLoading(true);
+                // 获取文章详情
+                const articleDetail = await articleService.getArticleDetail(articleId);
+                
+                // 填充表单数据
+                form.setFieldsValue({
+                    title: articleDetail.header,
+                    tags: articleDetail.tags,
+                    // 如果是草稿，设置状态
+                    isDraft: articleDetail.status === 0
+                });
+                
+                // 设置内容和草稿状态
+                setContent(articleDetail.article_detail || '');
+                setIsDraft(articleDetail.status === 0);
+                setPageTitle("编辑文章");
+                setIsEdit(true);
+                setContentLoaded(true); // 标记内容已加载
+                
+            } catch (error) {
+                console.error('获取文章详情失败:', error);
+                message.error('获取文章详情失败，请重试');
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        fetchArticleDetail();
+    }, [articleId, form]);
 
     // 表单提交处理
     const handleFinish = async (values: any) => {
         try {
             setLoading(true);
-            console.log('提交的表单数据:', values);
 
             // 准备文章请求数据
             const articleRequest: createArticleRequest = {
@@ -50,35 +87,29 @@ export default function CreateArticlePage() {
                 status: isDraft ? 0 : 3, // 0表示草稿，3表示正式发布
             };
 
-            // 封面图处理
-            if (fileList.length > 0 && fileList[0].originFileObj) {
-                // 这里应该有上传图片到服务器的逻辑，获取到图片URL
-                // 假设上传成功后得到URL
-                // articleRequest.cover_image = 上传后的URL;
-                console.log('需要上传封面图片:', fileList[0].name);
+            let response;
+            // 根据是否有articleId决定是创建还是更新文章
+            if (isEdit && articleId) {
+                // 更新文章时需要传入文章ID
+                articleRequest.article_id = articleId;
+                response = await updateArticle(articleRequest);
+            } else {
+                // 创建新文章
+                response = await articleService.createArticle(articleRequest);
             }
-
-            // 提交到服务器
-            const response = await articleService.createArticle(articleRequest);
 
             if (response.code === 200) {
                 message.success(isDraft ? '草稿保存成功！' : '文章发布成功！');
 
-                // 直接跳转，不使用setTimeout，避免可能的问题
-                console.log('准备跳转...');
-
                 // 不管有没有article_id都进行跳转
                 if (isDraft) {
                     // 草稿跳转到创作中心的文章管理页面
-                    console.log('跳转到草稿箱');
                     router.push('/creatorCenter/articles/drafts');
                 } else if (response.data && response.data.article_id) {
                     // 发布文章且有ID时跳转到文章详情
-                    console.log('跳转到文章详情:', response.data.article_id);
                     router.push(`/article/${response.data.article_id}`);
                 } else {
                     // 发布文章但没有ID时跳转到文章列表
-                    console.log('跳转到文章列表');
                     router.push('/creatorCenter/articles');
                 }
             } else {
@@ -96,7 +127,7 @@ export default function CreateArticlePage() {
         <div className={styles.createArticleWrapper}>
             <div className={styles.createArticleMain}>
                 <Card className={styles.createArticleCard}>
-                    <h2 className={styles.title}>发布新文章</h2>
+                    <h2 className={styles.title}>{pageTitle}</h2>
                     <Form
                         form={form}
                         layout="vertical"
@@ -124,15 +155,23 @@ export default function CreateArticlePage() {
                             name="content"
                             style={{ height: 520, width: '100%' }}
                         >
-                            <AIEditor
-                                placeholder="请输入正文内容"
-                                style={{ height: 500 }}
-                                value={content}
-                                onChange={(val) => {
-                                    setContent(val);
-                                    form.setFieldsValue({ content: val });
-                                }}
-                            />
+                            {contentLoaded ? (
+                                <AIEditor
+                                    placeholder="请输入正文内容"
+                                    style={{ height: 500 }}
+                                    defaultValue={content}
+                                    onChange={(val) => {
+                                        setContent(val);
+                                        form.setFieldsValue({ content: val });
+                                    }}
+                                />
+                            ) : (
+                                <div className={styles.editorSkeleton} style={{ height: 500, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Spin tip="加载文章中..." size="large">
+                                        <div className="content" />
+                                    </Spin>
+                                </div>
+                            )}
                         </Form.Item>
 
                         {/* 文章标签 */}
@@ -167,17 +206,6 @@ export default function CreateArticlePage() {
                                         checkedChildren="存为草稿"
                                         unCheckedChildren="立即发布"
                                     />
-                                </Form.Item>
-
-                                <Form.Item
-                                    label="原创声明"
-                                    name="originalContent"
-                                    valuePropName="checked"
-                                    initialValue={true}
-                                    layout="horizontal"
-                                    style={{ marginBottom: 0 }}
-                                >
-                                    <Switch checkedChildren="原创" unCheckedChildren="转载" defaultChecked />
                                 </Form.Item>
 
                                 <Tooltip title="预览文章效果">

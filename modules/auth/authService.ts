@@ -12,8 +12,6 @@ import {
     CheckEmailResponse,
     CheckUsernameResponse
 } from './authModel';
-import { useUserStore } from '@/store/userStore';
-
 
 /**
  * 认证服务
@@ -114,9 +112,7 @@ class AuthService {
      */
     async checkCaptcha(captchaId: string, xPosition: number, userID: string): Promise<boolean> {
         try {
-            // 根据OpenAPI规范，端点是/api/captcha/check/${userID}/{cid}/{x}
             // 其中cid是滑块验证码ID，x是用户滑动后的X轴位置
-            console.log('Checking captcha:', { userID, captchaId, xPosition });
             const response = await apiClient.get<CaptchaCheckResponse>(`/api/captcha/check/${userID}/${captchaId}/${xPosition}`);
 
             // 根据OpenAPI规范，成功响应码为200

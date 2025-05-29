@@ -50,6 +50,8 @@ const ProfileTabPanel: React.FC<ProfileTabPanelProps> = ({
   if (loading) {
     return (
       <Card className={styles.profileTabCard}>
+        {/* 为加载状态添加标题以保持一致性 */}
+        <Title level={4} className={styles.tabTitle}>{title}</Title>
         <div className={styles.loadingContainer}>
           <Spin size="large" />
         </div>
@@ -57,7 +59,7 @@ const ProfileTabPanel: React.FC<ProfileTabPanelProps> = ({
     );
   }
 
-  // 渲染空状态
+  // 渲染空状态 (此条件会正确处理 settings 和 certification 类型，因为它们的 data 为 null)
   if (!tabData || (Array.isArray(tabData.data) && tabData.data.length === 0)) {
     return (
       <Card className={styles.profileTabCard}>
@@ -73,17 +75,19 @@ const ProfileTabPanel: React.FC<ProfileTabPanelProps> = ({
 
   // 根据不同类型渲染对应内容
   const renderContent = () => {
-    if (!tabData) return null;
-
-    switch (tabData.type) {
+    // 前面的检查已确保 tabData 在此处已定义
+    switch (tabData!.type) {
       case 'article':
+        return tabData!.data.map(article => (
+          <ArticleItem key={article.id} article={article} />
+        ));
       case 'favorites':
-        return tabData.data.map(post => (
+        return tabData!.data.map(post => (
           <ArticleItem key={post.id} article={post} />
         ));
 
       case 'comments':
-        return tabData.data.map(comment => (
+        return tabData!.data.map(comment => (
           <CommentItem 
             key={comment.id} 
             comment={comment}
@@ -93,12 +97,12 @@ const ProfileTabPanel: React.FC<ProfileTabPanelProps> = ({
         ));
 
       case 'collections':
-        return tabData.data.map(collection => (
+        return tabData!.data.map(collection => (
           <CollectionItem key={collection.id} collection={collection} />
         ));
 
       case 'followers':
-        return tabData.data.map(user => (
+        return tabData!.data.map(user => (
           <UserCard 
             key={user.id} 
             user={user}
@@ -114,7 +118,9 @@ const ProfileTabPanel: React.FC<ProfileTabPanelProps> = ({
         return <CertificationCenter />;
 
       default:
-        return null;
+        // 处理未知的 tabData.type
+        console.warn('ProfileTabPanel: Encountered unknown tabData.type:', (tabData as any)?.type);
+        return <Empty description={`无法加载 "${title}" 内容，类型未知。`} image={Empty.PRESENTED_IMAGE_SIMPLE} />;
     }
   };
 

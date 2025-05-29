@@ -1,29 +1,17 @@
 'use client';
-import React from 'react';
-import { Card, Typography, Space, Menu } from 'antd';
+
+import React, { useMemo } from 'react';
+import { Card, Menu } from 'antd';
 import { useRouter } from 'next/navigation';
-import { 
+import {
   HomeOutlined,
   BarChartOutlined,
   FileTextOutlined,
-  EditOutlined,
-  InboxOutlined,
   NotificationOutlined,
 } from '@ant-design/icons';
-import MenuItem from '@/components/molecules/center-menu-item';
+import styles from './sidebar-menu.module.scss';
 
-const { Title } = Typography;
-
-export interface CreatorMenuItemData {
-  key: string;
-  text: string;
-  icon: React.ReactNode;
-  href: string;
-  subItems?: CreatorMenuItemData[];
-  notification?: number;
-  divider?: boolean;
-}
-
+// 组件属性类型定义
 interface CreatorSidebarMenuProps {
   activeMenuKey: string;
   onMenuSelect: (key: string) => void;
@@ -31,6 +19,10 @@ interface CreatorSidebarMenuProps {
   notificationCounts?: Record<string, number>;
 }
 
+/**
+ * 创作者中心侧边栏菜单组件
+ * 支持桌面端和移动端两种展示模式
+ */
 const CreatorSidebarMenu: React.FC<CreatorSidebarMenuProps> = ({
   activeMenuKey,
   onMenuSelect,
@@ -38,112 +30,80 @@ const CreatorSidebarMenu: React.FC<CreatorSidebarMenuProps> = ({
   notificationCounts = {}
 }) => {
   const router = useRouter();
-  // 创作中心菜单项
-  const menuItems: CreatorMenuItemData[] = [
-    { 
-      key: 'home', 
-      text: '首页', 
-      icon: <HomeOutlined />,
-      href: `/creatorCenter`,
-    },
-    { 
-      key: 'data', 
-      text: '数据中心', 
-      icon: <BarChartOutlined />,
-      href: `/creatorCenter/data`,
-    },
-    { 
-      key: 'articles', 
-      text: '投稿管理', 
-      icon: <FileTextOutlined />,
-      href: `/creatorCenter/articles`,
-      notification: notificationCounts.articles,
-    },
-    { 
-      key: 'announcements', 
-      text: '创作公告', 
-      icon: <NotificationOutlined />,
-      href: `/creatorCenter/announcements`,
-      notification: notificationCounts.announcements
-    },
-  ];
 
-  // 渲染主菜单项
-  const renderMainMenuItems = () => {
-    return menuItems.map((item) => (
-      <div key={item.key}>
-        <MenuItem 
-          icon={item.icon}
-          text={item.text}
-          active={activeMenuKey === item.key || (item.subItems?.some(sub => activeMenuKey === sub.key))}
-          href={item.href}
-          onClick={() => onMenuSelect(item.key)}
-          notification={item.notification}
-        />
-        {item.subItems && activeMenuKey === item.key && (
-          <div style={{ marginTop: '8px', paddingLeft: '12px' }}>
-            {item.subItems.map(subItem => (
-              <MenuItem 
-                key={subItem.key}
-                icon={subItem.icon}
-                text={subItem.text}
-                active={activeMenuKey === subItem.key}
-                href={subItem.href}
-                onClick={() => onMenuSelect(subItem.key)}
-                notification={subItem.notification}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    ));
+  // 菜单项列表
+  const menuItems = useMemo(() => [
+    {
+      key: 'home',
+      label: (
+        <>
+          首页
+          {notificationCounts.home ? (
+            <span className={styles.notificationCount}>({notificationCounts.home})</span>
+          ) : null}
+        </>
+      ),
+      icon: <HomeOutlined />,
+    },
+    {
+      key: 'data',
+      label: (
+        <>
+          数据中心
+          {notificationCounts.data ? (
+            <span className={styles.notificationCount}>({notificationCounts.data})</span>
+          ) : null}
+        </>
+      ),
+      icon: <BarChartOutlined />,
+    },
+    {
+      key: 'articles',
+      label: (
+        <>
+          投稿管理
+          {notificationCounts.articles ? (
+            <span className={styles.notificationCount}>({notificationCounts.articles})</span>
+          ) : null}
+        </>
+      ),
+      icon: <FileTextOutlined />,
+    },
+    {
+      key: 'announcements',
+      label: (
+        <>
+          创作公告
+          {notificationCounts.announcements ? (
+            <span className={styles.notificationCount}>({notificationCounts.announcements})</span>
+          ) : null}
+        </>
+      ),
+      icon: <NotificationOutlined />,
+    },
+  ], [notificationCounts]);
+
+  // 统一的菜单点击处理函数
+  const handleMenuClick = (key: string) => {
+    onMenuSelect(key);
+    router.push(`/creatorCenter${key === 'home' ? '' : `/${key}`}`);
   };
 
-  const menuContent = (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      {isMobile && (
-        <Title level={5} style={{ padding: '16px 16px 0' }}>
-          创作中心
-        </Title>
-      )}
-      <Space direction="vertical" style={{ width: '100%', marginTop: '8px' }}>
-        {renderMainMenuItems()}
-      </Space>
-    </div>
+  // 创建菜单组件
+  const menu = (
+    <Menu
+      selectedKeys={[activeMenuKey]}
+      onClick={({ key }) => handleMenuClick(key as string)}
+      mode={isMobile ? "horizontal" : "vertical"}
+      className={isMobile ? styles.mobileMenu : styles.desktopMenu}
+      items={menuItems}
+    />
   );
 
-  // 移动端显示Menu水平导航
-  if (isMobile) {
-    return (
-      <Menu
-        mode="horizontal"
-        selectedKeys={[activeMenuKey]}
-        onClick={({ key }) => {
-          onMenuSelect(key as string);
-          const item = menuItems.find(item => item.key === key);
-          if (item) {
-            router.push(item.href);
-          }
-        }}
-        style={{ width: '100%', borderBottom: 0, marginBottom: 12 }}
-        items={menuItems.map(item => ({
-          key: item.key,
-          icon: item.icon,
-          label: (
-        <>
-          {item.text}
-          {item.notification ? <span style={{ color: 'red', marginLeft: 4 }}>({item.notification})</span> : null}
-        </>
-          ),
-        }))}
-      />
-    );
-  }
-
-  // 桌面端显示卡片
-  return (
-    <Card style={{ width: '100%' }}>
-      {menuContent}
+  // 返回适当的菜单形式
+  return isMobile ? menu : (
+    <Card >
+      {menu}
     </Card>
   );
 };

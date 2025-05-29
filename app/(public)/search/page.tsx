@@ -1,34 +1,38 @@
 'use client';
 import React, { useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import FeedLayout from "@/components/templates/feed-layout";
-import HomeFeed from "@/modules/article/article-feed";
+import SearchFeed from "@/modules/article/search-feed";
 import SearchSidebar from "@/modules/sidebar/search-sidebar";
 import RocketToTop from "@/components/header/rocket";
 import { Empty } from 'antd';
 import styles from './page.module.scss';
 import { useSearchStore } from '@/store/searchStore';
+import { useSearchParams } from 'next/navigation';
 
 export default function SearchPage() {
     const searchParams = useSearchParams();
     const {
         keyword,
-        searchText,
+        tag,
         sortOrder,
         setKeyword,
-        setSearchText,
         setSortOrder,
-        updateKeywordAndUrl
+        setTag,
     } = useSearchStore();
 
-    // 从 URL 参数更新搜索关键词
+    // 从URL参数初始化搜索状态
     useEffect(() => {
-        const q = searchParams.get('q');
-        if (q) {
-            setKeyword(q);
-            setSearchText(q);
+        const urlKeyword = searchParams.get('q') || '';
+        const urlTag = searchParams.get('tag') || '';
+        const urlSortOrder = searchParams.get('sort') || '';
+        setKeyword(urlKeyword.trim());
+        setTag(urlTag.trim());
+        if (urlSortOrder === 'latest' || urlSortOrder === 'hottest') {
+            setSortOrder(urlSortOrder as 'latest' | 'hottest');
+        } else {
+            setSortOrder('comprehensive'); // 默认综合排序
         }
-    }, [searchParams, setKeyword, setSearchText]);
+    }, [searchParams, setKeyword, setTag, setSortOrder]);
 
     // 将排序方式映射到API参数
     const mapSortToApiParams = () => {
@@ -49,25 +53,6 @@ export default function SearchPage() {
         }
     };
 
-    // 处理搜索提交
-    const handleSearch = () => {
-        if (searchText.trim()) {
-            updateKeywordAndUrl(searchText);
-        }
-    };
-
-    // 处理排序变更
-    const handleSortChange = (value: 'comprehensive' | 'latest' | 'hottest') => {
-        setSortOrder(value);
-    };
-
-    // 处理按键按下
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleSearch();
-        }
-    };
-
     // 构建标题文本
     const buildTitle = () => {
         if (!keyword) return '所有文章';
@@ -83,30 +68,18 @@ export default function SearchPage() {
 
     return (
         <main>
-
             <FeedLayout
                 main={
-                    keyword ? (
-                        <HomeFeed
-                            title={buildTitle()}
-                            pageSize={10}
-                            keyword={keyword}
-                            {...mapSortToApiParams()}
-                        />
-                    ) : (
-                        <div className={styles.emptySearchContainer}>
-                            <Empty
-                                description="请输入搜索关键词"
-                                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                            />
-                        </div>
-                    )
+                    <SearchFeed
+                        title={buildTitle()}
+                        pageSize={10}
+                        {...mapSortToApiParams()}
+                    />
                 }
                 sidebar={
                     <SearchSidebar />
                 }
             />
-
             <RocketToTop />
         </main>
     );

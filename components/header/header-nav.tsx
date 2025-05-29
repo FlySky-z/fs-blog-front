@@ -1,19 +1,18 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Input, Avatar, Dropdown, Space, Layout, Button, Row, Col, Menu, MenuProps } from 'antd';
-import styles from './header-nav.module.scss';
+import { Layout, Row, Col, MenuProps } from 'antd';
+
 import { useUIStore } from '@/store/uiStore';
 import LogoSection from './LogoSection';
 import NavMenu from './NavMenu';
 import SearchBox from './SearchBox';
 import ThemeToggle from './ThemeToggle';
-import NotificationButton from './NotificationButton';
 import UserMenu from './UserMenu';
 
 interface HeaderComponentProps {
     isLogin: boolean;
-    isAdmin?: boolean;
+    isAdmin: boolean;
     user: {
         avatar?: string;
         name?: string;
@@ -27,7 +26,7 @@ interface HeaderComponentProps {
 export default function HeaderComponent(props: HeaderComponentProps) {
     const {
         isLogin,
-        isAdmin = true,
+        isAdmin,
         user,
         openLoginModal,
         openRegisterModal,
@@ -36,7 +35,6 @@ export default function HeaderComponent(props: HeaderComponentProps) {
 
     const router = useRouter();
     const { theme: currentTheme, toggleTheme } = useUIStore();
-    const [hasNotification, setHasNotification] = useState(true);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
@@ -44,8 +42,8 @@ export default function HeaderComponent(props: HeaderComponentProps) {
     useEffect(() => {
         const checkScreenSize = () => {
             const width = window.innerWidth;
-            setIsMobile(width < 768);
-            setIsTablet(width >= 768 && width < 1000);
+            setIsMobile(width < 576);
+            setIsTablet(width >= 576 && width < 1000);
         };
         checkScreenSize();
         window.addEventListener('resize', checkScreenSize);
@@ -130,22 +128,20 @@ export default function HeaderComponent(props: HeaderComponentProps) {
                 display: 'flex',
                 alignItems: 'center',
             }}>
-                <Row style={{ width: '100%' }} align="middle" wrap={false} gutter={8}>
+                <Row style={{ width: '100%' }} align="middle" wrap={false}>
                     {/* Left Section */}
-                    <Col flex="auto" style={{ display: 'flex', justifyContent: 'flex-start'}} >
+                    <Col flex="auto" style={{ display: 'flex', justifyContent: 'flex-start'}} span={4}>
                         <LogoSection isMobile={isMobile} isAdmin={isAdmin} currentTheme={currentTheme} adminMenu={adminMenu} />
                     </Col>
 
                     {/* Center Section */}
-                    <Col flex="auto" style={{ display: 'flex', justifyContent: isMobile ? 'flex-start' : 'center', minWidth: 0 }}>
-                        <NavMenu isMobile={isMobile} isTablet={isTablet} navMenu={navMenu} />
+                    <Col flex="auto" style={{ display: 'flex', justifyContent: isTablet ? 'flex-end' : 'center'}}>
+                        <NavMenu isMobile={isMobile} navMenu={navMenu} />
                     </Col>
 
                     {/* Right Section */}
                     <Col flex="none">
-                        <Space>
                             <SearchBox isMobile={isMobile} handleSearch={props.handleSearch} />
-                            <NotificationButton hasNotification={hasNotification} onClick={() => setHasNotification(!hasNotification)} />
                             {toggleTheme && (
                                 <ThemeToggle currentTheme={currentTheme} toggleTheme={toggleTheme} />
                             )}
@@ -160,7 +156,6 @@ export default function HeaderComponent(props: HeaderComponentProps) {
                                 openRegisterModal={openRegisterModal}
                                 mobileAuthMenu={mobileAuthMenu}
                             />
-                        </Space>
                     </Col>
                 </Row>
             </div>

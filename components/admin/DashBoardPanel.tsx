@@ -1,12 +1,12 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Row, Col, Statistic, Tabs, DatePicker, Space, Button } from 'antd';
-import { 
-  Line, 
-  Column, 
-  Pie, 
+import {
+  Line,
+  Column,
+  Pie,
   Area,
-  DualAxes 
+  DualAxes
 } from '@ant-design/charts';
 import {
   FileTextOutlined,
@@ -53,22 +53,18 @@ const DashBoardPanel: React.FC<DashBoardPanelProps> = ({ className }) => {
     regionDistribution: [] as any[]
   });
 
-  // 生成模拟数据
-  useEffect(() => {
-    generateMockData();
-  }, [dateRange]);
-
-  const generateMockData = () => {
+  // 用 useCallback 包裹 generateMockData
+  const generateMockData = useCallback(() => {
     setLoading(true);
-    
+
     // 文章发布趋势数据
     const articleTrendData = [];
     const userGrowthData = [];
     const abnormalData = [];
-    
+
     for (let i = 29; i >= 0; i--) {
       const date = dayjs().subtract(i, 'day').format('YYYY-MM-DD');
-      
+
       // 文章趋势
       articleTrendData.push({
         date,
@@ -76,14 +72,14 @@ const DashBoardPanel: React.FC<DashBoardPanelProps> = ({ className }) => {
         reviewed: Math.floor(Math.random() * 30) + 10,
         rejected: Math.floor(Math.random() * 10) + 2
       });
-      
+
       // 用户增长
       userGrowthData.push({
         date,
         newUsers: Math.floor(Math.random() * 80) + 40,
         activeUsers: Math.floor(Math.random() * 500) + 800
       });
-      
+
       // 异常检测
       abnormalData.push({
         date,
@@ -121,7 +117,13 @@ const DashBoardPanel: React.FC<DashBoardPanelProps> = ({ className }) => {
     });
 
     setTimeout(() => setLoading(false), 500);
-  };
+  }, [dashboardData]);
+
+  // 只在组件挂载时调用一次 generateMockData
+  useEffect(() => {
+    generateMockData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 文章趋势图配置
   const articleTrendConfig = {

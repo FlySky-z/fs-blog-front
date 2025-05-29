@@ -83,9 +83,11 @@ export const withProtectedRoute = <P extends object>(
   Component: React.ComponentType<P>,
   options: Omit<ProtectedRouteProps, 'children'> = {}
 ) => {
-  return (props: P) => (
+  const WrappedComponent = (props: P) => (
     <ProtectedRoute {...options}>
       <Component {...props} />
     </ProtectedRoute>
   );
+  WrappedComponent.displayName = `WithProtectedRoute(${Component.displayName || Component.name || 'Component'})`;
+  return WrappedComponent;
 };

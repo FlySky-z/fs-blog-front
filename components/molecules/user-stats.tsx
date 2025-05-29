@@ -28,7 +28,7 @@ const UserStats: React.FC<UserStatsProps> = ({
       <StatItem
         value={stats.followers}
         label="粉丝"
-        onClick={onFollowersClick}
+        // onClick={onFollowersClick}
       />
       <div className={styles.divider} />
       <StatItem

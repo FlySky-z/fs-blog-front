@@ -7,6 +7,7 @@ export interface CreatorSummary {
   likes: number;
   comments: number;
   favorites: number;
+  articlesPublished: number;
 }
 
 // 模拟API调用获取创作者统计数据
@@ -20,7 +21,8 @@ const mockFetchCreatorSummary = (period: 'week' | 'month' | 'total'): Promise<Cr
           reads: 432,
           likes: 78,
           comments: 25,
-          favorites: 18
+          favorites: 18,
+          articlesPublished: 3
         });
       } else if (period === 'month') {
         resolve({
@@ -28,7 +30,8 @@ const mockFetchCreatorSummary = (period: 'week' | 'month' | 'total'): Promise<Cr
           reads: 1832,
           likes: 329,
           comments: 106,
-          favorites: 87
+          favorites: 87,
+          articlesPublished: 12
         });
       } else {
         // total
@@ -37,7 +40,8 @@ const mockFetchCreatorSummary = (period: 'week' | 'month' | 'total'): Promise<Cr
           reads: 8964,
           likes: 1527,
           comments: 648,
-          favorites: 421
+          favorites: 421,
+          articlesPublished: 45
         });
       }
     }, 500);

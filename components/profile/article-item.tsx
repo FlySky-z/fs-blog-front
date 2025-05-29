@@ -24,7 +24,7 @@ const ArticleItem: React.FC<ArticleItemProps> = ({ article: article }) => {
       description={article.abstract}
       coverImage={article.cover_image}
       showAuthor={false}
-      publishedAt={new Date(article.last_modified_date).toISOString()}
+      lastModified={article.last_modified_date}
       viewCount={article.view}
       likeCount={article.like}
       commentCount={article.comment}

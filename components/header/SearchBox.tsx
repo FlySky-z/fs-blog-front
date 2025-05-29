@@ -14,7 +14,6 @@ export default function SearchBox({ isMobile, handleSearch }: SearchBoxProps) {
       style={{ width: isMobile ? 120 : 200 }}
       onPressEnter={(e) => {
         const keyword = (e.target as HTMLInputElement).value.trim();
-        console.log('搜索关键词:', keyword);
         if (keyword) {
           // 调用父组件传入的搜索处理函数
           handleSearch(keyword);

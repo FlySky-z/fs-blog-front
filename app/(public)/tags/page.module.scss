@@ -1,0 +1,21 @@
+/* 标签页样式 */
+.tagsCard {
+  margin-bottom: 16px;
+}
+
+.tagsContainer {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.searchInput {
+  margin-top: 16px;
+}

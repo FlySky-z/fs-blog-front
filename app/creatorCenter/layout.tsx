@@ -42,40 +42,22 @@ export default function CreatorCenterLayout({
         <ProtectedRoute role={0} redirectPath="/400">
             <div className={styles.container}>
                 <div className={styles.grid}>
-                    {/* 侧边栏区域 */}
-                    {!isMobile && (
-                        <div className={styles.sidebar}>
-                            <CreatorSidebarMenu
-                                activeMenuKey={activeMenuKey}
-                                onMenuSelect={handleMenuSelect}
-                                isMobile={false}
-                                notificationCounts={{
-                                    articles: 2,
-                                    drafts: 3,
-                                    announcements: 1
-                                }}
-                            />
-                        </div>
-                    )}
-
-                    {/* 移动端导航栏 */}
-                    {isMobile && (
-                        <div className={styles['mobile-menu']}>
-                            <CreatorSidebarMenu
-                                activeMenuKey={activeMenuKey}
-                                onMenuSelect={handleMenuSelect}
-                                isMobile={true}
-                                notificationCounts={{
-                                    articles: 2,
-                                    drafts: 3,
-                                    announcements: 1
-                                }}
-                            />
-                        </div>
-                    )}
+                    {/* 侧边栏区域, TODO: 增加通知count */}
+                    <div className={isMobile ? styles.mobileMenu : styles.sidebar}>
+                        <CreatorSidebarMenu
+                            activeMenuKey={activeMenuKey}
+                            onMenuSelect={handleMenuSelect}
+                            isMobile={isMobile}
+                            notificationCounts={{
+                                articles: 0,
+                                drafts: 0,
+                                announcements: 0
+                            }}
+                        />
+                    </div>
 
                     {/* 主内容区域 */}
-                    <div className={styles['main-content']}>
+                    <div className={styles.mainContent}>
                         {children}
                     </div>
                 </div>

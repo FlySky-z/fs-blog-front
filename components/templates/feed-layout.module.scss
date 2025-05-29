@@ -1,6 +1,11 @@
 .container {
   margin: 0 auto;
   padding: 24px 12px;
+  max-width: 1280px;
+
+  @media (max-width: 768px) {
+    padding: 12px 0px;
+  }
 }
 
 .layout {
@@ -22,10 +27,4 @@
 
 .mobileSidebar {
   margin-top: 24px;
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 16px;
-  }
 }

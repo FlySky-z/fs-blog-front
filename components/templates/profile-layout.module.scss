@@ -1,11 +1,43 @@
 .container {
-  margin: 0 auto;
-  padding: 24px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  max-width: 1280px;
+
+  .sidebar {
+    grid-column: span 3;
+    position: sticky;
+    top: 88px;
+    height: fit-content;
+  }
+
+  .mobileMenu {
+    grid-column: span 12;
+    position: sticky;
+    top: 64px;
+    z-index: 10;
+    margin-bottom: 10px;
+  }
+
+  @media (max-width: 768px) {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 }
 
-.layout {
+.grid {
   display: grid;
-  gap: 24px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 1.5rem;
+
+  @media screen and (max-width: 768px) {
+    column-gap: 0;
+  }
 }
 
 .profileHeader {
@@ -13,28 +45,10 @@
   margin-bottom: 24px;
 }
 
-.sidebar {
-  position: sticky;
-  top: 88px; /* Header高度 + 一些间距 */
-  height: fit-content;
-}
+.mainContent {
+  grid-column: span 12;
 
-.main {
-  min-height: 70vh;
-}
-
-.mobileMenuButton {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 16px;
-}
-
-@media (max-width: 1024px) {
-  .container {
-    padding: 16px;
-  }
-  
-  .profileHeader {
-    margin-bottom: 16px;
+  @media (min-width: 768px) {
+    grid-column: span 9;
   }
 }

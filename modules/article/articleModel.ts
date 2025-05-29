@@ -11,11 +11,35 @@ export interface ArticleListParams {
   page: number;
   limit?: number;
   tag?: string;
-  order_by?: 'time' | 'hot';
+  order_by?: 'time' | 'likes';
   sort_order?: 'asc' | 'desc';
   keyword?: string;
   user_id?: string;
 }
+
+export interface MyArticleRequest {
+    /**
+     * 每一页内容数
+     */
+    limit?: number;
+    /**
+     * 排序（时间time/热度likes）
+     */
+    order_by?: string;
+    /**
+     * 页面数
+     */
+    page: number;
+    /**
+     * asc（升序）或desc（降序）
+     */
+    sort_order?: string;
+    /**
+     * 标签
+     */
+    tag?: string;
+}
+
 
 /**
  * 文章列表项

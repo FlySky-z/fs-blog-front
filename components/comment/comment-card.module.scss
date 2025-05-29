@@ -1,0 +1,97 @@
+.commentCard {
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  
+  &.reply {
+    margin-left: 32px;
+    
+    @media (max-width: 768px) {
+      margin-left: 16px;
+    }
+  }
+  
+  .cardBody {
+    padding: 16px;
+    
+    @media (max-width: 768px) {
+      padding: 12px;
+    }
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  .content {
+    margin: 12px 0;
+    font-size: 15px;
+    word-break: break-word;
+    
+    @media (max-width: 768px) {
+      font-size: 14px;
+    }
+  }
+  
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    
+    @media (max-width: 768px) {
+      gap: 8px;
+      
+      button {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+    }
+  }
+  
+  .replyForm {
+    margin-top: 16px;
+    
+    textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d9d9d9;
+      border-radius: 6px;
+      min-height: 80px;
+      resize: vertical;
+      
+      &.dark {
+        background-color: #23272f;
+        color: #fff;
+        border-color: #444;
+      }
+    }
+    
+    .replyActions {
+      margin-top: 8px;
+      text-align: right;
+      
+      @media (max-width: 768px) {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+    }
+  }
+  
+  .repliesSection {
+    margin-top: 16px;
+  }
+  
+  .loadMoreButton {
+    padding: 4px 0;
+    margin-left: 32px;
+    
+    @media (max-width: 768px) {
+      margin-left: 16px;
+      font-size: 12px;
+    }
+  }
+}

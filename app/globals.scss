@@ -305,3 +305,6 @@
   }
 
 }
+
+/* 导入Prism.js默认主题，确保代码高亮在全站可用 */
+@import url('https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css');

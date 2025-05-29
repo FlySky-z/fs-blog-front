@@ -1,6 +1,7 @@
 "use client"; // Next.JS
 
 import { AiEditor, AiEditorOptions } from "aieditor";
+import {uploadImage} from "@/utils/imgService";
 import "aieditor/dist/style.css";
 
 import { HTMLAttributes, forwardRef, useEffect, useRef } from "react";
@@ -44,11 +45,42 @@ export default forwardRef<HTMLDivElement, AIEditorProps>(function AIEditor(
         ai: {
           models: {
             openai: {
-              endpoint: "https://api.cerebras.ai",
+              endpoint: process.env.NEXT_PUBLIC_AI_ENDPOINT || "",
               apiKey: process.env.NEXT_PUBLIC_AI_KEY || "",
-              model: "llama-4-scout-17b-16e-instruct"
+              model: process.env.NEXT_PUBLIC_AI_MODEL || "gpt-4.1-mini",
             }
           }
+        },
+        image: {
+          uploader: async (
+            file: File,
+            formName: string
+          ): Promise<Record<string, any>> => {
+            const formData = new FormData();
+            formData.append(formName, file);
+            try {
+              const resp = await uploadImage(file, file.name);
+              if (resp.data) {
+                return {
+                  errorCode: 0,
+                  data: {
+                    src: resp.data,
+                    alt: file.name,
+                  },
+                };
+              } else {
+                return {
+                  errorCode: 1,
+                  data: {},
+                };
+              }
+            } catch (error) {
+              return {
+                errorCode: 1,
+                data: {},
+              };
+            }
+          },
         },
         ...options,
       });

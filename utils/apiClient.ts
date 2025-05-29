@@ -28,14 +28,11 @@ let requestInterceptor: ((config: InternalAxiosRequestConfig) => InternalAxiosRe
 // 请求拦截器
 axiosInstance.interceptors.request.use(
   (config) => {
-    // 打印出来当前的cookie
-    console.log('当前的 cookie:', document.cookie);
-    console.trace("当前请求: ", config.url);
     // 应用自定义拦截器
     if (requestInterceptor) {
       config = requestInterceptor(config);
     }
-
+    // console.trace("请求", config.method?.toUpperCase(), config.url);
     // 自动添加 Access Token（通过 TokenManager）
     if (TokenManager.hasValidToken()) {
       config.headers['Authorization'] = `Bearer ${TokenManager.getAccessToken()}`;

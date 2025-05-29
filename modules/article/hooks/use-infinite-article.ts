@@ -8,7 +8,7 @@ interface UseInfiniteArticleOptions {
   tag?: string;
   keyword?: string;
   userId?: string;
-  orderBy?: 'time' | 'hot';
+  orderBy?: 'time' | 'likes';
   sortOrder?: 'asc' | 'desc';
 }
 
@@ -31,7 +31,7 @@ const fetchArticleList = async (
     tag?: string;
     keyword?: string;
     userId?: string;
-    orderBy?: 'time' | 'hot';
+    orderBy?: 'time' | 'likes';
     sortOrder?: 'asc' | 'desc';
   }
 ): Promise<{ data: ArticleListItem[]; hasMore: boolean }> => {
@@ -125,6 +125,8 @@ export function useInfiniteArticle(options: UseInfiniteArticleOptions = {}): Use
    */
   const refresh = useCallback(async () => {
     setError(null); // 刷新时重置错误状态
+    setPage(1); // 重置页码
+    setHasMore(true); // 重置hasMore状态
     await loadArticles(1);
   }, [loadArticles]);
   return {

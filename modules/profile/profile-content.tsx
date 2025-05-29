@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { notification, Modal } from 'antd';
+import { notification, Modal, Grid } from 'antd';
 import ProfileLayout from '@/components/templates/profile-layout';
 import AvatarHeader from '@/components/profile/avatar-header';
 import SidebarMenu from '@/components/profile/sidebar-menu';
@@ -9,7 +9,6 @@ import ProfileTabPanel from '@/components/profile/profile-tab-panel';
 import useProfile from '@/modules/profile/hooks/use-profile';
 import useProfileTabs from '@/modules/profile/hooks/use-profile-tabs';
 import { useUserStore } from '@/store/userStore';
-import { useRouter } from 'next/navigation';
 
 interface ProfileContentProps {
   initialTab?: string;
@@ -29,26 +28,20 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
   initialTab = 'article'
 }) => {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  // 从URL参数获取用户ID和当前标签
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
+
   const currentUserId = useUserStore.getState().userInfo?.id.toString() || '';
-  if (!currentUserId) {
-    notification.error({
-      message: '用户未登录',
-      description: '请先登录以查看个人资料。',
-    });
-    router.push('/');
-  }
-  
+
   const userId = searchParams.get('userId') || currentUserId;
 
   const defaultTab = searchParams.get('tab') || initialTab;
 
   const isCurrentUser = userId === currentUserId;
-  
+
   const [activeTab, setActiveTab] = useState(defaultTab);
-  const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false);
-  
+
   // 获取用户资料
   const {
     userInfo,
@@ -56,7 +49,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
     toggleFollowing,
     isFollowingLoading
   } = useProfile(userId, currentUserId);
-  
+
   // 获取标签页数据
   const {
     tabData,
@@ -69,31 +62,27 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
     handleToggleFollow,
     followLoading
   } = useProfileTabs(activeTab, userId);
-  
+
   // 处理标签切换
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    setMobileDrawerVisible(false);
-    
+
     // 更新URL参数，但不重新加载页面
     const url = new URL(window.location.href);
     url.searchParams.set('tab', tab);
     window.history.pushState({}, '', url);
   };
-  
+
   // 处理编辑个人资料
   const handleEditProfile = () => {
-    notification.info({
-      message: '功能开发中',
-      description: '个人资料编辑功能正在开发中，敬请期待！',
-    });
+    setActiveTab('settings');
   };
-  
+
   // 处理显示粉丝列表
   const handleFollowersClick = () => {
     handleTabChange('followers');
   };
-  
+
   // 处理显示关注列表 (假设也存在这个标签)
   const handleFollowingClick = () => {
     notification.info({
@@ -101,7 +90,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
       description: '关注列表功能正在开发中，敬请期待！',
     });
   };
-  
+
   // 处理评论删除确认
   const confirmDeleteComment = (commentId: string) => {
     Modal.confirm({
@@ -113,12 +102,12 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
       onOk: () => handleCommentDelete(commentId)
     });
   };
-  
+
   return (
     <ProfileLayout
       profileHeader={
         userInfo ? (
-          <AvatarHeader 
+          <AvatarHeader
             user={userInfo}
             isCurrentUser={isCurrentUser}
             isFollowingLoading={isFollowingLoading}
@@ -130,18 +119,14 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
         ) : null
       }
       sidebar={
-        <SidebarMenu 
+        <SidebarMenu
           activeTab={activeTab}
           onTabChange={handleTabChange}
           userId={userId}
-          isMobile={false}
-          mobileDrawerVisible={mobileDrawerVisible}
-          onMobileDrawerClose={() => setMobileDrawerVisible(false)}
+          isMobile={isMobile}
           notificationCounts={{
-            posts: 2,
-            comments: 0,
-            followers: 1
           }}
+          isCurrentUser={isCurrentUser}
         />
       }
       content={
@@ -158,7 +143,6 @@ const ProfileContent: React.FC<ProfileContentProps> = ({
           followLoading={followLoading}
         />
       }
-      onOpenMobileMenu={() => setMobileDrawerVisible(true)}
     />
   );
 };

@@ -3,17 +3,16 @@ import { DownOutlined } from '@ant-design/icons';
 
 interface NavMenuProps {
   isMobile: boolean;
-  isTablet: boolean;
   navMenu: MenuProps;
 }
 
-export default function NavMenu({ isMobile, isTablet, navMenu }: NavMenuProps) {
+export default function NavMenu({ isMobile, navMenu }: NavMenuProps) {
   return (
     <Space>
-      {(isMobile || isTablet) ? (
+      {(isMobile) ? (
         <Dropdown menu={navMenu} trigger={['click']}>
           <Button type="text">
-            首页 <DownOutlined />
+            首页
           </Button>
         </Dropdown>
       ) : (

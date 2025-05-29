@@ -22,7 +22,6 @@ export const useProfileTabs = (tab: string, userId: string) => {
   
   // 加载初始数据
   useEffect(() => {
-    const tabType = tab === 'posts' ? 'article' : tab;
     const fetchTabData = async () => {
       setLoading(true);
       setError(null);
@@ -32,7 +31,7 @@ export const useProfileTabs = (tab: string, userId: string) => {
         let tabData: TabDataType | undefined;
         let hasMoreFlag = true;
         
-        switch (tabType) {
+        switch (tab) {
           case 'article': {
             const articles = await articleService.getArticleList({ user_id: userId, page: 1 });
             tabData = { type: 'article', data: articles };
@@ -61,14 +60,24 @@ export const useProfileTabs = (tab: string, userId: string) => {
             tabData = { type: 'followers', data: followerCards };
             break;
           }
+
+          case 'settings': {
+            tabData = { type: 'settings', data: null };
+            break;
+          }
+
+          case 'certification': {
+            tabData = { type: 'certification', data: null };
+            break;
+          }
           
           // TODO: comments/collections等tab的真实API
           default:
-            tabData = { type: 'article', data: [] };
+            tabData = { type: "article", data: [] };
         }
         
         setTabData(tabData);
-        setHasMore(tabType !== 'settings' && tabType !== 'certification' && hasMoreFlag);
+        setHasMore(tab !== 'settings' && tab !== 'certification' && hasMoreFlag);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('获取数据失败'));
         console.error('获取标签数据失败:', err);
@@ -90,12 +99,11 @@ export const useProfileTabs = (tab: string, userId: string) => {
       const nextPage = page + 1;
       let newData: any[] = [];
       let hasMoreFlag = true;
-      
+
       if (tabData) {
         switch (tabData.type) {
           case 'article': {
-            newData = generateMockPosts(3);
-            // newData = await articleService.getArticleList({ user_id: userId, page: nextPage });
+            newData = await articleService.getArticleList({ user_id: userId, page: nextPage });
             hasMoreFlag = newData.length > 0;
             break;
           }
@@ -108,10 +116,10 @@ export const useProfileTabs = (tab: string, userId: string) => {
             newData = generateMockComments(3);
             break;
           case 'collections':
-            // newData = generateMockCollections(2);
+            newData = generateMockCollections(3);
             break;
           case 'followers':
-            newData = generateMockFollowers(5);
+            newData = generateMockFollowers(3);
             break;
         }
         
@@ -123,7 +131,6 @@ export const useProfileTabs = (tab: string, userId: string) => {
         ) {
           setTabData({
             type: tabData.type,
-            // @ts-ignore - 为简化忽略类型错误
             data: [...tabData.data, ...newData]
           });
         }
@@ -140,13 +147,13 @@ export const useProfileTabs = (tab: string, userId: string) => {
   
   // 模拟处理编辑评论
   const handleCommentEdit = (commentId: string) => {
-    console.log('编辑评论:', commentId);
+    // console.log('编辑评论:', commentId);
     // 在实际应用中，这里会打开编辑对话框
   };
   
   // 模拟处理删除评论
   const handleCommentDelete = (commentId: string) => {
-    console.log('删除评论:', commentId);
+    // console.log('删除评论:', commentId);
     // 在实际应用中，这里会显示确认对话框并调用 API
     
     // 模拟UI更新
@@ -163,8 +170,6 @@ export const useProfileTabs = (tab: string, userId: string) => {
     setFollowLoading(prev => ({ ...prev, [userId]: true }));
     
     try {
-      await followUser(Number(userId), !isFollowing);
-      
       if (tabData && tabData.type === 'followers') {
         setTabData({
           type: 'followers',

@@ -1,12 +1,12 @@
 'use client';
 import React from 'react';
-import { Card, Avatar, Typography, Space, Carousel, Tag } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Card, Typography, Space, Carousel, Tag } from 'antd';
 import styles from './creator-header-card.module.scss';
+import cardStyles from './card.module.scss';
 import UserMeta from '@/components/molecules/user-meta';
 import { useUIStore } from '@/store/uiStore';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 interface CreatorAnnouncement {
   id: string;
@@ -17,7 +17,7 @@ interface CreatorAnnouncement {
 interface CreatorHeaderCardProps {
   id: string;
   avatar?: string;
-  nickname: string;
+  username: string;
   level: number;
   announcements: CreatorAnnouncement[];
   style?: React.CSSProperties;
@@ -26,18 +26,20 @@ interface CreatorHeaderCardProps {
 const CreatorHeaderCard: React.FC<CreatorHeaderCardProps> = ({
   id,
   avatar,
-  nickname,
+  username,
   level,
   announcements,
   style,
 }) => {
 
   return (
-    <Card className={styles.cardContainer} style={style}>
+    <Card className={cardStyles.cardContainer} style={style} styles={{
+      body: { padding: 0},
+    }}>
       <div className={styles.headerWrapper}>
         <UserMeta
           id={id}
-          username={nickname}
+          username={username}
           avatar={avatar}
           level={level}
         ></UserMeta>

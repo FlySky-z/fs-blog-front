@@ -45,7 +45,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       setUsernameVerified(false);
       return false;
     }
-  }, []);
+  }, [messageApi]);
 
   // 手机号检查（通常只需要验证格式，这里假设服务端也可以验证手机号是否已注册）
   const checkPhone = useCallback(async (phone: string) => {
@@ -60,7 +60,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       setPhoneVerified(false);
       return false;
     }
-  }, []);
+  }, [messageApi]);
 
   const handleSubmit = async (values: any) => {
     // 检查是否已验证用户名/手机号
@@ -92,25 +92,20 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       const registerData: RegisterRequest = {
         username: values.username,
         password: hashedPassword,
-        email: values.email,  
+        email: values.email,
         phone: values.phone,
         captcha_id: captchaId,
         captcha_code: Math.round(captchaPosition)
       };
-
-      // 直接使用 authService 进行注册
-      const success = await authService.register(registerData);
+      const success = await onRegister(registerData);
 
       if (success) {
         messageApi.success('注册成功');
         // 注册成功，重置表单
-        form.resetFields();
+        // form.resetFields();
         setVerified(false);
         setCaptchaId('');
         setCaptchaPosition(0);
-
-        // 如果需要，可以调用传入的 onRegister 回调
-        await onRegister(values);
       }
     } catch (error) {
       console.error('注册表单提交错误:', error);

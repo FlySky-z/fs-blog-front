@@ -1,10 +1,10 @@
 'use client';
 import React, { useRef, useCallback, useEffect } from 'react';
-import { Spin, Empty, Typography, Button, Tooltip } from 'antd';
+import { Spin, Empty, Typography, Button, Tooltip, Card, Radio, Space } from 'antd';
 import { useInfiniteArticle } from '@/modules/article/hooks/use-infinite-article';
-import AritcleCard, { PostCardProps } from '@/components/article/article-card';
+import AritcleCard, { ArticleCardProps } from '@/components/article/article-card';
 import styles from './article-feed.module.scss';
-import { ReloadOutlined, SyncOutlined } from '@ant-design/icons';
+import { FieldTimeOutlined, FireOutlined, ReloadOutlined, SortAscendingOutlined, SyncOutlined } from '@ant-design/icons';
 import QuickHeader from '@/components/creator/quick-header';
 import { ArticleListItem } from './articleModel';
 
@@ -15,7 +15,7 @@ interface ArticleFeedProps {
   title?: string;
   pageSize?: number;
   keyword?: string;
-  orderBy?: 'time' | 'hot';
+  orderBy?: 'time' | 'likes';
   sortOrder?: 'asc' | 'desc';
   tag?: string;
   userId?: string;
@@ -24,7 +24,7 @@ interface ArticleFeedProps {
 /**
  * 将后端文章数据转换为文章卡片需要的格式
  */
-const mapArticleToCardProps = (article: ArticleListItem): PostCardProps => {
+const mapArticleToCardProps = (article: ArticleListItem): ArticleCardProps => {
   return {
     id: article.id,
     title: article.header,
@@ -35,12 +35,12 @@ const mapArticleToCardProps = (article: ArticleListItem): PostCardProps => {
       id: article.author_id,
       username: article.author,
     },
-    publishedAt: new Date(article.create_time).toISOString(),
+    lastModified: article.last_modified_date,
     viewCount: article.view,
     likeCount: article.like,
     commentCount: article.comment,
     tags: article.tags.map((tag, index) => ({
-      id: `${article.id}-tag-${index}`,
+      id: `tag-${index}`,
       name: tag
     }))
   };
@@ -60,7 +60,7 @@ const ArticleFeed: React.FC<ArticleFeedProps> = ({
 }) => {
   // 获取文章数据
   const { articles, loading, hasMore, error, loadMore, refresh } = useInfiniteArticle({
-    pageSize: 1,
+    pageSize,
     orderBy,
     sortOrder,
     tag,

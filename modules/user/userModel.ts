@@ -80,7 +80,7 @@ export interface getUserListQuery {
     /**
      * 每一页数量
      */
-    count?: number;
+    limit?: number;
     /**
      * 查询关键词
      */

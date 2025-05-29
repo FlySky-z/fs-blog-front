@@ -52,14 +52,18 @@ export async function updateUserInfo(param: userUpdateRequest): Promise<boolean>
 }
 
 /**
+ * 
+ */
+
+/**
  * 获取用户列表
  * @param page 页码
- * @param count 每页数量
+ * @param limit 每页数量
  */
 export async function getUserList(query: getUserListQuery): Promise<getUserListResponse> {
-    const { page, count, ...rest } = query;
+    const { page, limit, ...rest } = query;
     // 支持更多查询参数
-    const params = new URLSearchParams({ page: String(page), count: String(count), ...rest as any }).toString();
+    const params = new URLSearchParams({ page: String(page), limit: String(limit), ...rest as any }).toString();
     const response = await apiClient.get<getUserListResponse>(`/api/user/list?${params}`);
     if (response.code !== 200) {
         throw new Error(response.msg || '获取用户列表失败');
@@ -106,10 +110,15 @@ export async function kickUser(userId: string): Promise<boolean> {
  * @param follow true为关注，false为取关
  */
 export async function followUser(userId: number, follow: boolean): Promise<void> {
-    const response = await apiClient.post<{ code: number; msg: string }>(
-        '/api/user/follow',
-        { user_id: userId, follow }
-    );
+    // mock 数据
+    const response = {
+        code: 200,
+        msg: 'success'
+    }
+    // const response = await apiClient.post<{ code: number; msg: string }>(
+    //     '/api/user/follow',
+    //     { user_id: userId, follow }
+    // );
     if (response.code !== 200) {
         throw new Error(response.msg || (follow ? '关注失败' : '取关失败'));
     }

@@ -1,18 +1,11 @@
-// 替换 TailwindCSS 样式为 SCSS 样式
 .cardContainer {
   width: 100%;
-  margin-bottom: 16px;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-}
-
-.headerTitle {
-  margin: 0;
 }
 
 .statistic {

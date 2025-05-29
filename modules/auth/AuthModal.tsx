@@ -108,14 +108,8 @@ export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
   const handleRegister = useCallback(async (values: any) => {
     try {
       const success = await authService.register(values);
-      
       if (success) {
         messageApi.success('注册成功，请登录');
-        // 切换到登录标签，但不关闭模态框
-        setModalState(prev => ({
-          ...prev,
-          tab: 'login'
-        }));
         return true;
       }
       

@@ -28,7 +28,6 @@ export const TokenManager = {
 
   // 清除 Access Token
   clearAccessToken(): void {
-    console.log('清除 Access Token');
     if (typeof window === 'undefined') return;
     localStorage.removeItem('access_token');
   },

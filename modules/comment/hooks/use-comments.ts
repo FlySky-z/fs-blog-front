@@ -17,7 +17,7 @@ const fetchComments = async (
   return new Promise((resolve) => {
     setTimeout(() => {
       // 生成模拟评论数据
-      const total = 35; // 假设总共有35条评论
+      const total = 2; 
       const startIndex = (page - 1) * pageSize;
       const endIndex = Math.min(startIndex + pageSize, total);
       const hasMore = endIndex < total;

@@ -1,8 +1,6 @@
 'use client';
 import React, { ReactNode, useEffect, useState, useRef } from 'react';
-import { Layout, Grid, Card } from 'antd';
-import { EditOutlined, FundProjectionScreenOutlined } from '@ant-design/icons';
-import Link from 'next/link';
+import { Layout, Grid } from 'antd';
 import styles from './feed-layout.module.scss';
 
 const { Content } = Layout;
@@ -33,9 +31,6 @@ const FeedLayout: React.FC<FeedLayoutProps> = ({
     <Content>
       <div
         className={styles.container}
-        style={{
-          maxWidth: fullWidth ? '100%' : '1280px',
-        }}
       >
         <div className={styles.layout} style={{
           gridTemplateColumns: isMobile ? '1fr' : '1fr 320px',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Card, 
   Table, 
@@ -28,6 +28,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { useRouter } from 'next/navigation';
 import { articleService } from '@/modules/article/articleService';
 import { ArticleListItem } from '@/modules/article/articleModel';
+import Image from 'next/image';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -74,32 +75,32 @@ const ArticleManagePanel: React.FC<ArticleManagePanelProps> = ({ className }) =>
   };
 
   // 获取文章列表
-  const fetchArticles = async (page = 1, search = '', status?: number, startTime?: string, endTime?: string) => {
+  const fetchArticles = useCallback(async (page = 1, search = '', status?: number, startTime?: string, endTime?: string) => {
     setLoading(true);
     try {
       const params: any = {
-        page,
-        limit: pageSize,
+        page: 1, // 只取第一页
+        limit: -1, // 获取全部文章
       };
-      
       if (search) params.keyword = search;
       if (status !== null && status !== undefined) params.status = status;
-      
+      // 这里可以根据需要加上时间筛选
       const data = await articleService.getArticleList(params);
       setArticles(data);
-      setTotal(data.length); // 实际应该从API返回total
+      setTotal(data.length); // 总数为全部文章数
+      setCurrentPage(1); // 只显示一页
     } catch (error) {
       console.error('获取文章列表失败:', error);
       message.error('获取文章列表失败');
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // pageSize 不再需要作为依赖
 
   // 初始化加载
   useEffect(() => {
     fetchArticles();
-  }, []);
+  }, [fetchArticles]);
 
   // 搜索处理
   const handleSearch = (value: string) => {
@@ -161,12 +162,12 @@ const ArticleManagePanel: React.FC<ArticleManagePanelProps> = ({ className }) =>
       render: (_, record) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {record.cover_image ? (
-            <img
+            <Image
               src={record.cover_image}
               alt={record.header}
+              width={80}
+              height={60}
               style={{
-                width: 80,
-                height: 60,
                 objectFit: 'cover',
                 borderRadius: 6,
                 marginRight: 12
@@ -265,7 +266,7 @@ const ArticleManagePanel: React.FC<ArticleManagePanelProps> = ({ className }) =>
       width: 120,
       render: (time: number) => (
         <Text style={{ fontSize: 12 }}>
-          {new Date(time * 1000).toLocaleDateString()}
+          {new Date(time).toLocaleDateString()}
         </Text>
       )
     },
@@ -369,17 +370,13 @@ const ArticleManagePanel: React.FC<ArticleManagePanelProps> = ({ className }) =>
         loading={loading}
         scroll={{ x: 1200 }}
         pagination={{
-          current: currentPage,
-          pageSize,
-          total,
+          current: 1,
+          pageSize: articles.length || 10,
+          total: articles.length,
           showSizeChanger: false,
-          showQuickJumper: true,
-          showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条/共 ${total} 条`,
-          onChange: (page) => {
-            setCurrentPage(page);
-            const [startTime, endTime] = dateRange || [];
-            fetchArticles(page, searchText, statusFilter || undefined, startTime, endTime);
-          },
+          showQuickJumper: false,
+          showTotal: (total, range) => `共 ${total} 条`,
+          onChange: () => {}, // 禁用分页切换
         }}
       />
     </Card>

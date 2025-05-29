@@ -40,15 +40,17 @@ const RecommendedArticles: React.FC<RecommendedArticlesProps> = ({
                 {article.title}
               </Typography.Title>
             </Link>
-            
+
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Avatar src={article.avatar} size="small" style={{ marginRight: 8 }} />
+                {article.avatar && (
+                  <Avatar src={article.avatar} size="small" style={{ marginRight: 8 }} />
+                )}
                 <Text type="secondary" style={{ fontSize: '12px' }}>
                   {article.author}
                 </Text>
               </div>
-              
+
               <Space size={12}>
                 <Text type="secondary" style={{ fontSize: '12px' }}>
                   {article.likeCount} 赞

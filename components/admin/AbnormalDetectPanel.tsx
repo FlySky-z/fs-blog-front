@@ -30,39 +30,42 @@ const AbnormalDetectPanel: React.FC = () => {
   const router = useRouter();
 
   // 获取异常事件列表
-  const fetchAbnormalEvents = async (page = 1, search = '', startTime?: string, endTime?: string) => {
-    setLoading(true);
-    try {
-      const params: any = {
-        page,
-        count: pageSize,
-      };
-      
-      if (search) params.search = search;
-      if (startTime) params.start_time = startTime;
-      if (endTime) params.end_time = endTime;
-      
-      const response = await adminService.getAbnormalEvents(params);
-      
-      if (response.code === 200) {
-        // 为每个异常事件生成唯一的ID，以防API没有返回唯一ID
-        const eventsWithUniqueIds = response.data.map((event: AbnormalEvent, index: number) => ({
-          ...event,
-          id: event.id || `${event.user_id}_${Date.now()}_${index}`
-        }));
-        setAbnormals(eventsWithUniqueIds);
-        // 注意：这里假设API会返回总数，如果没有需要调整
-        setTotal(eventsWithUniqueIds.length);
-      } else {
-        message.error(response.msg || '获取异常事件失败');
+  const fetchAbnormalEvents = React.useCallback(
+    async (page = 1, search = '', startTime?: string, endTime?: string) => {
+      setLoading(true);
+      try {
+        const params: any = {
+          page,
+          count: pageSize,
+        };
+        
+        if (search) params.search = search;
+        if (startTime) params.start_time = startTime;
+        if (endTime) params.end_time = endTime;
+        
+        const response = await adminService.getAbnormalEvents(params);
+        
+        if (response.code === 200) {
+          // 为每个异常事件生成唯一的ID，以防API没有返回唯一ID
+          const eventsWithUniqueIds = response.data.map((event: AbnormalEvent, index: number) => ({
+            ...event,
+            id: event.id || `${event.user_id}_${Date.now()}_${index}`
+          }));
+          setAbnormals(eventsWithUniqueIds);
+          // 注意：这里假设API会返回总数，如果没有需要调整
+          setTotal(eventsWithUniqueIds.length);
+        } else {
+          message.error(response.msg || '获取异常事件失败');
+        }
+      } catch (error) {
+        console.error('获取异常事件失败:', error);
+        message.error('获取异常事件失败');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('获取异常事件失败:', error);
-      message.error('获取异常事件失败');
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [pageSize]
+  );
 
   // 获取用户详情
   const fetchUserDetail = async (userId: string) => {
@@ -129,7 +132,7 @@ const AbnormalDetectPanel: React.FC = () => {
   // 初始化数据
   useEffect(() => {
     fetchAbnormalEvents();
-  }, []);
+  }, [fetchAbnormalEvents]);
 
   // 表格列配置
   const columns: ColumnsType<AbnormalEvent> = [

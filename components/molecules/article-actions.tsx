@@ -112,7 +112,7 @@ const ArticleActions: React.FC<ArticleActionsProps> = ({
 
   return (
     <>
-      <Space size="large">
+      <Space size="small" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start' }}>  
         <Button
           type="text"
           icon={isLiked ? <LikeFilled /> : <LikeOutlined />}

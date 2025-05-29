@@ -41,7 +41,7 @@ const TopicTagList: React.FC<TopicTagListProps> = ({
         {topics.map(topic => (
           <Link 
             key={topic.id} 
-            href={`/topics/${topic.id}`}
+            href={`/tags?tag=${topic.name}`}
             style={{ textDecoration: 'none' }}
           >
             <Tag 

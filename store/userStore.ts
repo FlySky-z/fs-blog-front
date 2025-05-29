@@ -48,7 +48,6 @@ export const useUserStore = create<UserState>((set, get) => ({
 
             if (!token) {
                 // 没有token，设置为未登录状态
-                console.log('没有access_token，设置为未登录状态');
                 set({
                     isLoggedIn: false,
                     isInitializing: false,

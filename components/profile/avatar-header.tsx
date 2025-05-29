@@ -1,9 +1,9 @@
 'use client';
 import React from 'react';
-import { Avatar, Typography, Button, Space, Card } from 'antd';
+import { Avatar, Typography, Button, Card } from 'antd';
 import { EditOutlined, UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
 import TagBadge from '@/components/atoms/tag-badge';
-import UserStats, { UserStatsData } from '@/components/molecules/user-stats';
+import UserStats from '@/components/molecules/user-stats';
 import styles from './avatar-header.module.scss';
 import { userInfo } from '@/modules/user/userModel';
 import { UserOutlined } from '@ant-design/icons';
@@ -58,18 +58,6 @@ const AvatarHeader: React.FC<AvatarHeaderProps> = ({
             <Text className={styles.userBio}>
               {user.abstract || '这个人很懒，还没有填写个人简介'}
             </Text>
-
-            {/* 标签 */}
-            {/* <div className={styles.userTagsContainer}>
-              <Space size={[8, 8]} wrap>
-                {user.tags?.map(tag => (
-                  <TagBadge key={tag.id} text={tag.name} color={tag.color} />
-                ))}
-                {user.location && (
-                  <TagBadge type="location" text={user.location} />
-                )}
-              </Space>
-            </div> */}
           </div>
         </div>
 

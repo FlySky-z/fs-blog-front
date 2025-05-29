@@ -35,9 +35,6 @@ const CertificationCenter: React.FC = () => {
     setIsLoading(true);
     
     try {
-      console.log('提交的认证数据:', values);
-      console.log('身份证文件:', idCardFiles);
-      console.log('资格证书文件:', certificateFiles);
       
       // 模拟 API 调用
       await new Promise(resolve => setTimeout(resolve, 1000));

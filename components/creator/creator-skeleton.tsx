@@ -46,10 +46,10 @@ export const CreatorDashboardSkeleton: React.FC = () => {
         {/* 主内容区骨架屏 */}
         <div className={styles.main}>
           <SkeletonLoading avatar rows={2}/>
-          <SkeletonLoading rows={3} />
-          <SkeletonLoading rows={4} />
-          <SkeletonLoading rows={6} />
-          <SkeletonLoading rows={8} />
+          {/* <SkeletonLoading rows={3} /> */}
+          {/* <SkeletonLoading rows={4} /> */}
+          {/* <SkeletonLoading rows={6} /> */}
+          <SkeletonLoading rows={10} />
         </div>
       </div>
     </div>

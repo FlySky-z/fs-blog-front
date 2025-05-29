@@ -1,44 +1,41 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import OfficialNews from '@/components/sidebar/official-news';
 import RecommendedUsers from '@/components/sidebar/recommended-users';
-import QuickEntryTabs from '@/components/sidebar/quick-entry-tabs';
+import { followUser } from '@/modules/user/userService';
 import PromoBanner from '@/components/sidebar/promo-banner';
 import WelcomeCard from '@/components/sidebar/welcome-card';
 import { useAuthModal } from '@/modules/auth/AuthModal';
+import articleService from '../article/articleService';
+import { Skeleton, Spin } from 'antd';
+import { ArticleListItem } from '../article/articleModel';
 
-const HomeSidebar: React.FC = ({
-}) => {
+const HomeSidebar: React.FC = () => {
   const { openLoginModal } = useAuthModal();
-  // 模拟数据
-  const mockNewsItems = [
-    {
-      id: '1',
-      title: '技术博客平台全新发布，带来更好的写作体验',
-      coverImage: 'https://picsum.photos/600/300?random=1',
-      publishedAt: '2025-05-05T08:00:00Z',
-      url: '/article/tech-blog-launch'
-    },
-    {
-      id: '2',
-      title: '如何利用人工智能提升你的写作效率',
-      publishedAt: '2025-05-03T10:30:00Z',
-      coverImage: 'https://picsum.photos/600/300?random=1',
-      url: '/article/ai-writing-tips'
-    },
-    {
-      id: '3',
-      title: '2025技术趋势展望：哪些技术值得关注',
-      publishedAt: '2025-05-01T14:15:00Z',
-      url: '/article/tech-trends-2025'
-    },
-    {
-      id: '4',
-      title: '程序员健康指南：如何在高压工作中保持身心健康',
-      publishedAt: '2025-04-29T09:45:00Z',
-      url: '/article/programmer-health-guide'
-    }
-  ];
+  const [officialArticles, setOfficialArticles] = useState<ArticleListItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // 在 useEffect 中获取文章
+  useEffect(() => {
+    const fetchOfficialArticles = async () => {
+      try {
+        const articles = await articleService.getArticleList({
+          page: 1,
+          limit: 5,
+          order_by: 'time',
+          sort_order: 'desc',
+          user_id: '23', // 官方用户ID
+        });
+        setOfficialArticles(articles);
+      } catch (error) {
+        console.error('获取官方文章失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchOfficialArticles();
+  }, []);
 
   const mockRecommendedUsers = [
     {
@@ -67,41 +64,18 @@ const HomeSidebar: React.FC = ({
     }
   ];
 
-  // const mockQuickEntries = [
-  //   {
-  //     key: 'categories',
-  //     label: '分类',
-  //     items: [
-  //       { key: 'frontend', label: '前端开发', url: '/category/frontend', icon: <span>🌐</span> },
-  //       { key: 'backend', label: '后端开发', url: '/category/backend', icon: <span>⚙️</span> },
-  //       { key: 'mobile', label: '移动开发', url: '/category/mobile', icon: <span>📱</span> },
-  //       { key: 'ai', label: '人工智能', url: '/category/ai', icon: <span>🤖</span> }
-  //     ]
-  //   },
-  //   {
-  //     key: 'resources',
-  //     label: '资源',
-  //     items: [
-  //       { key: 'ebooks', label: '免费电子书', url: '/resources/ebooks', icon: <span>📚</span> },
-  //       { key: 'courses', label: '在线课程', url: '/resources/courses', icon: <span>🎓</span> },
-  //       { key: 'tools', label: '开发工具', url: '/resources/tools', icon: <span>🛠️</span> },
-  //       { key: 'communities', label: '开发社区', url: '/resources/communities', icon: <span>👥</span> }
-  //     ]
-  //   }
-  // ];
-
   const mockBanners = [
     {
       id: 'banner1',
       imageUrl: 'https://picsum.photos/600/200?random=10',
-      title: '参加年度开发者大会，抢先体验新技术',
-      url: '/events/annual-dev-conference'
+      title: '欢迎各位前来体验小破站',
+      url: '/article/20'
     },
     {
       id: 'banner2',
       imageUrl: 'https://picsum.photos/600/200?random=20',
-      title: '高级前端工程师训练营，助你职场进阶',
-      url: '/courses/frontend-bootcamp'
+      title: '关于网站进入测试的公告',
+      url: '/article/19'
     }
   ];
 
@@ -114,8 +88,7 @@ const HomeSidebar: React.FC = ({
 
   // 模拟关注用户的处理函数
   const handleFollowUser = async (userId: string, isFollowing: boolean) => {
-    // TODO: 关注用户的处理函数
-    console.log(`${isFollowing ? '关注' : '取消关注'} 用户: ${userId}`);
+    await followUser(Number(userId), !isFollowing)
     // 真实环境下这里会有API调用
     return Promise.resolve();
   };
@@ -138,10 +111,14 @@ const HomeSidebar: React.FC = ({
       />
 
       {/* 官方资讯 */}
-      <OfficialNews
-        newsItems={mockNewsItems}
-        title="官方资讯"
-      />
+      {loading ? (
+        <Skeleton active paragraph={{ rows: 2 }} />
+      ) : (
+        <OfficialNews
+          newsItems={officialArticles}
+          title="官方资讯"
+        />
+      )}
 
       {/* 推荐用户 */}
       <RecommendedUsers

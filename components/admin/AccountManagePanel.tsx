@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Card, 
-  Table, 
-  Input, 
-  Button, 
-  Tag, 
-  Space, 
-  Select, 
-  Modal, 
-  message, 
-  Avatar, 
-  Typography, 
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Card,
+  Table,
+  Input,
+  Button,
+  Tag,
+  Space,
+  Select,
+  Modal,
+  message,
+  Avatar,
+  Typography,
   Tooltip,
   Popconfirm,
   Dropdown,
   Form
 } from 'antd';
-import { 
-  UserOutlined, 
-  LockOutlined, 
-  UnlockOutlined, 
-  EyeOutlined, 
+import {
+  UserOutlined,
+  LockOutlined,
+  UnlockOutlined,
+  EyeOutlined,
   ReloadOutlined,
   MoreOutlined,
   ExclamationCircleOutlined,
@@ -54,11 +54,11 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
-  
+
   // 用户详情弹窗状态
   const [userModalVisible, setUserModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState<userStats | null>(null);
-  
+
   // 编辑用户信息弹窗
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [editingUser, setEditingUser] = useState<userStats | null>(null);
@@ -78,36 +78,56 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
 
   // 获取用户状态配置
   const getBlockStatusConfig = (isBlocked: boolean) => {
-    return isBlocked 
+    return isBlocked
       ? { text: '已封禁', color: 'error' }
       : { text: '正常', color: 'success' };
   };
 
   // 获取登录状态配置
   const getLoginStatusConfig = (isLogin: boolean) => {
-    return isLogin 
+    return isLogin
       ? { text: '在线', color: 'success' }
       : { text: '离线', color: 'default' };
   };
 
   // 获取用户列表
-  const fetchUsers = async (page = 1, search = '', role?: number, isBlocked?: boolean) => {
+  const fetchUsers = useCallback(async (page = 1, search = '', role?: number, isBlocked?: boolean) => {
     setLoading(true);
     try {
-      const query: getUserListQuery = {
-        page,
-        count: pageSize,
-        ...(search && { key_word: search }),
-        ...(role !== null && role !== undefined && { role }),
-        ...(isBlocked !== null && isBlocked !== undefined && { is_blocked: isBlocked })
-      };
-      
-      console.log('正在调用用户列表API，参数：', query);
-      const response = await getUserList(query);
-      console.log('用户列表API响应：', response);
-      
-      setUsers(response.data || []);
-      setTotal(response.data?.length || 0);
+      let totalResponse: any = null;
+      let pageResponse: any = null;
+
+      // 仅在第一页时获取总用户数
+      if (page === 1) {
+        const totalQuery: getUserListQuery = {
+          page: 1,
+          limit: -1,
+          ...(search && { key_word: search }),
+          ...(role !== null && role !== undefined && { role }),
+          ...(isBlocked !== null && isBlocked !== undefined && { is_blocked: isBlocked })
+        };
+        [totalResponse, pageResponse] = await Promise.all([
+          getUserList(totalQuery),
+          getUserList({
+            page,
+            limit: pageSize,
+            ...(search && { key_word: search }),
+            ...(role !== null && role !== undefined && { role }),
+            ...(isBlocked !== null && isBlocked !== undefined && { is_blocked: isBlocked })
+          })
+        ]);
+        setTotal(totalResponse.data?.length || 0); // 使用总用户数作为总数
+      } else {
+        pageResponse = await getUserList({
+          page,
+          limit: pageSize,
+          ...(search && { key_word: search }),
+          ...(role !== null && role !== undefined && { role }),
+          ...(isBlocked !== null && isBlocked !== undefined && { is_blocked: isBlocked })
+        });
+      }
+
+      setUsers(pageResponse.data || []);
     } catch (error) {
       console.error('获取用户列表失败:', error);
       message.error('获取用户列表失败');
@@ -116,12 +136,12 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageSize]);
 
-  // 初始化加载
+  // 初始化加载 - 使用useEffect的依赖项确保只加载一次
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   // 搜索处理
   const handleSearch = (value: string) => {
@@ -175,16 +195,17 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
       if (!editingUser) return;
 
       const updateData: userUpdateRequest = {
+        id: editingUser.id.toString(), // 添加用户ID到更新数据对象中
         username: values.username,
         email: values.email,
         phone: values.phone,
         avatar_url: values.avatar_url,
         abstract: values.abstract
       };
-      // TODO: API 调用更新管理员用户信息
-      // const success = await updateUserInfo(updateData);
-      // 模拟更新成功
-      const success = true; // 模拟成功
+
+      // 调用 API 更新用户信息
+      const success = await updateUserInfo(updateData);
+
       if (success) {
         message.success('用户信息更新成功');
         setEditModalVisible(false);
@@ -207,9 +228,7 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
         password: 'Default123'
       };
       // TODO: API 调用重置密码
-      // const success = await updateUserInfo(updateData);
-      // 模拟重置密码成功
-      const success = true; // 模拟成功
+      const success = await updateUserInfo(updateData);
       if (success) {
         message.success('密码重置成功，新密码为：Default123');
       } else {
@@ -328,16 +347,16 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
       width: 250,
       render: (_, record) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar 
-            size={40} 
-            src={record.avatar_url} 
+          <Avatar
+            size={40}
+            src={record.avatar_url}
             icon={<UserOutlined />}
             style={{ marginRight: 12 }}
           />
           <div>
             <div>
               <Text strong>{record.username}</Text>
-              <Tag 
+              <Tag
                 color={getRoleConfig(record.role).color}
                 style={{ marginLeft: 8 }}
               >
@@ -390,7 +409,7 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
       width: 120,
       render: (time: number) => (
         <Text style={{ fontSize: 12 }}>
-          {new Date(time * 1000).toLocaleDateString()}
+          {new Date(time).toLocaleDateString()}
         </Text>
       )
     },
@@ -409,7 +428,7 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
               onClick={() => handleViewUser(record)}
             />
           </Tooltip>
-          
+
           <Tooltip title={record.is_blocked ? "解封用户" : "封禁用户"}>
             <Popconfirm
               title={record.is_blocked ? "解封用户" : "封禁用户"}
@@ -443,12 +462,12 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
   ];
 
   return (
-    <Card 
-      title="账号管理" 
+    <Card
+      title="账号管理"
       className={className}
       extra={
-        <Button 
-          icon={<ReloadOutlined />} 
+        <Button
+          icon={<ReloadOutlined />}
           onClick={handleRefresh}
           loading={loading}
         >
@@ -465,7 +484,7 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
           onSearch={handleSearch}
           onChange={(e) => !e.target.value && handleSearch('')}
         />
-        
+
         <Select
           placeholder="用户角色"
           allowClear
@@ -528,9 +547,9 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
         {selectedUser && (
           <div style={{ padding: '20px 0' }}>
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: 24 }}>
-              <Avatar 
-                size={60} 
-                src={selectedUser.avatar_url} 
+              <Avatar
+                size={60}
+                src={selectedUser.avatar_url}
                 icon={<UserOutlined />}
                 style={{ marginRight: 16 }}
               />
@@ -544,7 +563,7 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
                 </Tag>
               </div>
             </div>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
                 <Text type="secondary">用户ID</Text>
@@ -568,7 +587,7 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
                 <Text type="secondary">注册时间</Text>
-                <div>{new Date(selectedUser.create_time * 1000).toLocaleString()}</div>
+                <div>{new Date(selectedUser.create_time).toLocaleString()}</div>
               </div>
               {selectedUser.abstract && (
                 <div style={{ gridColumn: '1 / -1' }}>
@@ -607,7 +626,7 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
           >
             <Input placeholder="请输入用户名" />
           </Form.Item>
-          
+
           <Form.Item
             label="邮箱"
             name="email"
@@ -615,21 +634,21 @@ const AccountManagePanel: React.FC<AccountManagePanelProps> = ({ className }) =>
           >
             <Input placeholder="请输入邮箱" />
           </Form.Item>
-          
+
           <Form.Item
             label="手机号"
             name="phone"
           >
             <Input placeholder="请输入手机号" />
           </Form.Item>
-          
+
           <Form.Item
             label="头像URL"
             name="avatar_url"
           >
             <Input placeholder="请输入头像URL" />
           </Form.Item>
-          
+
           <Form.Item
             label="个人简介"
             name="abstract"

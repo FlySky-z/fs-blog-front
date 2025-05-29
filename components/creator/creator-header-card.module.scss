@@ -1,20 +1,12 @@
-// 设置卡片的样式
-.cardContainer {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
 .headerWrapper {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px;
 }
 
 .avatarSection {
   display: flex;
   align-items: center;
-  gap: 16px;
 }
 
 .avatarDetails {

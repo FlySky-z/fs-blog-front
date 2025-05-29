@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './slider-verify.module.scss';
 import { authService } from '@/modules/auth/authService';
+import Image from 'next/image';
 
 interface SliderVerifyProps {
   userId: string; // 用户ID
@@ -253,30 +254,37 @@ const SliderVerify: React.FC<SliderVerifyProps> = ({ userId, onSuccess, onFail }
           }}
         >
           {/* 背景图片 */}
-          <img 
+          <Image 
             className={styles.captchaBackground}
             src={backgroundImage}
             alt="验证码背景"
+            width={bgWidth}
+            height={bgHeight}
             style={{
               width: '100%',
               height: '100%',
               objectFit: 'contain'
             }}
             draggable={false}
+            priority
           />
           
           {/* 滑块图片 */}
-          <img 
+          <Image 
             className={styles.captchaBlock}
             src={blockImage}
             alt="验证码滑块"
+            width={blockWidth}
+            height={blockHeight}
             style={{
               width: `${blockWidth}px`,
               height: `${blockHeight}px`,
               top: `${blockY}px`,
-              left: `${sliderLeft}px`
+              left: `${sliderLeft}px`,
+              position: 'absolute'
             }}
             draggable={false}
+            priority
           />
         </div>
       )}

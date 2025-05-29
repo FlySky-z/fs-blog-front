@@ -1,6 +1,7 @@
 'use client';
-import React from 'react';
-import { Card, Drawer, Typography, Space } from 'antd';
+import React, { useMemo } from 'react';
+import { Card, Menu } from 'antd';
+import { useRouter } from 'next/navigation';
 import { 
   FileTextOutlined,
   CommentOutlined,
@@ -10,129 +11,150 @@ import {
   SettingOutlined,
   SafetyCertificateOutlined
 } from '@ant-design/icons';
-import MenuItem from '@/components/molecules/center-menu-item';
 import styles from './sidebar-menu.module.scss';
-
-const { Title } = Typography;
-
-export interface MenuItemData {
-  key: string;
-  text: string;
-  icon: React.ReactNode;
-  href: string;
-  notification?: number;
-}
 
 interface SidebarMenuProps {
   activeTab: string;
   onTabChange: (key: string) => void;
   userId: string;
   isMobile: boolean;
-  mobileDrawerVisible: boolean;
-  onMobileDrawerClose: () => void;
   notificationCounts?: Record<string, number>;
+  isCurrentUser?: boolean; // 是否是当前登录用户
 }
 
+/**
+ * 账户中心侧边栏菜单组件
+ * 支持桌面端和移动端两种展示模式
+ */
 const SidebarMenu: React.FC<SidebarMenuProps> = ({
   activeTab,
   onTabChange,
   userId,
   isMobile,
-  mobileDrawerVisible,
-  onMobileDrawerClose,
-  notificationCounts = {}
+  notificationCounts = {},
+  isCurrentUser = false // 默认不是当前用户
 }) => {
-  // 默认菜单项
-  const menuItems: MenuItemData[] = [
-    { 
-      key: 'article', 
-      text: '我的发帖', 
-      icon: <FileTextOutlined />,
-      href: `/accountCenter?tab=article&userId=${userId}`,
-      notification: notificationCounts.article
-    },
-    { 
-      key: 'comments', 
-      text: '我的评论', 
-      icon: <CommentOutlined />,
-      href: `/accountCenter?tab=comments&userId=${userId}`,
-      notification: notificationCounts.comments
-    },
-    { 
-      key: 'collections', 
-      text: '我的合集', 
-      icon: <FolderOutlined />,
-      href: `/accountCenter?tab=collections&userId=${userId}`
-    },
-    { 
-      key: 'favorites', 
-      text: '我的收藏', 
-      icon: <StarOutlined />,
-      href: `/accountCenter?tab=favorites&userId=${userId}`
-    },
-    { 
-      key: 'followers', 
-      text: '我的粉丝', 
-      icon: <TeamOutlined />,
-      href: `/accountCenter?tab=followers&userId=${userId}`,
-      notification: notificationCounts.followers
-    },
-    { 
-      key: 'settings', 
-      text: '账号设置', 
-      icon: <SettingOutlined />,
-      href: `/accountCenter?tab=settings&userId=${userId}`
-    },
-    { 
-      key: 'certification', 
-      text: '认证中心', 
-      icon: <SafetyCertificateOutlined />,
-      href: `/accountCenter?tab=certification&userId=${userId}`
-    },
-  ];
+  const router = useRouter();
 
-  const menuContent = (
-    <div className={styles.sidebarMenuContainer}>
-      {isMobile && (
-        <Title level={5} className={styles.sidebarMenuTitle}>
-          导航菜单
-        </Title>
-      )}
-      <Space direction="vertical" className={styles.sidebarMenuSpace}>
-        {menuItems.map((item) => (
-          <MenuItem 
-            key={item.key}
-            icon={item.icon}
-            text={item.text}
-            active={activeTab === item.key}
-            href={item.href}
-            onClick={() => onTabChange(item.key)}
-            notification={item.notification}
-          />
-        ))}
-      </Space>
-    </div>
+  // 菜单项列表 - 使用useMemo优化性能
+  const menuItems = useMemo(() => {
+    // 基本菜单项（所有人都可见）
+    const baseMenuItems = [
+      {
+        key: 'article',
+        label: (
+          <>
+            {isCurrentUser ? '我的发帖' : '作者文章'} 
+            {notificationCounts.article ? (
+              <span className={styles.notificationCount}>({notificationCounts.article})</span>
+            ) : null}
+          </>
+        ),
+        icon: <FileTextOutlined />,
+      }
+    ];
+
+    // 仅当前用户可见的菜单项
+    const currentUserMenuItems = [
+      {
+        key: 'comments',
+        label: (
+          <>
+            我的评论
+            {notificationCounts.comments ? (
+              <span className={styles.notificationCount}>({notificationCounts.comments})</span>
+            ) : null}
+          </>
+        ),
+        icon: <CommentOutlined />,
+      },
+      {
+        key: 'collections',
+        label: (
+          <>
+            我的合集
+            {notificationCounts.collections ? (
+              <span className={styles.notificationCount}>({notificationCounts.collections})</span>
+            ) : null}
+          </>
+        ),
+        icon: <FolderOutlined />,
+      },
+      {
+        key: 'favorites',
+        label: (
+          <>
+            我的收藏
+            {notificationCounts.favorites ? (
+              <span className={styles.notificationCount}>({notificationCounts.favorites})</span>
+            ) : null}
+          </>
+        ),
+        icon: <StarOutlined />,
+      },
+      {
+        key: 'followers',
+        label: (
+          <>
+            我的粉丝
+            {notificationCounts.followers ? (
+              <span className={styles.notificationCount}>({notificationCounts.followers})</span>
+            ) : null}
+          </>
+        ),
+        icon: <TeamOutlined />,
+      },
+      {
+        key: 'settings',
+        label: (
+          <>
+            账号设置
+            {notificationCounts.settings ? (
+              <span className={styles.notificationCount}>({notificationCounts.settings})</span>
+            ) : null}
+          </>
+        ),
+        icon: <SettingOutlined />,
+      },
+      {
+        key: 'certification',
+        label: (
+          <>
+            认证中心
+            {notificationCounts.certification ? (
+              <span className={styles.notificationCount}>({notificationCounts.certification})</span>
+            ) : null}
+          </>
+        ),
+        icon: <SafetyCertificateOutlined />,
+      }
+    ];
+
+    // 根据是否是当前用户返回不同的菜单项
+    return isCurrentUser ? [...baseMenuItems, ...currentUserMenuItems] : baseMenuItems;
+  }, [notificationCounts, isCurrentUser]);
+
+  // 统一的菜单点击处理函数
+  const handleMenuClick = (key: string) => {
+    onTabChange(key);
+    router.push(`/accountCenter?tab=${key}&userId=${userId}`);
+  };
+
+  // 创建菜单组件
+  const menu = (
+    <Menu
+      selectedKeys={[activeTab]}
+      onClick={({ key }) => handleMenuClick(key as string)}
+      mode={isMobile ? "horizontal" : "vertical"}
+      className={isMobile ? styles.mobileMenu : styles.desktopMenu}
+      items={menuItems}
+    />
   );
 
-  // 移动端显示抽屉
-  if (isMobile) {
-    return (
-      <Drawer
-        title="导航菜单"
-        placement="left"
-        onClose={onMobileDrawerClose}
-        open={mobileDrawerVisible}
-        bodyStyle={{ padding: '12px' }}
-      >
-        {menuContent}
-      </Drawer>
-    );
-  }
-
-  // 桌面端显示卡片
-  return (
-    <Card className={styles.sidebarMenuCard}>
-      {menuContent}
+  // 返回适当的菜单形式
+  return isMobile ? menu : (
+    <Card>
+      {menu}
     </Card>
   );
 };

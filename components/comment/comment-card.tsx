@@ -1,11 +1,12 @@
 'use client';
 import React, { useState } from 'react';
-import { Card, Button, Typography, Space, Dropdown, Menu, message } from 'antd';
-import { LikeOutlined, LikeFilled, DislikeOutlined, DislikeFilled, CommentOutlined, EllipsisOutlined, MoreOutlined } from '@ant-design/icons';
+import { Card, Button, Typography, Dropdown, message } from 'antd';
+import { LikeOutlined, LikeFilled, DislikeOutlined, DislikeFilled, CommentOutlined, MoreOutlined } from '@ant-design/icons';
 import UserMeta from '@/components/molecules/user-meta';
 import { useUIStore } from '@/store/uiStore';
+import styles from './comment-card.module.scss';
 
-const { Text, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 export interface CommentCardProps {
   id: string;
@@ -150,127 +151,127 @@ const CommentCard: React.FC<CommentCardProps> = ({
   const visibleReplies = showAllReplies ? replies : replies.slice(0, 2);
   const hasMoreReplies = replies.length > 2 && !showAllReplies;
 
+  // 是否为回复评论
+  const isReply = depth > 0;
+  
+  // 两层评论限制：原始评论(depth=0)和回复评论(depth=1)
+  const showReplyButton = depth < 1;
+  
   return (
     <Card
+      className={`${styles.commentCard} ${isReply ? styles.reply : ''}`}
+      styles={{
+        body: {
+          padding: 0,
+        }
+      }}
       style={{
-        marginBottom: 16,
-        marginLeft: depth > 0 ? `${depth * 32}px` : 0,
-        backgroundColor: depth > 0
+        backgroundColor: isReply
           ? (theme === 'dark' ? '#23272f' : '#fafafa')
           : (theme === 'dark' ? '#181a1b' : undefined),
       }}
-      styles={{
-        body: {
-          padding: '16px',
-        }
-      }}
-      className="comment-card"
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <UserMeta
-          id={author.id}
-          username={author.username}
-          avatar={author.avatar}
-          level={author.level}
-          createdAt={formattedDate}
-          showTime={true}
-          size="small"
-        />
-
-        <Dropdown
-          menu={{
-            items: menuItems.map(item => ({
-              key: item.key,
-              label: item.label,
-              onClick: item.onClick,
-            }))
-          }}
-          trigger={['click']}
-        >
-          <Button type="text" icon={<MoreOutlined />} size="small" />
-        </Dropdown>
-      </div>
-
-      <Paragraph style={{ margin: '12px 0', fontSize: 15 }}>
-        {content}
-      </Paragraph>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <Button
-          type="text"
-          size="small"
-          icon={isLiked ? <LikeFilled /> : <LikeOutlined />}
-          onClick={handleLike}
-          style={{ color: isLiked ? '#1677ff' : undefined }}
-        >
-          {likeCount > 0 ? likeCount : '赞同'}
-        </Button>
-        <Button
-          type="text"
-          size="small"
-          icon={isDisliked ? <DislikeFilled /> : <DislikeOutlined />}
-          onClick={handleDislike}
-          style={{ color: isDisliked ? '#ff4d4f' : undefined }}
-        >
-          {dislikeCount > 0 ? dislikeCount : '不赞同'}
-        </Button>
-        <Button
-          type="text"
-          size="small"
-          icon={<CommentOutlined />}
-          onClick={handleReply}
-        >
-          回复
-        </Button>
-      </div>
-
-      {/* 回复框 */}
-      {isReplying && (
-        <div style={{ marginTop: 16 }}>
-          <textarea
-            value={replyContent}
-            onChange={(e) => setReplyContent(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              border: '1px solid #d9d9d9',
-              borderRadius: '6px',
-              minHeight: '80px',
-              background: theme === 'dark' ? '#23272f' : undefined,
-              color: theme === 'dark' ? '#fff' : undefined,
-            }}
-            placeholder="写下你的评论..."
+      <div className={styles.cardBody}>
+        <div className={styles.header}>
+          <UserMeta
+            id={author.id}
+            username={author.username}
+            avatar={author.avatar}
+            level={author.level}
+            createdAt={formattedDate}
+            showTime={true}
+            size="small"
           />
-          <div style={{ marginTop: 8, textAlign: 'right' }}>
-            <Button onClick={() => setIsReplying(false)} style={{ marginRight: 8 }}>取消</Button>
-            <Button type="primary" onClick={submitReply}>发布</Button>
-          </div>
+
+          <Dropdown
+            menu={{
+              items: menuItems.map(item => ({
+                key: item.key,
+                label: item.label,
+                onClick: item.onClick,
+              }))
+            }}
+            trigger={['click']}
+          >
+            <Button type="text" icon={<MoreOutlined />} size="small" />
+          </Dropdown>
         </div>
-      )}
 
-      {/* 嵌套回复 */}
-      {showReplies && visibleReplies.length > 0 && (
-        <div style={{ marginTop: 16 }}>
-          {visibleReplies.map(reply => (
-            <CommentCard
-              key={reply.id}
-              {...reply}
-              depth={depth + 1}
-              showReplies={depth < 2} // 限制嵌套层级
-            />
-          ))}
+        <Paragraph className={styles.content}>
+          {content}
+        </Paragraph>
 
-          {hasMoreReplies && (
+        <div className={styles.actions}>
+          <Button
+            type="text"
+            size="small"
+            icon={isLiked ? <LikeFilled /> : <LikeOutlined />}
+            onClick={handleLike}
+            style={{ color: isLiked ? '#1677ff' : undefined }}
+          >
+            {likeCount > 0 ? likeCount : '赞同'}
+          </Button>
+          <Button
+            type="text"
+            size="small"
+            icon={isDisliked ? <DislikeFilled /> : <DislikeOutlined />}
+            onClick={handleDislike}
+            style={{ color: isDisliked ? '#ff4d4f' : undefined }}
+          >
+            {dislikeCount > 0 ? dislikeCount : '不赞同'}
+          </Button>
+          {showReplyButton && (
             <Button
-              type="link"
-              onClick={() => setShowAllReplies(true)}
-              style={{ padding: '4px 0', marginLeft: '32px' }}
+              type="text"
+              size="small"
+              icon={<CommentOutlined />}
+              onClick={handleReply}
             >
-              查看更多回复 ({replies.length - 2})
+              回复
             </Button>
           )}
         </div>
-      )}
+
+        {/* 回复框 */}
+        {isReplying && (
+          <div className={styles.replyForm}>
+            <textarea
+              value={replyContent}
+              onChange={(e) => setReplyContent(e.target.value)}
+              className={theme === 'dark' ? styles.dark : ''}
+              placeholder="写下你的评论..."
+            />
+            <div className={styles.replyActions}>
+              <Button onClick={() => setIsReplying(false)} style={{ marginRight: 8 }}>取消</Button>
+              <Button type="primary" onClick={submitReply}>发布</Button>
+            </div>
+          </div>
+        )}
+
+        {/* 嵌套回复 - 仅显示一级嵌套 */}
+        {showReplies && visibleReplies.length > 0 && (
+          <div className={styles.repliesSection}>
+            {visibleReplies.map(reply => (
+              <CommentCard
+                key={reply.id}
+                {...reply}
+                depth={1} // 强制设置回复层级为1，确保不会出现更深的嵌套
+                showReplies={false} // 不再显示回复的回复
+              />
+            ))}
+
+            {hasMoreReplies && (
+              <Button
+                type="link"
+                onClick={() => setShowAllReplies(true)}
+                className={styles.loadMoreButton}
+              >
+                查看更多回复 ({replies.length - 2})
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
     </Card>
   );
 };
